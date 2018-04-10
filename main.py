@@ -5,11 +5,8 @@ import modHandler
 import discord
 import json
 
-config = json.loads("".join(open("Config/config.json", encoding="utf-8").readlines()))
-# print(config["Token"])
-
 client = discord.Client()
-
+config = json.loads("".join(open("Config/config.json", encoding="utf-8").readlines()))
 mod_handler = modHandler.ModHandler(client, config['LoggingLevel'], config['HelpCommands'], config['EmbedColor'])
 
 

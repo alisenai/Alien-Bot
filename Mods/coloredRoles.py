@@ -82,27 +82,27 @@ class Main:
             if command in self.add_role_commands:
                 commands = self.add_role_commands
                 help_text = "Add Color Command"
-                description = "Adds role to user"
+                description = "Adds role to user."
             elif command in self.remove_role_commands:
                 commands = self.remove_role_commands
                 help_text = "Remove Color Command"
-                description = "Removes role from user"
+                description = "Removes role from user."
             elif command in self.delete_role_commands:
                 commands = self.delete_role_commands
                 help_text = "Delete Color Command"
-                description = "Deletes a role from all users"
+                description = "Deletes a role from all users."
             elif command in self.list_colors_command:
                 commands = self.list_colors_command
                 help_text = "List Colors Command"
-                description = "Lists all colors"
+                description = "Lists all colors."
             elif command in self.equipped_users_command:
                 commands = self.equipped_users_command
                 help_text = "Equipped Users Command"
-                description = "Lists users equipped with a role"
+                description = "Lists users equipped with a role."
             elif command in self.info_commands:
                 commands = self.info_commands
                 help_text = "Info Command"
-                description = "Lists colors and equipped users"
+                description = "Lists colors and equipped users."
             else:
                 return "Unknown Command - " + command, "Unknown command for " + self.mod_name
             help_text += " - "
@@ -136,9 +136,9 @@ class Main:
                             await self.simple_embed_reply(channel, "[Add Role]", "Max role count reached.",
                                                           hex_color=hex_color)
                     else:
-                        self.simple_embed_reply(channel, "[Error]", "Invalid hex value", split_message[1])
+                        self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
                 else:
-                    self.simple_embed_reply(channel, "[Error]", "Missing color parameter")
+                    self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Removing a role
             elif command in self.remove_role_commands:
                 # Get the current role id
@@ -161,22 +161,27 @@ class Main:
                         # Get the role
                         color_role = self.get_role_by_hex(server, hex_color)
                         if color_role is None:
-                            await self.simple_embed_reply(channel, "[Error]", "Color not found", split_message[1])
+                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", split_message[1])
                         else:
                             await self.delete_role(server, color_role)
                             # Reply
                             await self.simple_embed_reply(channel, "[Delete Role]", "Deleted " + hex_color + ".",
                                                           hex_color=hex_color)
                     else:
-                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value", split_message[1])
+                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
                 else:
-                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter")
+                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Listing roles
             elif command in self.list_colors_command:
                 # Create the text
                 roles_text = ""
-                for role in self.roles[server.id]:
-                    roles_text += self.get_role_by_id(server, role).name + "\n"
+                # Check if roles exist
+                if len(self.roles[server.id]) > 0:
+                    for role in self.roles[server.id]:
+                        roles_text += self.get_role_by_id(server, role).name + "\n"
+                else:
+                    # If no roles exist, state so
+                    roles_text = "No roles exist."
                 # Reply
                 await self.simple_embed_reply(channel, "[Role List]", roles_text)
             # Listing users equipped with role
@@ -190,40 +195,49 @@ class Main:
                         if role is not None:
                             # Create the text
                             users_text = ""
-                            for user_id in self.roles[server.id][role.id]:
-                                user = self.get_user_by_id(server, user_id)
-                                users_text += user.name + "\n"
+                            # Check if users are equipped with this role
+                            if len(self.roles[server.id][role.id]) > 0:
+                                for user_id in self.roles[server.id][role.id]:
+                                    user = self.get_user_by_id(server, user_id)
+                                    users_text += user.name + "\n"
+                            else:
+                                # If no users are equipped, state so
+                                users_text = "No users are equipped with this role."
                             # Reply
                             await self.simple_embed_reply(channel, "[" + role.name + " Equipped List]", users_text,
                                                           hex_color)
                         else:
-                            await self.simple_embed_reply(channel, "[Error]", "Color not found", hex_color)
+                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
                     else:
-                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value", split_message[1])
+                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
                 else:
-                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter")
+                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # List all info known by this mod for current server
             elif command in self.info_commands:
-                # Begin reply crafting
-                embed = discord.Embed(title="[Info]", color=0x751DDF)
-                # Cycle all the roles
-                for role_id in self.roles[server.id]:
-                    role = self.get_role_by_id(server, role_id)
-                    # Create user list per role
-                    users_text = ""
-                    for user_id in self.roles[server.id][role_id]:
-                        user = self.get_user_by_id(server, user_id)
-                        users_text += user.name + "\n"
-                    # Create embed field per role
-                    embed.add_field(name=role.name, value=users_text)
-                # Reply
-                await self.client.send_message(message.channel, embed=embed)
+                # Check if there are existing roles
+                if len(self.roles[server.id]) > 0:
+                    # Begin reply crafting
+                    embed = discord.Embed(title="[Info]", color=0x751DDF)
+                    # Cycle all the roles
+                    for role_id in self.roles[server.id]:
+                        role = self.get_role_by_id(server, role_id)
+                        # Create user list per role
+                        users_text = ""
+                        for user_id in self.roles[server.id][role_id]:
+                            user = self.get_user_by_id(server, user_id)
+                            users_text += user.name + "\n"
+                        # Create embed field per role
+                        embed.add_field(name=role.name, value=users_text)
+                    # Reply
+                    await self.client.send_message(message.channel, embed=embed)
+                else:
+                    await self.simple_embed_reply(message.channel, "[Info]", "No roles exist.")
         except discord.errors.Forbidden as e:
-            await self.simple_embed_reply(channel, "[Error]", "Bot does not have enough perms")
-            logging.exception("An error")
+            await self.simple_embed_reply(channel, "[Error]", "Bot does not have enough perms.")
+            logging.exception("An error occured.")
         except Exception as e:  # Leave as a general exception!
-            await self.simple_embed_reply(channel, "[Error]", "Unknown error occurred (Ping Alien)")
-            logging.exception("An error occurred")
+            await self.simple_embed_reply(channel, "[Error]", "Unknown error occurred (Ping Alien).")
+            logging.exception("An error occurred.")
 
     # Used to give a role to a user and record it in the mod DB
     async def give_role(self, server, user, role):

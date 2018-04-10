@@ -5,6 +5,8 @@ import sys
 import discord
 
 
+# TODO: Add mod perm/admin handling
+
 class ModHandler:
     client = None
     mod_commands = {}

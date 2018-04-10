@@ -1,0 +1,39 @@
+{
+  "ModCommand": "coloredRoles",
+  "ModDescription": "Gives users the ability to manage their own colors",
+  "MaxColors": 100,
+  "AddRoleCommands": [
+    "addColor",
+    "aColor",
+    "ac"
+  ],
+  "RemoveRoleCommands": [
+    "removeColor",
+    "remColor",
+    "rColor",
+    "rc"
+  ],
+  "DeleteRoleCommands": [
+    "deleteColor",
+    "delColor",
+    "dColor",
+    "dc"
+  ],
+  "EquippedUsersCommand": [
+    "equippedColor",
+    "equColor",
+    "eColor",
+    "ec"
+  ],
+  "ListColorsCommand": [
+    "listColor",
+    "lColor",
+    "lc"
+  ],
+  "InfoCommands": [
+    "infoColor",
+    "iColor",
+    "ic"
+  ],
+  "EmbedColor": "0x751DDF"
+}

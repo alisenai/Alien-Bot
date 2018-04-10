@@ -1,2 +1,9 @@
-# Alien-Bot
-A Discord bot with dynamic module loading
+WIP
+
+Logging Levels:
+- None:
+    - Logs almost nothing
+- Basic:
+    - Logs the basics
+- Verbose:
+    - Logs diligently

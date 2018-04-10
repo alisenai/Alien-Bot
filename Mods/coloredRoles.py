@@ -4,9 +4,6 @@ import json
 import re
 
 
-# TODO: Error Handling
-# Add many Try/Excepts
-# Add excepts in ELSEs
 # TODO: Command enable / disable
 # TODO: Logging levels
 # TODO: Call command on other user if "admin" for add role / remove role / etc
@@ -200,11 +197,11 @@ class Main:
                             await self.simple_embed_reply(channel, "[" + role.name + " Equipped List]", users_text,
                                                           hex_color)
                         else:
-                            self.simple_embed_reply(channel, "[Error]", "Color not found", hex_color)
+                            await self.simple_embed_reply(channel, "[Error]", "Color not found", hex_color)
                     else:
-                        self.simple_embed_reply(channel, "[Error]", "Invalid hex value", split_message[1])
+                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value", split_message[1])
                 else:
-                    self.simple_embed_reply(channel, "[Error]", "Missing color parameter")
+                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter")
             # List all info known by this mod for current server
             elif command in self.info_commands:
                 # Begin reply crafting

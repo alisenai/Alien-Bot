@@ -1,7 +1,7 @@
-
+{
   "Bot_Name": "Alien-Bot",
   "Nickname": "Alien-Bot",
-  "Token": "TOKEN HERE",
+  "Token": "TOKEN",
   "CommandPrefix": ";",
   "EmbedColor": "0x751DDF",
   "HelpCommands": [
@@ -9,7 +9,11 @@
     "h"
   ],
   "BotEmoji": "🥝",
-  "GameStatus": "With Alien-Chan",
+  "GameStatus": [
+    "With Alien Sensei",
+    "With Mods",
+    "Between Lines of Python Code"
+  ],
   "ProfilePicture": "pfp_default.jpg",
   "LoggingLevel": "Verbose"
 }

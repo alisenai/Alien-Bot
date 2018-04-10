@@ -1,9 +1,11 @@
+import random
+
 import DBManager
 import modHandler
 import discord
 import json
 
-config = json.loads("".join(open("config.json", encoding="utf-8").readlines()))
+config = json.loads("".join(open("Config/config.json", encoding="utf-8").readlines()))
 # print(config["Token"])
 
 client = discord.Client()
@@ -32,7 +34,9 @@ async def on_ready():
                 print("[Skipping Profile Picture Update - Throttled]")
             DBManager.save_data('AvatarHash', self.avatar)
 
-    await client.change_presence(game=discord.Game(name=config['GameStatus']))
+    status = config['GameStatus'][random.randint(0, len(config['GameStatus']) - 1)]
+    print("[Chose status \"" + status + "\"]")
+    await client.change_presence(game=discord.Game(name=status))
     await mod_handler.load_mods()
 
 

@@ -1,7 +1,7 @@
 import pickle
 
 
-save_file = "dataSave.db"
+save_file = "Config/dataSave.db"
 
 
 def save_data(key, data):

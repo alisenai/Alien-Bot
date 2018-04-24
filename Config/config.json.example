@@ -12,8 +12,9 @@
   "GameStatus": [
     "With Alien Sensei",
     "With Mods",
-    "Between Lines of Python Code"
+    "Between Lines of Code"
   ],
   "ProfilePicture": "pfp_default.jpg",
-  "LoggingLevel": "Verbose"
+  "LoggingLevel": "Verbose",
+  "SaveFile": "Config/database.json"
 }

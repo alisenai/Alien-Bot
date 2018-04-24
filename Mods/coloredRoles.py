@@ -12,11 +12,13 @@ import re
 
 class Main:
     def __init__(self, client, logging_level):
+        # General var init
         self.client = client
+        self.logging_level = logging_level
         self.users = {}
         self.roles = {}
+        # Config var init
         self.config = json.loads("".join(open("Mods/colorRolesConfig.json", encoding="utf-8").readlines()))
-        self.logging_level = logging_level
         self.mod_name = "Colored Roles by Alien"
         self.max_colors = self.config['MaxColors']
         self.embed_color = self.config['EmbedColor']
@@ -29,6 +31,7 @@ class Main:
         self.delete_role_commands = self.config['DeleteRoleCommands']
         self.equipped_users_command = self.config['EquippedUsersCommand']
 
+        # Created a local DB based on live info (fresh DB)
         for server in self.client.servers:
             # Create a user database for each server
             self.users[server.id] = {}
@@ -45,11 +48,13 @@ class Main:
                         else:
                             self.roles[server.id][role.id] = [user.id]
 
+    # Returns info about this mod
     def register_mod(self):
         return self.mod_command, {'Name': self.mod_name,
                                   'Description': self.mod_description,
                                   'Commands': self.mod_commands()}
 
+    # Returns all commands that are used by this mod
     def mod_commands(self):
         return self.info_commands + \
                self.add_role_commands + \
@@ -58,6 +63,7 @@ class Main:
                self.delete_role_commands + \
                self.equipped_users_command
 
+    # Gets help - All of it, or specifics
     async def get_help(self, message):
         embed = discord.Embed(title="[" + self.mod_name + " Help]", color=0x751DDF)
         split_message = message.content.split(" ")
@@ -70,7 +76,9 @@ class Main:
                 embed.add_field(name=help_title, value=help_description, inline=False)
         await self.client.send_message(message.channel, embed=embed)
 
+    # Used to generate help, all or it or specifics
     def generate_help(self, command=None):
+        # If it's not asking for specifics, recursively return everything
         if command is None:
             return [self.generate_help(self.add_role_commands[0]),
                     self.generate_help(self.remove_role_commands[0]),
@@ -78,7 +86,10 @@ class Main:
                     self.generate_help(self.list_colors_command[0]),
                     self.generate_help(self.equipped_users_command[0]),
                     self.generate_help(self.info_commands[0])]
+        # Otherwise, return help for a specific command
         else:
+            # TODO: Compress and add config for all of this
+            # Figures out which command was called and beings building a help message
             if command in self.add_role_commands:
                 commands = self.add_role_commands
                 help_text = "Add Color Command"
@@ -104,10 +115,13 @@ class Main:
                 help_text = "Info Command"
                 description = "Lists colors and equipped users."
             else:
+                # If passed something that doesn't exist, let them know
                 return "Unknown Command - " + command, "Unknown command for " + self.mod_name
+            # Build the rest of the help by appending the command list
             help_text += " - "
             for command in commands:
                 help_text += command + ", "
+            # Return the help message built
             return help_text[0:-2], description
 
     async def command_called(self, message, command):

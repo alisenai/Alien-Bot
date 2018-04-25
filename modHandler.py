@@ -53,6 +53,9 @@ class ModHandler:
                         else:
                             # If it's with the help commands, state so
                             raise Exception("Mod copies bot help command")
+                # Check if the mod's info is valid
+                if ' ' in mod_command:
+                    raise Exception("Mod command \"" + mod_command + "\" contains a space")
                 # Store mod's info
                 self.mods[mod_command] = mod_info
         # When finished loading all mods, state so and unblock

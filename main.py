@@ -17,6 +17,7 @@ mod_handler = modHandler.ModHandler(client, config['LoggingLevel'], config['Help
 @client.event
 # When the bot is ready to be worked with
 async def on_ready():
+    print('[Login successful]')
     print('[Starting]')
     self = None
     # Change the bot nickname and get a "self" user
@@ -47,7 +48,6 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # TODO: Move help parsing to this method
     # Check if the message is a possible command
     if message.content[0:len(config['CommandPrefix'])] == config['CommandPrefix']:
         # If it's a possible command, parse it

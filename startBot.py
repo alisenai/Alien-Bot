@@ -14,8 +14,8 @@ dataManager.init(config['SaveFile'])
 mod_handler = modHandler.ModHandler(client, config['LoggingLevel'], config['HelpCommands'], config['EmbedColor'])
 
 
-@client.event
 # When the bot is ready to be worked with
+@client.event
 async def on_ready():
     print('[Login successful]')
     print('[Starting]')
@@ -46,6 +46,7 @@ async def on_ready():
     await mod_handler.load_mods()
 
 
+# When a message is received by the bot
 @client.event
 async def on_message(message):
     # Check if the message is a possible command

@@ -17,10 +17,11 @@ class Mod:
     async def command_called(self, message, command):
         return
 
-    # Returns info about this mod
+    # Returns the registration info about this mod
     def register_mod(self):
         return self.mod_command, self.commands
 
+    # Returns the important info about this mod
     def get_info(self):
         return {'Name': self.name, 'Description': self.description, 'Commands': self.mod_commands(),
                 'Mod Command': self.mod_command}

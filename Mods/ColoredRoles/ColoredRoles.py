@@ -10,7 +10,7 @@ import re
 # TODO: Call command on other user if "admin" for add role / remove role / etc
 # TODO: Logging levels
 # TODO: Require role for command use
-# TODO: Delete ALL colors in current server
+# TODO: Delete ALL colors in current server (Purge command?)
 
 class ColoredRoles(Mod.Mod):
     def __init__(self, client, logging_level):

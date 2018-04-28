@@ -25,5 +25,4 @@ def event(event):
         else:
             handlers[event] = [handler]
         return handler
-
     return register_handler

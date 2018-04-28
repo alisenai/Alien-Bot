@@ -1,5 +1,5 @@
-import dataManager
-import modHandler
+import DataManager
+import ModHandler
 import discord
 import random
 import json
@@ -9,9 +9,9 @@ client = discord.Client()
 # Load the config
 config = json.loads("".join(open("Config/config.json", encoding="utf-8").readlines()))
 # Initialize the data manager
-dataManager.init(config['SaveFile'])
+DataManager.init(config['SaveFile'])
 # Initialize the mod handler
-mod_handler = modHandler.ModHandler(client, config['LoggingLevel'], config['HelpCommands'], config['EmbedColor'])
+mod_handler = ModHandler.ModHandler(client, config['LoggingLevel'], config['HelpCommands'], config['EmbedColor'])
 
 
 # When the bot is ready to be worked with
@@ -26,7 +26,7 @@ async def on_ready():
         await client.change_nickname(self, config['Nickname'])
     # Change the avatar if it's not already set
     pfp_hash = self.avatar
-    if dataManager.get_data('AvatarHash') == pfp_hash:
+    if DataManager.get_data('AvatarHash') == pfp_hash:
         print("[Skipping Profile Picture Update]")
     else:
         with open(config['ProfilePicture'], 'rb') as f:
@@ -36,7 +36,7 @@ async def on_ready():
                 print("[Updated Profile Picture]")
             except discord.errors.HTTPException:
                 print("[Skipping Profile Picture Update - Throttled]")
-            dataManager.write_data('AvatarHash', self.avatar)
+            DataManager.write_data('AvatarHash', self.avatar)
     # Pick a random status
     status = config['GameStatus'][random.randint(0, len(config['GameStatus']) - 1)]
     print("[Chose status \"" + status + "\"]")

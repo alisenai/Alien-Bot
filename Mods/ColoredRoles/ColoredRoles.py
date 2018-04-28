@@ -20,7 +20,7 @@ class ColoredRoles(Mod.Mod):
         self.users = {}
         self.roles = {}
         # Config var init
-        self.config = json.loads("".join(open("Mods/ColorRolesConfig.json", encoding="utf-8").readlines()))
+        self.config = json.loads("".join(open("Mods/ColoredRoles/ColorRolesConfig.json", encoding="utf-8").readlines()))
         self.max_colors = self.config['MaxColors']
         self.embed_color = self.config['EmbedColor']
         self.info_commands = self.config['InfoCommands']
@@ -139,7 +139,7 @@ class ColoredRoles(Mod.Mod):
                 # Get the current role id
                 current_color_role_id = self.users[server.id][author.id]
                 # Get the current role
-                current_color_role = self.get_role_by_id(server, current_color_role_id)
+                current_color_role = Utils.get_role_by_id(server, current_color_role_id)
                 # Get the current role's color
                 hex_color = current_color_role.name
                 # Remove the role
@@ -173,7 +173,7 @@ class ColoredRoles(Mod.Mod):
                 # Check if roles exist
                 if len(self.roles[server.id]) > 0:
                     for role in self.roles[server.id]:
-                        roles_text += self.get_role_by_id(server, role).name + "\n"
+                        roles_text += Utils.get_role_by_id(server, role).name + "\n"
                 else:
                     # If no roles exist, state so
                     roles_text = "No roles exist."
@@ -193,7 +193,7 @@ class ColoredRoles(Mod.Mod):
                             # Check if users are equipped with this role
                             if len(self.roles[server.id][role.id]) > 0:
                                 for user_id in self.roles[server.id][role.id]:
-                                    user = self.get_user_by_id(server, user_id)
+                                    user = Utils.get_user_by_id(server, user_id)
                                     users_text += user.name + "\n"
                             else:
                                 # If no users are equipped, state so
@@ -215,11 +215,11 @@ class ColoredRoles(Mod.Mod):
                     embed = discord.Embed(title="[Info]", color=0x751DDF)
                     # Cycle all the roles
                     for role_id in self.roles[server.id]:
-                        role = self.get_role_by_id(server, role_id)
+                        role = Utils.get_role_by_id(server, role_id)
                         # Create user list per role
                         users_text = ""
                         for user_id in self.roles[server.id][role_id]:
-                            user = self.get_user_by_id(server, user_id)
+                            user = Utils.get_user_by_id(server, user_id)
                             users_text += user.name + "\n"
                         # Create embed field per role
                         embed.add_field(name=role.name, value=users_text)
@@ -241,7 +241,7 @@ class ColoredRoles(Mod.Mod):
         # If the user has an old role, delete it
         if old_role_id is not None:
             # Get the old role from id
-            old_role = self.get_role_by_id(server, old_role_id)
+            old_role = Utils.get_role_by_id(server, old_role_id)
             # If the role isn't the same, remove it form the user
             if old_role.name is not role.name:
                 # Remove the old role from the user
@@ -279,7 +279,7 @@ class ColoredRoles(Mod.Mod):
 
     # Used for creating a role (Specific for this mod)
     async def create_role(self, server, color):
-        role = await self.client.create_role(server, name=color, color=self.get_color(color),
+        role = await self.client.create_role(server, name=color, color=Utils.get_color(color),
                                              permissions=discord.Permissions(permissions=0))
         self.roles[server.id][role.id] = []
         await self.role_max_shift(server, role)

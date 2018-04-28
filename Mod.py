@@ -1,5 +1,6 @@
-import re
 import discord
+import Utils
+
 
 class Mod:
     def __init__(self, name, description, mod_command, commands, client, logging_level):
@@ -13,11 +14,14 @@ class Mod:
     def event(self, func):
         setattr(self, func.__name__, func)
 
-    async def command_called(self, message):
+    async def command_called(self, message, command):
         return
 
     # Returns info about this mod
     def register_mod(self):
+        return self.mod_command, self.commands
+
+    def get_info(self):
         return {'Name': self.name, 'Description': self.description, 'Commands': self.mod_commands(),
                 'Mod Command': self.mod_command}
 
@@ -36,24 +40,8 @@ class Mod:
             color = hex_color
         # Craft and reply with a simple embed
         await self.client.send_message(channel, embed=discord.Embed(title=title, description=message,
-                                                                    color=self.get_color(color)))
+                                                                    color=Utils.get_color(color)))
 
     # Used for quickly replying to a channel with a message
     async def reply(self, channel, message):
         await self.client.send_message(channel, message)
-
-    # Used for getting user by user id in given server
-    def get_user_by_id(self, server, user_id):
-        # Gets a user by their ID
-        return server.get_member(user_id)
-
-    # Used for getting a role by id in given server
-    def get_role_by_id(self, server, role_id):
-        for role in server.roles:
-            if role.id == role_id:
-                return role
-
-    # Used for getting a discord color from a hex value
-    def get_color(self, color):
-        return discord.Color(int(color, 16))
-

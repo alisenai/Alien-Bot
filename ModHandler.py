@@ -1,9 +1,7 @@
 import os
-import re
 import sys
 import discord
 import difflib
-import EventHandler
 
 
 # TODO: Add mod perm/admin handling
@@ -24,41 +22,41 @@ class ModHandler:
 
     async def load_mods(self):
         mod_dir = "Mods/"
-        # Make the python files importable
-        sys.path.insert(0, mod_dir)
         print("[Loading Mods]")
         # Cycle through all the files within the mod dir
-        for file in os.listdir(mod_dir):
+        for file_name in os.listdir(mod_dir):
+            # Make the python files importable
+            file_path = mod_dir + file_name
+            sys.path.insert(0, file_path)
             # If it's a python file
-            # TODO: Check if there is a better way to get the file extension
-            if re.match(".*\.py", file):
-                print("[Loading: " + file[0:-3] + "]")
-                # Import that python file
-                mod = getattr(__import__(file[0:-3]), file.replace(".py", ""))(self.client, self.logging_level)
-                # Register the import as a mod and get the mod's info
-                mod_info = mod.register_mod()
-                mod_command = mod_info['Mod Command']
-                # Store the mod reference withing the mod info
-                mod_info['Mod'] = mod
-                # Cycle through all the mod's commands
-                for command in mod_info['Commands']:
-                    # Make sure there are no conflicting mod commands
-                    if command not in self.mod_commands.keys() and command not in self.help_commands:
-                        # Link the mod object to that command
-                        self.mod_commands[command] = mod
+            print("[Loading: " + file_name + "]")
+            # Import that python file
+            mod = getattr(__import__(file_name), file_name)(self.client, self.logging_level)
+            # Register the import as a mod and get the mod's info
+            mod_command, mod_commands = mod.register_mod()
+            # Cycle through all the mod's commands
+            for command in mod_commands:
+                # Make sure there are no conflicting mod commands
+                if command not in self.mod_commands.keys() and command not in self.help_commands:
+                    # Link the mod object to that command
+                    self.mod_commands[command] = mod
+                else:
+                    # If there is a duplicate mod command, error
+                    if command in self.mod_commands.keys():
+                        # If it's with another mod, state so
+                        raise Exception("Duplicate mod commands - " + command)
                     else:
-                        # If there is a duplicate mod command, error
-                        if command in self.mod_commands.keys():
-                            # If it's with another mod, state so
-                            raise Exception("Duplicate mod commands - " + command)
-                        else:
-                            # If it's with the help commands, state so
-                            raise Exception("Mod copies bot help command")
-                # Check if the mod's info is valid
-                if ' ' in mod_command:
-                    raise Exception("Mod command \"" + mod_command + "\" contains a space")
-                # Store mod's info
-                self.mods[mod_command] = mod_info
+                        # If it's with the help commands, state so
+                        raise Exception("Mod copies bot help command")
+            # Check if the mod's info is valid
+            if ' ' in mod_command:
+                raise Exception("Mod command \"" + mod_command + "\" contains a space")
+            # Gets the mod's info
+            mod_info = mod.get_info()
+            # Store the mod reference withing the mod info
+            mod_info['Mod'] = mod
+            # Store mod's info
+            self.mods[mod_command] = mod_info
         # When finished loading all mods, state so and unblock
         self.done_loading = True
         print("[Done loading Mods]")

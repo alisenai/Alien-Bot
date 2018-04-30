@@ -35,7 +35,7 @@
     "iColor",
     "ic"
   ],
-  "PurgeCommand": [
+  "PurgeColorCommands": [
   "purgeColor",
   "pColor",
   "pc"

@@ -23,7 +23,7 @@ class ColoredRoles(Mod.Mod):
         self.max_colors = self.config['MaxColors']
         self.embed_color = self.config['EmbedColor']
         self.info_commands = self.config['InfoCommands']
-        self.purge_color_commands = self.config["PurgeColorCommand"]
+        self.purge_color_commands = self.config["PurgeColorCommands"]
         self.add_color_commands = self.config['AddColorCommands']
         self.list_colors_command = self.config['ListColorsCommand']
         self.remove_color_commands = self.config['RemoveColorCommands']

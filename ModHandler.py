@@ -4,6 +4,7 @@ import discord
 import difflib
 
 
+# TODO: Improve mod handling
 # TODO: Add mod perm/admin handling
 # TODO: Add channel restrictions
 class ModHandler:
@@ -48,9 +49,6 @@ class ModHandler:
                     else:
                         # If it's with the help commands, state so
                         raise Exception("Mod copies bot help command")
-            # Check if the mod's info is valid
-            if ' ' in mod_command:
-                raise Exception("Mod command \"" + mod_command + "\" contains a space")
             # Gets the mod's info
             mod_info = mod.get_info()
             # Store the mod reference withing the mod info

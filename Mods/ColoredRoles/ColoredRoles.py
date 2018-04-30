@@ -3,7 +3,6 @@ import discord
 import logging
 import json
 import Utils
-import re
 
 
 # TODO: Command enable / disable
@@ -15,19 +14,20 @@ import re
 class ColoredRoles(Mod.Mod):
     def __init__(self, client, logging_level):
         # General var init
-        self.client = client
-        self.logging_level = logging_level
         self.users = {}
         self.roles = {}
+        self.client = client
+        self.logging_level = logging_level
         # Config var init
         self.config = json.loads("".join(open("Mods/ColoredRoles/ColorRolesConfig.json", encoding="utf-8").readlines()))
         self.max_colors = self.config['MaxColors']
         self.embed_color = self.config['EmbedColor']
         self.info_commands = self.config['InfoCommands']
-        self.add_role_commands = self.config['AddRoleCommands']
+        self.purge_color_commands = self.config["PurgeColorCommand"]
+        self.add_color_commands = self.config['AddColorCommands']
         self.list_colors_command = self.config['ListColorsCommand']
-        self.remove_role_commands = self.config['RemoveRoleCommands']
-        self.delete_role_commands = self.config['DeleteRoleCommands']
+        self.remove_color_commands = self.config['RemoveColorCommands']
+        self.delete_color_commands = self.config['DeleteColorCommands']
         self.equipped_users_command = self.config['EquippedUsersCommand']
         # Generate a fresh DB
         self.generate_db()
@@ -38,10 +38,10 @@ class ColoredRoles(Mod.Mod):
     # Returns all commands that are used by this mod
     def mod_commands(self):
         return self.info_commands + \
-               self.add_role_commands + \
+               self.add_color_commands + \
                self.list_colors_command + \
-               self.remove_role_commands + \
-               self.delete_role_commands + \
+               self.remove_color_commands + \
+               self.delete_color_commands + \
                self.equipped_users_command
 
     # Gets help - All of it, or specifics
@@ -61,9 +61,9 @@ class ColoredRoles(Mod.Mod):
     def generate_help(self, command=None):
         # If it's not asking for specifics, recursively return everything
         if command is None:
-            return [self.generate_help(self.add_role_commands[0]),
-                    self.generate_help(self.remove_role_commands[0]),
-                    self.generate_help(self.delete_role_commands[0]),
+            return [self.generate_help(self.add_color_commands[0]),
+                    self.generate_help(self.remove_color_commands[0]),
+                    self.generate_help(self.delete_color_commands[0]),
                     self.generate_help(self.list_colors_command[0]),
                     self.generate_help(self.equipped_users_command[0]),
                     self.generate_help(self.info_commands[0])]
@@ -71,16 +71,16 @@ class ColoredRoles(Mod.Mod):
         else:
             # TODO: Compress and add config for all of this
             # Figures out which command was called and beings building a help message
-            if command in self.add_role_commands:
-                commands = self.add_role_commands
+            if command in self.add_color_commands:
+                commands = self.add_color_commands
                 help_text = "Add Color Command"
                 description = "Adds role to user."
-            elif command in self.remove_role_commands:
-                commands = self.remove_role_commands
+            elif command in self.remove_color_commands:
+                commands = self.remove_color_commands
                 help_text = "Remove Color Command"
                 description = "Removes role from user."
-            elif command in self.delete_role_commands:
-                commands = self.delete_role_commands
+            elif command in self.delete_color_commands:
+                commands = self.delete_color_commands
                 help_text = "Delete Color Command"
                 description = "Deletes a role from all users."
             elif command in self.list_colors_command:
@@ -110,7 +110,7 @@ class ColoredRoles(Mod.Mod):
         channel, author, server = message.channel, message.author, message.server
         try:
             # Adding a role
-            if command in self.add_role_commands:
+            if command in self.add_color_commands:
                 # Check command format
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
@@ -135,7 +135,7 @@ class ColoredRoles(Mod.Mod):
                 else:
                     self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Removing a role
-            elif command in self.remove_role_commands:
+            elif command in self.remove_color_commands:
                 # Get the current role id
                 current_color_role_id = self.users[server.id][author.id]
                 # Get the current role
@@ -149,7 +149,7 @@ class ColoredRoles(Mod.Mod):
                                               "Removed " + hex_color + " from your roles.",
                                               hex_color=hex_color)
             # Deleting a role
-            elif command in self.delete_role_commands:
+            elif command in self.delete_color_commands:
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
                         hex_color = split_message[1]

@@ -2,18 +2,18 @@
   "ModCommand": "ColoredRoles",
   "ModDescription": "Gives users the ability to manage their own colors",
   "MaxColors": 100,
-  "AddRoleCommands": [
+  "AddColorCommands": [
     "addColor",
     "aColor",
     "ac"
   ],
-  "RemoveRoleCommands": [
+  "RemoveColorCommands": [
     "removeColor",
     "remColor",
     "rColor",
     "rc"
   ],
-  "DeleteRoleCommands": [
+  "DeleteColorCommands": [
     "deleteColor",
     "delColor",
     "dColor",
@@ -35,5 +35,10 @@
     "iColor",
     "ic"
   ],
+  "PurgeCommand": [
+  "purgeColor",
+  "pColor",
+  "pc"
+],
   "EmbedColor": "0x751DDF"
 }

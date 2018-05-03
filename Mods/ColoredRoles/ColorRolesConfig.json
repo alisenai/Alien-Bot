@@ -2,43 +2,66 @@
   "ModCommand": "ColoredRoles",
   "ModDescription": "Gives users the ability to manage their own colors",
   "MaxColors": 100,
-  "AddColorCommands": [
-    "addColor",
-    "aColor",
-    "ac"
-  ],
-  "RemoveColorCommands": [
-    "removeColor",
-    "remColor",
-    "rColor",
-    "rc"
-  ],
-  "DeleteColorCommands": [
-    "deleteColor",
-    "delColor",
-    "dColor",
-    "dc"
-  ],
-  "EquippedUsersCommand": [
-    "equippedColor",
-    "equColor",
-    "eColor",
-    "ec"
-  ],
-  "ListColorsCommand": [
-    "listColor",
-    "lColor",
-    "lc"
-  ],
-  "InfoCommands": [
-    "infoColor",
-    "iColor",
-    "ic"
-  ],
-  "PurgeColorCommands": [
-  "purgeColor",
-  "pColor",
-  "pc"
-],
-  "EmbedColor": "0x751DDF"
+  "EmbedColor": "0x751DDF",
+  "Commands": {
+    "Add Color Command": {
+      "Commands": [
+        "addColor",
+        "aColor",
+        "ac"
+      ],
+      "Help": "Adds color to user."
+    },
+    "Remove Color Command": {
+      "Commands": [
+        "removeColor",
+        "remColor",
+        "rColor",
+        "rc"
+      ],
+      "Help": "Removes color from user."
+    },
+    "Delete Color Command": {
+      "Commands": [
+        "deleteColor",
+        "delColor",
+        "dColor",
+        "dc"
+      ],
+      "Help": "Deletes a color from all users."
+    },
+    "Equipped Users Command": {
+      "Commands": [
+        "equippedColor",
+        "equColor",
+        "eColor",
+        "ec"
+      ],
+      "Help": "Lists users equipped with a color."
+    },
+    "List Colors Command": {
+      "Commands": [
+        "listColor",
+        "lColor",
+        "lc"
+      ],
+      "Help": "Lists all colors."
+    },
+    "Color Info Command": {
+      "Commands": [
+        "infoColor",
+        "iColor",
+        "ic"
+      ],
+      "Help": "Lists colors and equipped users."
+    },
+    "Purge Color Command": {
+      "Commands": [
+        "purgeColor",
+        "pColor",
+        "pc"
+      ],
+      "Help": "Deletes all colors"
+    }
+  }
 }

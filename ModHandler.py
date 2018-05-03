@@ -36,19 +36,20 @@ class ModHandler:
             # Register the import as a mod and get the mod's info
             mod_command, mod_commands = mod.register_mod()
             # Cycle through all the mod's commands
-            for command in mod_commands:
-                # Make sure there are no conflicting mod commands
-                if command not in self.mod_commands.keys() and command not in self.help_commands:
-                    # Link the mod object to that command
-                    self.mod_commands[command] = mod
-                else:
-                    # If there is a duplicate mod command, error
-                    if command in self.mod_commands.keys():
-                        # If it's with another mod, state so
-                        raise Exception("Duplicate mod commands - " + command)
+            for command_name in mod_commands:
+                for command in mod_commands[command_name]['Commands']:
+                    # Make sure there are no conflicting mod commands
+                    if command not in self.mod_commands.keys() and command not in self.help_commands:
+                        # Link the mod object to that command
+                        self.mod_commands[command] = mod
                     else:
-                        # If it's with the help commands, state so
-                        raise Exception("Mod copies bot help command")
+                        # If there is a duplicate mod command, error
+                        if command in self.mod_commands.keys():
+                            # If it's with another mod, state so
+                            raise Exception("Duplicate mod commands - " + command)
+                        else:
+                            # If it's with the help commands, state so
+                            raise Exception("Mod copies bot help command")
             # Gets the mod's info
             mod_info = mod.get_info()
             # Store the mod reference withing the mod info
@@ -151,6 +152,7 @@ def most_similar_string(string, string_list):
                 most_similar = i
         return most_similar
     # Return None if there are no strings to compare to
+    return None
 
 
 # Returns the similarity between two strings

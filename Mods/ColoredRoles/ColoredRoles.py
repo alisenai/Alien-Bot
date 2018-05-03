@@ -22,95 +22,19 @@ class ColoredRoles(Mod.Mod):
         self.config = json.loads("".join(open("Mods/ColoredRoles/ColorRolesConfig.json", encoding="utf-8").readlines()))
         self.max_colors = self.config['MaxColors']
         self.embed_color = self.config['EmbedColor']
-        self.info_commands = self.config['InfoCommands']
-        self.purge_color_commands = self.config["PurgeColorCommands"]
-        self.add_color_commands = self.config['AddColorCommands']
-        self.list_colors_command = self.config['ListColorsCommand']
-        self.remove_color_commands = self.config['RemoveColorCommands']
-        self.delete_color_commands = self.config['DeleteColorCommands']
-        self.equipped_users_command = self.config['EquippedUsersCommand']
+        self.commands = self.config['Commands']
         # Generate a fresh DB
         self.generate_db()
 
         super().__init__("Colored Roles by Alien", self.config['ModDescription'], self.config['ModCommand'],
-                         self.mod_commands(), client, logging_level)
-
-    # Returns all commands that are used by this mod
-    def mod_commands(self):
-        return self.info_commands + \
-               self.add_color_commands + \
-               self.list_colors_command + \
-               self.remove_color_commands + \
-               self.delete_color_commands + \
-               self.equipped_users_command
-
-    # Gets help - All of it, or specifics
-    async def get_help(self, message):
-        embed = discord.Embed(title="[" + self.name + " Help]", color=0x751DDF)
-        split_message = message.content.split(" ")
-        if len(split_message) >= 3:
-            help_title, help_description = self.generate_help(split_message[2])
-            embed.add_field(name=help_title, value=help_description)
-        else:
-            help_texts = self.generate_help()
-            for help_title, help_description in help_texts:
-                embed.add_field(name=help_title, value=help_description, inline=False)
-        await self.client.send_message(message.channel, embed=embed)
-
-    # Used to generate help, all or it or specifics
-    def generate_help(self, command=None):
-        # If it's not asking for specifics, recursively return everything
-        if command is None:
-            return [self.generate_help(self.add_color_commands[0]),
-                    self.generate_help(self.remove_color_commands[0]),
-                    self.generate_help(self.delete_color_commands[0]),
-                    self.generate_help(self.list_colors_command[0]),
-                    self.generate_help(self.equipped_users_command[0]),
-                    self.generate_help(self.info_commands[0])]
-        # Otherwise, return help for a specific command
-        else:
-            # TODO: Compress and add config for all of this
-            # Figures out which command was called and beings building a help message
-            if command in self.add_color_commands:
-                commands = self.add_color_commands
-                help_text = "Add Color Command"
-                description = "Adds role to user."
-            elif command in self.remove_color_commands:
-                commands = self.remove_color_commands
-                help_text = "Remove Color Command"
-                description = "Removes role from user."
-            elif command in self.delete_color_commands:
-                commands = self.delete_color_commands
-                help_text = "Delete Color Command"
-                description = "Deletes a role from all users."
-            elif command in self.list_colors_command:
-                commands = self.list_colors_command
-                help_text = "List Colors Command"
-                description = "Lists all colors."
-            elif command in self.equipped_users_command:
-                commands = self.equipped_users_command
-                help_text = "Equipped Users Command"
-                description = "Lists users equipped with a role."
-            elif command in self.info_commands:
-                commands = self.info_commands
-                help_text = "Info Command"
-                description = "Lists colors and equipped users."
-            else:
-                # If passed something that doesn't exist, let them know
-                return "Unknown Command - " + command, "Unknown command for " + self.name
-            # Build the rest of the help by appending the command list
-            help_text += " - "
-            for command in commands:
-                help_text += command + ", "
-            # Return the help message built
-            return help_text[0:-2], description
+                         self.commands, client, logging_level)
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
         channel, author, server = message.channel, message.author, message.server
         try:
             # Adding a role
-            if command in self.add_color_commands:
+            if command in self.commands['Add Color Command']['Commands']:
                 # Check command format
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
@@ -135,7 +59,7 @@ class ColoredRoles(Mod.Mod):
                 else:
                     self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Removing a role
-            elif command in self.remove_color_commands:
+            elif command in self.commands["Remove Color Command"]["Commands"]:
                 # Get the current role id
                 current_color_role_id = self.users[server.id][author.id]
                 # Get the current role
@@ -149,7 +73,7 @@ class ColoredRoles(Mod.Mod):
                                               "Removed " + hex_color + " from your roles.",
                                               hex_color=hex_color)
             # Deleting a role
-            elif command in self.delete_color_commands:
+            elif command in self.commands["Delete Color Command"]["Commands"]:
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
                         hex_color = split_message[1]
@@ -167,7 +91,7 @@ class ColoredRoles(Mod.Mod):
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Listing roles
-            elif command in self.list_colors_command:
+            elif command in self.commands["List Colors Command"]["Commands"]:
                 # Create the text
                 roles_text = ""
                 # Check if roles exist
@@ -180,7 +104,7 @@ class ColoredRoles(Mod.Mod):
                 # Reply
                 await self.simple_embed_reply(channel, "[Role List]", roles_text)
             # Listing users equipped with role
-            elif command in self.equipped_users_command:
+            elif command in self.commands["Equipped Users Command"]["Commands"]:
                 # Check command format
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
@@ -208,7 +132,7 @@ class ColoredRoles(Mod.Mod):
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # List all info known by this mod for current server
-            elif command in self.info_commands:
+            elif command in self.commands["Color Info Command"]["Commands"]:
                 # Check if there are existing roles
                 if len(self.roles[server.id]) > 0:
                     # Begin reply crafting

@@ -19,7 +19,6 @@ class Mod:
         self.description = description
         self.logging_level = logging_level
 
-    # TODO: remove "command" param
     # Called when the bot receives a message
     async def command_called(self, message, command):
         return
@@ -41,15 +40,21 @@ class Mod:
     # Prints the help message for the mod
     # Gets help - All of it, or specifics
     async def get_help(self, message):
+        # Sets up an embed to return
         embed = discord.Embed(title="[" + self.name + " Help]", color=0x751DDF)
+        # Parses the help message
         split_message = message.content.split(" ")
+        # If it can be parsed as a specific command
         if len(split_message) >= 3:
+            # Extract info and append to the embed
             help_title, help_description = self.generate_help(split_message[2])
             embed.add_field(name=help_title, value=help_description)
         else:
+            # Get all the help for this mod
             help_texts = self.generate_help()
             for help_title, help_description in help_texts:
                 embed.add_field(name=help_title, value=help_description, inline=False)
+        # Return the embed
         await self.client.send_message(message.channel, embed=embed)
 
     # Used to generate help, all or it or specifics
@@ -62,7 +67,6 @@ class Mod:
             return generated_help
         # Otherwise, return help for a specific command
         else:
-            # TODO: Compress and add config for all of this
             # Figures out which command was called and beings building a help message
             command_name, command_list, command_help = None, None, None
             for command_name in self.commands:
@@ -83,11 +87,8 @@ class Mod:
 
     # Used for replying with a simple, formatted, embed
     async def simple_embed_reply(self, channel, title, message, hex_color=None):
-        color = None
-        if hex_color is None:
-            color = self.embed_color
-        else:
-            color = hex_color
+        # Get a color to use
+        color = self.embed_color if hex_color is None else hex_color
         # Craft and reply with a simple embed
         await self.client.send_message(channel, embed=discord.Embed(title=title, description=message,
                                                                     color=Utils.get_color(color)))

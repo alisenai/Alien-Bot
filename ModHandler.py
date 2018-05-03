@@ -32,7 +32,7 @@ class ModHandler:
             # If it's a python file
             print("[Loading: " + file_name + "]")
             # Import that python file
-            mod = getattr(__import__(file_name), file_name)(self.client, self.logging_level)
+            mod = getattr(__import__(file_name), file_name)(self.client, self.logging_level, self.embed_color)
             # Register the import as a mod and get the mod's info
             mod_command, mod_commands = mod.register_mod()
             # Cycle through all the mod's commands
@@ -94,7 +94,8 @@ class ModHandler:
                 else:
                     # Loop through all mods and create fields for their info
                     for mod in self.mods.keys():
-                        embed.add_field(name=self.mods[mod]['Name'] + " - " + mod, value=self.mods[mod]['Description'])
+                        embed.add_field(name=self.mods[mod]['Name'] + " - " + mod, value=self.mods[mod]['Description'],
+                                        inline=False)
                 # Reply with the created embed
                 await self.client.send_message(channel, embed=embed)
             # If it's not a help command

@@ -2,15 +2,16 @@ import discord
 import Utils
 
 
-# TODO: Handel help here
+# TODO: Role handling here
 # Extendable class for mods
 class Mod:
-    def __init__(self, name, description, mod_command, commands, client, logging_level, embed_color="0xab12ba"):
+    def __init__(self, name, description, mod_command, commands, client, logging_level, embed_color):
         # Check if the mod's info is valid
         if ' ' in mod_command:
             raise Exception("Mod command \",  mod_command, \" contains a space")
         if not Utils.is_hex(embed_color):
             raise Exception("Embed Color \"", embed_color, "\" is not a valid hex color")
+        # Var init
         self.name = name
         self.client = client
         self.commands = commands

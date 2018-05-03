@@ -5,14 +5,14 @@ import json
 import Utils
 
 
-# TODO: Command enable / disable
+# TODO: Command enable / disable in code (config done)
 # TODO: Call command on other user if "admin" for add role / remove role / etc
 # TODO: Logging levels
 # TODO: Require role for command use
 # TODO: Delete ALL colors in current server (Purge command?)
 
 class ColoredRoles(Mod.Mod):
-    def __init__(self, client, logging_level):
+    def __init__(self, client, logging_level, embed_color):
         # General var init
         self.users = {}
         self.roles = {}
@@ -21,13 +21,12 @@ class ColoredRoles(Mod.Mod):
         # Config var init
         self.config = json.loads("".join(open("Mods/ColoredRoles/ColorRolesConfig.json", encoding="utf-8").readlines()))
         self.max_colors = self.config['MaxColors']
-        self.embed_color = self.config['EmbedColor']
         self.commands = self.config['Commands']
         # Generate a fresh DB
         self.generate_db()
 
         super().__init__("Colored Roles by Alien", self.config['ModDescription'], self.config['ModCommand'],
-                         self.commands, client, logging_level)
+                         self.commands, client, logging_level, embed_color)
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
@@ -228,8 +227,7 @@ class ColoredRoles(Mod.Mod):
         # Created a local DB based on live info (fresh DB)
         for server in self.client.servers:
             # Create a user database for each server
-            self.users[server.id] = {}
-            self.roles[server.id] = {}
+            self.users[server.id], self.roles[server.id] = {}, {}
             for user in server.members:
                 # Create a role database for each user
                 self.users[server.id][user.id] = None

@@ -2,7 +2,6 @@
   "ModCommand": "ColoredRoles",
   "ModDescription": "Gives users the ability to manage their own colors",
   "MaxColors": 100,
-  "EmbedColor": "0x751DDF",
   "Commands": {
     "Add Color Command": {
       "Commands": [
@@ -10,7 +9,8 @@
         "aColor",
         "ac"
       ],
-      "Help": "Adds color to user."
+      "Help": "Adds color to user.",
+      "Enabled": "True"
     },
     "Remove Color Command": {
       "Commands": [
@@ -19,7 +19,8 @@
         "rColor",
         "rc"
       ],
-      "Help": "Removes color from user."
+      "Help": "Removes color from user.",
+      "Enabled": "True"
     },
     "Delete Color Command": {
       "Commands": [
@@ -28,7 +29,8 @@
         "dColor",
         "dc"
       ],
-      "Help": "Deletes a color from all users."
+      "Help": "Deletes a color from all users.",
+      "Enabled": "True"
     },
     "Equipped Users Command": {
       "Commands": [
@@ -37,7 +39,8 @@
         "eColor",
         "ec"
       ],
-      "Help": "Lists users equipped with a color."
+      "Help": "Lists users equipped with a color.",
+      "Enabled": "True"
     },
     "List Colors Command": {
       "Commands": [
@@ -45,7 +48,8 @@
         "lColor",
         "lc"
       ],
-      "Help": "Lists all colors."
+      "Help": "Lists all colors.",
+      "Enabled": "True"
     },
     "Color Info Command": {
       "Commands": [
@@ -53,7 +57,8 @@
         "iColor",
         "ic"
       ],
-      "Help": "Lists colors and equipped users."
+      "Help": "Lists colors and equipped users.",
+      "Enabled": "True"
     },
     "Purge Color Command": {
       "Commands": [
@@ -61,7 +66,8 @@
         "pColor",
         "pc"
       ],
-      "Help": "Deletes all colors"
+      "Help": "Deletes all colors",
+      "Enabled": "True"
     }
   }
 }

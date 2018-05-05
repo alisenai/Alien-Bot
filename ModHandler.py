@@ -27,8 +27,7 @@ class ModHandler:
         # Cycle through all the files within the mod dir
         for file_name in os.listdir(mod_dir):
             # Make the python files importable
-            file_path = mod_dir + file_name
-            sys.path.insert(0, file_path)
+            sys.path.insert(0, mod_dir + file_name)
             # If it's a python file
             print("[Loading: " + file_name + "]")
             # Import that python file

@@ -22,7 +22,7 @@ class Mod:
 
     # Called when the bot receives a message
     async def command_called(self, message, command):
-        return
+        await self.simple_embed_reply(message.channel, "[Error]", "No command parsing implemented for this mod")
 
     # Returns the registration info about this mod
     def register_mod(self):
@@ -58,13 +58,15 @@ class Mod:
         # Return the embed
         await self.client.send_message(message.channel, embed=embed)
 
-    # Used to generate help, all or it or specifics
+    # Used to generate help, all of it or a specific command
     def generate_help(self, specific_command=None):
-        # If it's not asking for specifics, recursively return everything
+        # If it's not asking for a specific command, recursively return everything
         if specific_command is None:
             generated_help = []
             for command_name in self.commands:
                 generated_help.append(self.generate_help(self.commands[command_name]['Commands'][0]))
+            if len(generated_help) == 0:
+                return [["", "There is no help for this mod"]]
             return generated_help
         # Otherwise, return help for a specific command
         else:

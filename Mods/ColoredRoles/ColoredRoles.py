@@ -25,9 +25,11 @@ class ColoredRoles(Mod.Mod):
         # Generate a fresh DB
         self.generate_db()
 
+        # Init the super mod with all the info from this mod
         super().__init__("Colored Roles by Alien", self.config['ModDescription'], self.config['ModCommand'],
                          self.commands, client, logging_level, embed_color)
 
+    # Called when the bot receives a message
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
         channel, author, server = message.channel, message.author, message.server

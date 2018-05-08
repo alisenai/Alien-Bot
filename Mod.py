@@ -1,18 +1,20 @@
 import discord
 import Utils
+import os
 
 
-# TODO: Role handling here
+# TODO: Admin and per-command role handling here? Maybe DB integration as well
+# Change __init__ with default values for all the parameters (EX: Name="NoName")
 # Extendable class for mods
 class Mod:
-    def __init__(self, name, description, mod_command, commands, client, logging_level, embed_color):
+    def __init__(self, description, mod_command, commands, client, logging_level, embed_color):
         # Check if the mod's info is valid
         if ' ' in mod_command:
             raise Exception("Mod command \",  mod_command, \" contains a space")
         if not Utils.is_hex(embed_color):
             raise Exception("Embed Color \"", embed_color, "\" is not a valid hex color")
         # Var init
-        self.name = name
+        self.name = os.getcwd().split(os.sep)[-1]
         self.client = client
         self.commands = commands
         self.embed_color = embed_color
@@ -37,7 +39,6 @@ class Mod:
     def mod_commands(self):
         return self.commands
 
-    # TODO: Comment
     # Prints the help message for the mod
     # Gets help - All of it, or specifics
     async def get_help(self, message):

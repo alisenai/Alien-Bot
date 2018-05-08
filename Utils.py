@@ -25,3 +25,10 @@ def get_role_by_id(server, role_id):
 # Used for getting a discord color from a hex value
 def get_color(color):
     return discord.Color(int(color, 16))
+
+
+# An "enum" to determine logging levels
+class LoggingLevels:
+    verbose = "Verbose"
+    Informational = "Informational"
+    minimal = "Minimal"

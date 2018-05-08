@@ -7,7 +7,7 @@ import Utils
 
 # TODO: Command enable / disable in code (config done)
 # TODO: Call command on other user if "admin" for add role / remove role / etc
-# TODO: Logging levels
+# TODO: Logging levels - the rest
 # TODO: Require role for command use
 # TODO: Delete ALL colors in current server (Purge command?)
 
@@ -26,7 +26,7 @@ class ColoredRoles(Mod.Mod):
         self.generate_db()
 
         # Init the super mod with all the info from this mod
-        super().__init__("Colored Roles by Alien", self.config['ModDescription'], self.config['ModCommand'],
+        super().__init__(self.config['ModDescription'], self.config['ModCommand'],
                          self.commands, client, logging_level, embed_color)
 
     # Called when the bot receives a message

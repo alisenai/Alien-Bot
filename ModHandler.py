@@ -14,9 +14,10 @@ class ModHandler:
     done_loading = False
 
     # Builds a mod handler with passed parameters
-    def __init__(self, client, logging_level, help_commands, embed_color):
+    def __init__(self, enabled_mods, client, logging_level, help_commands, embed_color):
         # Var init
         self.client = client
+        self.enabled_mods = enabled_mods
         self.logging_level = logging_level
         self.help_commands = help_commands
         self.embed_color = embed_color
@@ -25,39 +26,47 @@ class ModHandler:
         mod_dir = "Mods/"
         print("[Loading Mods]")
         # Cycle through all the files within the mod dir
-        for file_name in os.listdir(mod_dir):
-            # Make the python files importable
-            sys.path.insert(0, mod_dir + file_name)
-            # If it's a python file
-            print("[Loading: " + file_name + "]")
-            # Import that python file
-            mod = getattr(__import__(file_name), file_name)(self.client, self.logging_level, self.embed_color)
-            # Register the import as a mod and get the mod's info
-            mod_command, mod_commands = mod.register_mod()
-            # Cycle through all the mod's commands
-            for command_name in mod_commands:
-                for command in mod_commands[command_name]['Commands']:
-                    # Make sure there are no conflicting mod commands
-                    if command not in self.mod_commands.keys() and command not in self.help_commands:
-                        # Link the mod object to that command
-                        self.mod_commands[command] = mod
-                    else:
-                        # If there is a duplicate mod command, error
-                        if command in self.mod_commands.keys():
-                            # If it's with another mod, state so
-                            raise Exception("Duplicate mod commands - " + command)
+        mod_names = []
+        for mod_name in os.listdir(mod_dir):
+            # Store the mod names to return them
+            mod_names.append(mod_name)
+            # Check if it's a newly installed mod or if the mod is enabled
+            if mod_name not in self.enabled_mods or self.enabled_mods[mod_name] is not False:
+                # Make the python files importable
+                sys.path.insert(0, mod_dir + mod_name)
+                # If it's a python file
+                print("[Loading: " + mod_name + "]")
+                # Import that python file
+                mod = getattr(__import__(mod_name), mod_name)(self.client, self.logging_level, self.embed_color)
+                # Register the import as a mod and get the mod's info
+                mod_command, mod_commands = mod.register_mod()
+                # Cycle through all the mod's commands
+                for command_name in mod_commands:
+                    for command in mod_commands[command_name]['Commands']:
+                        # Make sure there are no conflicting mod commands
+                        if command not in self.mod_commands.keys() and command not in self.help_commands:
+                            # Link the mod object to that command
+                            self.mod_commands[command] = mod
                         else:
-                            # If it's with the help commands, state so
-                            raise Exception("Mod copies bot help command")
-            # Gets the mod's info
-            mod_info = mod.get_info()
-            # Store the mod reference withing the mod info
-            mod_info['Mod'] = mod
-            # Store mod's info
-            self.mods[mod_command] = mod_info
+                            # If there is a duplicate mod command, error
+                            if command in self.mod_commands.keys():
+                                # If it's with another mod, state so
+                                raise Exception("Duplicate mod commands - " + command)
+                            else:
+                                # If it's with the help commands, state so
+                                raise Exception("Mod copies bot help command")
+                # Gets the mod's info
+                mod_info = mod.get_info()
+                # Store the mod reference withing the mod info
+                mod_info['Mod'] = mod
+                # Store mod's info
+                self.mods[mod_command] = mod_info
+            else:
+                print("[Not Loading \"" + mod_name + "\"]")
         # When finished loading all mods, state so and unblock
         self.done_loading = True
         print("[Done loading Mods]")
+        return mod_names
 
     # Called when a user message looks like a command, and it attempts to work with that command
     async def command_called(self, client, message, command):

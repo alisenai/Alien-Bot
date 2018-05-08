@@ -1,33 +1,24 @@
 import json
 
-database = {}
-store_file = ''
 
+class DataManager:
+    # Initializes the dataManager with a local DB
+    def __init__(self, save_file):
+        print("[Loading ", save_file, " DB]")
+        self.store_file = save_file
+        self.database = self.get_data()
+        print("[Done loading DB]")
 
-# Inits the dataManager with a local DB
-def init(save_file):
-    global store_file
-    global database
-    print("[Loading DB]")
-    store_file = save_file
-    database = load_data()
-    print("[Done loading DB]")
+    # Writes data to the DB
+    def write_data(self, key, data):
+        self.database[key] = data
+        with open(self.store_file, 'w', encoding="utf-8") as outfile:
+            json.dump(self.database, outfile)
 
-
-# Writes data to the DB
-def write_data(key, data):
-    global database
-    database[key] = data
-    with open(store_file, 'w') as outfile:
-        json.dump(database, outfile)
-
-
-# Gets data from the local DB
-def get_data(key):
-    return database[key]
-
-
-# Gets all data from the DB file
-def load_data():
-    with open(store_file) as json_file:
-        return json.load(json_file)
+    # Gets data from the local DB
+    def get_data(self, key=None):
+        if key is None:
+            with open(self.store_file, 'r', encoding="utf-8") as json_file:
+                return json.load(json_file)
+        else:
+            return self.database[key]

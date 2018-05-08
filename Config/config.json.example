@@ -1,14 +1,10 @@
 {
-  "Bot_Name": "Alien-Bot",
-  "Nickname": "Alien-Bot",
   "Token": "TOKEN",
-  "CommandPrefix": ";",
+  "Bot_Name": "Alien-Bot",
+  "ProfilePicture": "pfp_default.jpg",
   "EmbedColor": "0x751DDF",
-  "HelpCommands": [
-    "help",
-    "h"
-  ],
-  "BotEmoji": "🥝",
+  "BotEmoji": "\ud83e\udd5d",
+  "Nickname": "Alien-Bot",
   "GameStatus": [
     "With Alien Sensei",
     "With Mods",
@@ -17,7 +13,15 @@
     "01000011011011110110010001100101",
     "With Your Data"
   ],
-  "ProfilePicture": "pfp_default.jpg",
+  "SaveFile": "Config/database.json",
   "LoggingLevel": "Verbose",
-  "SaveFile": "Config/database.json"
+  "CommandPrefix": ";",
+  "EnabledMods": {
+    "ColoredRoles": true,
+    "ExampleMod": false
+  },
+  "HelpCommands": [
+    "help",
+    "h"
+  ]
 }

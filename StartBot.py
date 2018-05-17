@@ -15,7 +15,6 @@ dataBaseManager = DataManager(config['SaveFile'])
 mod_handler = ModHandler.ModHandler(config['EnabledMods'], client, config['LoggingLevel'], config['HelpCommands'], config['EmbedColor'])
 
 
-# TODO: Enable / Disable mods in config
 # When the bot is ready to be worked with
 @client.event
 async def on_ready():

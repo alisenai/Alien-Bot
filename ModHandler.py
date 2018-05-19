@@ -8,18 +8,19 @@ import difflib
 # TODO: Add mod perm/admin handling
 # TODO: Add channel restrictions
 class ModHandler:
-    client = None
     mod_commands = {}
     mods = {}
     done_loading = False
 
     # Builds a mod handler with passed parameters
-    def __init__(self, enabled_mods, client, logging_level, help_commands, embed_color):
+    def __init__(self, client, nicknname, enabled_mods, logging_level, bot_commands, embed_color):
         # Var init
         self.client = client
+        self.nickname = nicknname
         self.enabled_mods = enabled_mods
         self.logging_level = logging_level
-        self.help_commands = help_commands
+        self.bot_commands = bot_commands
+        self.bot_command_aliases = [alias for command in bot_commands for alias in bot_commands[command]['Aliases']]
         self.embed_color = embed_color
 
     async def load_mods(self):
@@ -40,21 +41,19 @@ class ModHandler:
                 mod = getattr(__import__(mod_name), mod_name)(self.client, self.logging_level, self.embed_color)
                 # Register the import as a mod and get the mod's info
                 mod_command, mod_commands = mod.register_mod()
-                # Cycle through all the mod's commands
+                # Cycle through all the mod's commands and make sure there are no conflicting mod commands
                 for command_name in mod_commands:
-                    for command in mod_commands[command_name]['Commands']:
-                        # Make sure there are no conflicting mod commands
-                        if command not in self.mod_commands.keys() and command not in self.help_commands:
+                    for command in mod_commands[command_name]['Aliases']:
+                        if command in self.mod_commands.keys():
+                            # If there is a duplicate mod command, error
+                            raise Exception("Duplicate mod commands - " + command)
+                        elif command in self.bot_command_aliases:
+                            # If there is a conflicting mod command (with the bot's commands), error
+                            raise Exception("Mod copies a default command")
+                        else:
                             # Link the mod object to that command
                             self.mod_commands[command] = mod
-                        else:
-                            # If there is a duplicate mod command, error
-                            if command in self.mod_commands.keys():
-                                # If it's with another mod, state so
-                                raise Exception("Duplicate mod commands - " + command)
-                            else:
-                                # If it's with the help commands, state so
-                                raise Exception("Mod copies bot help command")
+
                 # Gets the mod's info
                 mod_info = mod.get_info()
                 # Store the mod reference withing the mod info
@@ -62,7 +61,7 @@ class ModHandler:
                 # Store mod's info
                 self.mods[mod_command] = mod_info
             else:
-                print("[Not Loading \"" + mod_name + "\"]")
+                print("[Not Loading: " + mod_name + "]")
         # When finished loading all mods, state so and unblock
         self.done_loading = True
         print("[Done loading Mods]")
@@ -79,7 +78,7 @@ class ModHandler:
             # Get a list of the mod commands
             commands = list(self.mod_commands.keys())
             # Check if the command called was a help command
-            if command in self.help_commands:
+            if command in self.bot_command_aliases:
                 split_message = message.content.split(" ")
                 # Start building an embed reply
                 embed = discord.Embed(title="[Help]", color=0x751DDF)
@@ -91,19 +90,22 @@ class ModHandler:
                         await self.mods[split_message[1]]['Mod'].get_help(message)
                         # Return since the help command executed on the mod will reply instead
                         return
+                    elif split_message[1] == self.nickname:
+                        raise Exception("Self-help not implemented!")
                     # If it's help for an unknown mod command
                     else:
                         # Get a printable version of the known help commands
                         help_command_text = self.get_help_command_text()
                         # Add a field to the reply embed
                         embed.add_field(name="Unknown mod - " + split_message[1] + "",
-                                        value="Try: " + help_command_text[0:-2] + ".")
+                                        value="Try: " + help_command_text + ".")
                 # Otherwise, it's a full general list and parse as so
                 else:
+                    # Add a field for the main bot commands
+                    embed.add_field(name=self.nickname, value="Default bot commands", inline=False)
                     # Loop through all mods and create fields for their info
                     for mod in self.mods.keys():
-                        embed.add_field(name=self.mods[mod]['Name'] + " - " + mod, value=self.mods[mod]['Description'],
-                                        inline=False)
+                        embed.add_field(name=mod, value=self.mods[mod]['Description'], inline=False)
                 # Reply with the created embed
                 await self.client.send_message(channel, embed=embed)
             # If it's not a help command
@@ -145,12 +147,13 @@ class ModHandler:
     def get_help_command_text(self):
         help_command_text = ""
         # Build all the help commands
-        for command in self.help_commands:
+        for command in self.bot_commands['Help Command']['Aliases']:
             help_command_text += command + ", "
         # Return built text
-        return help_command_text
+        return help_command_text[0:-2]
 
 
+# Get the most similar string from an array, given a string
 def most_similar_string(string, string_list):
     # Check if there are strings to compare to
     if len(string_list) > 0:

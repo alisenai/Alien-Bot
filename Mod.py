@@ -4,11 +4,14 @@ import os
 
 
 # TODO: Admin and per-command role handling here? Maybe DB integration as well
-# Change __init__ with default values for all the parameters (EX: Name="NoName")
+# TODO: Add examples for each command
 # Extendable class for mods
 class Mod:
-    def __init__(self, description, mod_command, commands, client, logging_level, embed_color):
+    def __init__(self, client, description="None", mod_command="", commands=None,
+                 logging_level=Utils.LoggingLevels.VERBOSE, embed_color="0xab12ba"):
         # Check if the mod's info is valid
+        if commands is None:
+            commands = [""]
         if ' ' in mod_command:
             raise Exception("Mod command \",  mod_command, \" contains a space")
         if not Utils.is_hex(embed_color):
@@ -65,7 +68,7 @@ class Mod:
         if specific_command is None:
             generated_help = []
             for command_name in self.commands:
-                generated_help.append(self.generate_help(self.commands[command_name]['Commands'][0]))
+                generated_help.append(self.generate_help(self.commands[command_name]['Aliases'][0]))
             if len(generated_help) == 0:
                 return [["", "There is no help for this mod"]]
             return generated_help
@@ -75,8 +78,8 @@ class Mod:
             command_name, command_list, command_help = None, None, None
             for command_name in self.commands:
                 command_info = self.commands[command_name]
-                if specific_command in command_info['Commands']:
-                    command_list = command_info['Commands']
+                if specific_command in command_info['Aliases']:
+                    command_list = command_info['Aliases']
                     command_help = command_info['Help']
                     break
             if (command_name or command_list or command_help) is None:

@@ -1,27 +1,42 @@
 {
-  "Token": "TOKEN",
-  "Bot_Name": "Alien-Bot",
-  "ProfilePicture": "pfp_default.jpg",
   "EmbedColor": "0x751DDF",
+  "Token": "TOKEN",
+  "LoggingLevel": "Verbose",
   "BotEmoji": "\ud83e\udd5d",
+  "CommandPrefix": ";",
+  "EnabledMods": {
+    "ExampleMod": false,
+    "ColoredRoles": true
+  },
+  "ProfilePicture": "pfp_default.jpg",
   "Nickname": "Alien-Bot",
+  "SaveFile": "Config/database.json",
   "GameStatus": [
     "With Alien Sensei",
     "With Mods",
     "Between Lines of Code",
     "With Fire",
     "01000011011011110110010001100101",
-    "With Your Data"
+    "With Your Data",
+    "#751DDF"
   ],
-  "SaveFile": "Config/database.json",
-  "LoggingLevel": "Verbose",
-  "CommandPrefix": ";",
-  "EnabledMods": {
-    "ColoredRoles": true,
-    "ExampleMod": false
-  },
-  "HelpCommands": [
-    "help",
-    "h"
-  ]
+  "Bot_Name": "Alien-Bot",
+  "Commands": {
+    "Help Command": {
+      "Enabled": true,
+      "Aliases": [
+        "help",
+        "h"
+      ],
+      "Help": "Lists mod info"
+    },
+    "Channel Command": {
+      "Enabled": true,
+      "Aliases": [
+        "channel",
+        "c"
+      ],
+      "Help": "Changes the bot's presence in a channel"
+    }
+  }
 }

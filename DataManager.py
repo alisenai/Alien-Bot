@@ -4,7 +4,7 @@ import json
 class DataManager:
     # Initializes the dataManager with a local DB
     def __init__(self, save_file):
-        print("[Loading ", save_file, " DB]")
+        print("[Loading", save_file, "DB]")
         self.store_file = save_file
         self.database = self.get_data()
         print("[Done loading DB]")

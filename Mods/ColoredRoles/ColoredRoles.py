@@ -5,7 +5,6 @@ import json
 import Utils
 
 
-# TODO: Command enable / disable in code (config done)
 # TODO: Call command on other user if "admin" for add role / remove role / etc
 # TODO: Logging levels - the rest
 # TODO: Require role for command use
@@ -26,8 +25,8 @@ class ColoredRoles(Mod.Mod):
         self.generate_db()
 
         # Init the super mod with all the info from this mod
-        super().__init__(self.config['ModDescription'], self.config['ModCommand'],
-                         self.commands, client, logging_level, embed_color)
+        super().__init__(client, self.config['ModDescription'], self.config['ModCommand'],
+                         self.commands, logging_level, embed_color)
 
     # Called when the bot receives a message
     async def command_called(self, message, command):
@@ -35,11 +34,11 @@ class ColoredRoles(Mod.Mod):
         channel, author, server = message.channel, message.author, message.server
         try:
             # Adding a role
-            if command in self.commands['Add Color Command']['Commands']:
+            if command in self.commands['Add Color Command']['Aliases']:
                 # Check command format
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
-                        hex_color = split_message[1]
+                        hex_color = split_message[1].upper()
                         # If the role hasn't been created and max color count hasn't been reached, create it
                         if len(self.roles[server.id]) < self.max_colors:
                             if self.get_role_by_hex(server, hex_color) is None:
@@ -53,14 +52,14 @@ class ColoredRoles(Mod.Mod):
                                                           "Added " + hex_color + " to your roles.",
                                                           hex_color)
                         else:
-                            await self.simple_embed_reply(channel, "[Add Role]", "Max role count reached.",
+                            await self.simple_embed_reply(channel, "[Added Color]", "Max role count reached.",
                                                           hex_color=hex_color)
                     else:
                         self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
                 else:
                     self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Removing a role
-            elif command in self.commands["Remove Color Command"]["Commands"]:
+            elif command in self.commands["Remove Color Command"]["Aliases"]:
                 # Get the current role id
                 current_color_role_id = self.users[server.id][author.id]
                 # Get the current role
@@ -70,29 +69,29 @@ class ColoredRoles(Mod.Mod):
                 # Remove the role
                 await self.remove_role(server, author, current_color_role)
                 # Reply
-                await self.simple_embed_reply(channel, "[Remove Role]",
+                await self.simple_embed_reply(channel, "[Removed Color]",
                                               "Removed " + hex_color + " from your roles.",
                                               hex_color=hex_color)
             # Deleting a role
-            elif command in self.commands["Delete Color Command"]["Commands"]:
+            elif command in self.commands["Delete Color Command"]["Aliases"]:
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
-                        hex_color = split_message[1]
+                        hex_color = split_message[1].upper()
                         # Get the role
                         color_role = self.get_role_by_hex(server, hex_color)
                         if color_role is None:
-                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", split_message[1])
+                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
                         else:
                             await self.delete_role(server, color_role)
                             # Reply
-                            await self.simple_embed_reply(channel, "[Delete Role]", "Deleted " + hex_color + ".",
+                            await self.simple_embed_reply(channel, "[Deleted Color]", "Deleted " + hex_color + ".",
                                                           hex_color=hex_color)
                     else:
                         await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Listing roles
-            elif command in self.commands["List Colors Command"]["Commands"]:
+            elif command in self.commands["List Colors Command"]["Aliases"]:
                 # Create the text
                 roles_text = ""
                 # Check if roles exist
@@ -103,13 +102,13 @@ class ColoredRoles(Mod.Mod):
                     # If no roles exist, state so
                     roles_text = "No roles exist."
                 # Reply
-                await self.simple_embed_reply(channel, "[Role List]", roles_text)
+                await self.simple_embed_reply(channel, "[Color List]", roles_text)
             # Listing users equipped with role
-            elif command in self.commands["Equipped Users Command"]["Commands"]:
+            elif command in self.commands["Equipped Users Command"]["Aliases"]:
                 # Check command format
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
-                        hex_color = split_message[1]
+                        hex_color = split_message[1].upper()
                         # Get role
                         role = self.get_role_by_hex(server, hex_color)
                         if role is not None:
@@ -123,17 +122,20 @@ class ColoredRoles(Mod.Mod):
                             else:
                                 # If no users are equipped, state so
                                 users_text = "No users are equipped with this role."
-                            # Reply
+                            # Reply with the equipped roles
                             await self.simple_embed_reply(channel, "[" + role.name + " Equipped List]", users_text,
                                                           hex_color)
+                        # If the color given doesn't have an associated role, error
                         else:
                             await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
+                    # If the given hex value can't be parsed, error
                     else:
                         await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                # If the message didn't contain the color parameter, error
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # List all info known by this mod for current server
-            elif command in self.commands["Color Info Command"]["Commands"]:
+            elif command in self.commands["Color Info Command"]["Aliases"]:
                 # Check if there are existing roles
                 if len(self.roles[server.id]) > 0:
                     # Begin reply crafting
@@ -149,12 +151,39 @@ class ColoredRoles(Mod.Mod):
                         # Create embed field per role
                         embed.add_field(name=role.name, value=users_text)
                     # Reply
-                    await self.client.send_message(message.channel, embed=embed)
+                    await self.client.send_message(channel, embed=embed)
+                # If there are no used roles, state so
                 else:
-                    await self.simple_embed_reply(message.channel, "[Info]", "No roles exist.")
+                    await self.simple_embed_reply(channel, "[Info]", "No color exist.")
+            # Purge a given role
+            elif command in self.commands["Purge Color Command"]["Aliases"]:
+                # Check if the hex color was supplied
+                if len(split_message) > 1:
+                    # Check if the given parameter is a hex value
+                    if Utils.is_hex(split_message[1]):
+                        # Get the hex color from the message
+                        hex_color = split_message[1].upper()
+                        # Get the role by the given hex color
+                        role = self.get_role_by_hex(server, hex_color)
+                        if role is not None:
+                            # Delete the role
+                            await self.delete_role(server, role)
+                            # State that it was purged
+                            await self.simple_embed_reply(channel, "[Purged Color]", "Purged " + hex_color + ".")
+                        # If the color given doesn't have an associated role, error
+                        else:
+                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
+                    # If the given color parameter could not be parsed, error
+                    else:
+                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                # If no hex color was supplied, error
+                else:
+                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
+        # If the bot isn't supplied with sufficient perms, error
         except discord.errors.Forbidden as e:
             await self.simple_embed_reply(channel, "[Error]", "Bot does not have enough perms.")
-            logging.exception("An error occured.")
+            logging.exception("An error occurred.")
+        # Some error I don't know of occurred, PING ALIEN!
         except Exception as e:  # Leave as a general exception!
             await self.simple_embed_reply(channel, "[Error]", "Unknown error occurred (Ping Alien).")
             logging.exception("An error occurred.")

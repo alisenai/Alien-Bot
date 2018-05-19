@@ -29,6 +29,6 @@ def get_color(color):
 
 # An "enum" to determine logging levels
 class LoggingLevels:
-    verbose = "Verbose"
-    Informational = "Informational"
-    minimal = "Minimal"
+    VERBOSE = "Verbose"
+    INFORMATIONAL = "Informational"
+    MINIMAL = "Minimal"

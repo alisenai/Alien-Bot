@@ -12,7 +12,8 @@ config = configManager.get_data()
 # Initialize database data manager
 dataBaseManager = DataManager(config['SaveFile'])
 # Initialize the mod handler
-mod_handler = ModHandler.ModHandler(config['EnabledMods'], client, config['LoggingLevel'], config['HelpCommands'], config['EmbedColor'])
+mod_handler = ModHandler.ModHandler(client, config['Nickname'], config['EnabledMods'], config['LoggingLevel'],
+                                    config['Commands'], config['EmbedColor'])
 
 
 # When the bot is ready to be worked with

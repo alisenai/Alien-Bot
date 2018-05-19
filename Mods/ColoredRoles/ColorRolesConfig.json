@@ -4,70 +4,70 @@
   "MaxColors": 100,
   "Commands": {
     "Add Color Command": {
-      "Commands": [
+      "Aliases": [
         "addColor",
         "aColor",
         "ac"
       ],
       "Help": "Adds color to user.",
-      "Enabled": "True"
+      "Enabled": true
     },
     "Remove Color Command": {
-      "Commands": [
+      "Aliases": [
         "removeColor",
         "remColor",
         "rColor",
         "rc"
       ],
       "Help": "Removes color from user.",
-      "Enabled": "True"
+      "Enabled": true
     },
     "Delete Color Command": {
-      "Commands": [
+      "Aliases": [
         "deleteColor",
         "delColor",
         "dColor",
         "dc"
       ],
       "Help": "Deletes a color from all users.",
-      "Enabled": "True"
+      "Enabled": true
     },
     "Equipped Users Command": {
-      "Commands": [
+      "Aliases": [
         "equippedColor",
         "equColor",
         "eColor",
         "ec"
       ],
       "Help": "Lists users equipped with a color.",
-      "Enabled": "True"
+      "Enabled": true
     },
     "List Colors Command": {
-      "Commands": [
+      "Aliases": [
         "listColor",
         "lColor",
         "lc"
       ],
       "Help": "Lists all colors.",
-      "Enabled": "True"
+      "Enabled": true
     },
     "Color Info Command": {
-      "Commands": [
+      "Aliases": [
         "infoColor",
         "iColor",
         "ic"
       ],
       "Help": "Lists colors and equipped users.",
-      "Enabled": "True"
+      "Enabled": true
     },
     "Purge Color Command": {
-      "Commands": [
+      "Aliases": [
         "purgeColor",
         "pColor",
         "pc"
       ],
       "Help": "Deletes all colors",
-      "Enabled": "True"
+      "Enabled": true
     }
   }
 }

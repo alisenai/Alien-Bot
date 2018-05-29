@@ -9,6 +9,12 @@ def is_hex(string):
     return False
 
 
+# Todo: Don't set this in Bot.py (Workaround?)
+# Returns help text
+def get_help_command_text():
+    return ""
+
+
 # Used for getting user by user id in given server
 def get_user_by_id(server, user_id):
     # Gets a user by their ID

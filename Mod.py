@@ -70,7 +70,7 @@ class Mod:
             for command_name in self.commands:
                 generated_help.append(self.generate_help(self.commands[command_name]['Aliases'][0]))
             if len(generated_help) == 0:
-                return [["", "There is no help for this mod"]]
+                return [["Help Does Not Exist", "There is no help for this mod"]]
             return generated_help
         # Otherwise, return help for a specific command
         else:
@@ -82,9 +82,9 @@ class Mod:
                     command_list = command_info['Aliases']
                     command_help = command_info['Help']
                     break
-            if (command_name or command_list or command_help) is None:
+            if command_name is None or command_list is None or command_help is None:
                 # If passed something that doesn't exist, let them know
-                return "Unknown Command - " + specific_command, "Unknown command for " + self.name
+                return "Unknown Command", "\"" + specific_command + "\" is not a known command."
             # Build the rest of the help by appending the command list
             message = command_name + " - "
             for command in command_list:

@@ -1,3 +1,4 @@
+import Utils
 from DataManager import DataManager
 import ModHandler
 import discord
@@ -20,6 +21,8 @@ dataBaseManager = DataManager(config['SaveFile'])
 # Initialize the mod handler
 mod_handler = ModHandler.ModHandler(client, config['EnabledMods'],
                                     bot_command_aliases, config['LoggingLevel'], config['EmbedColor'])
+# Boolean to keep track of when it's safe to start parsing commands
+mods_loaded = False
 
 
 # When the bot is ready to be worked with
@@ -52,6 +55,8 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name=status))
     # Use the mod handler to load mods
     mods = await mod_handler.load_mods()
+    # Allow for other processes to do their work
+    mods_loaded = True
     # Get the known enabled mods from the config
     enabled_mods = config['EnabledMods']
     # Create an objects to set new config values
@@ -83,26 +88,19 @@ async def on_message(message):
         # Check if the command called was a bot command
         if command in bot_command_aliases:
             if command in bot_commands['Help Command']['Aliases']:
-                # Start building an embed reply
-                embed = discord.Embed(title="[Help]", color=0x751DDF)
                 # If it's help for something specific, parse as so
                 if len(split_message) > 1:
                     # If it's help for the bot
                     if split_message[1] == bot_nick:
                         raise Exception("Self-help not implemented yet!")
-                    # If it's help for a specific mod or known mod command
-                    elif mod_handler.is_mod_name(split_message[1]):
-                        await mod_handler.get_mod_help(split_message[1], message)
-                        return
-                    # If it's help for an unknown mod command
+                    # If it's help for a possible mod or mod's command
                     else:
-                        # Get a printable version of the known help commands
-                        help_command_text = get_help_command_text()
-                        # Add a field to the reply embed
-                        embed.add_field(name="Unknown mod - " + split_message[1] + "",
-                                        value="Try: " + help_command_text + ".")
+                        # Let the mod handler deal with the mods
+                        await mod_handler.command_called(client, message, command, help=True)
                 # Otherwise, it's a full general list and parse as so
                 else:
+                    # Start building an embed reply
+                    embed = discord.Embed(title="[Help]", color=0x751DDF)
                     # Add a field for the main bot commands
                     embed.add_field(name=bot_nick, value="Default bot commands", inline=False)
                     # Get all the mods' descriptions
@@ -113,8 +111,10 @@ async def on_message(message):
                         description = mod_descriptions[mod]
                         # Add a field
                         embed.add_field(name=mod, value=description, inline=False)
-                # Reply with the created embed
-                await client.send_message(channel, embed=embed)
+                    # Reply with the created embed
+                    await client.send_message(channel, embed=embed)
+            elif command in bot_commands['Channel Command']['Aliases']:
+                raise Exception("Self-help not implemented yet!")
         else:
             # Use mod handler to parse the command
             await mod_handler.command_called(client, message, command)
@@ -129,6 +129,8 @@ def get_help_command_text():
     # Return built text
     return help_command_text[0:-2]
 
+
+Utils.get_help_command_text = get_help_command_text
 
 # Make sure there is a token in the config
 print("[Attempting to login]")

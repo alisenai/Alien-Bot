@@ -10,6 +10,9 @@ import difflib
 # TODO: Add per-mod perm handling
 # TODO: Add per-command channel restrictions
 # TODO: Add per-command perm handling
+import Utils
+
+
 class ModHandler:
     mod_command_aliases = {}
     mods = {}
@@ -69,37 +72,56 @@ class ModHandler:
         return mod_names
 
     # Called when a user message looks like a command, and it attempts to work with that command
-    async def command_called(self, client, message, command):
+    async def command_called(self, client, message, command, help=False):
         # Get info from that message
         channel = message.channel
-        # If mod loading is done, proceed (make sure everything initialized)
-        if self.done_loading:
-            # Send the "is typing", for  a e s t h e t i c s
-            await client.send_typing(channel)
-            # Get a list of the mod commands
-            commands = list(self.mod_command_aliases.keys())
-            # If it's not a bot command
-            if command in commands:
-                # Get the mod from the command dict and call the command handler on that mod
-                await self.mod_command_aliases[command].command_called(message, command)
-            # If it's not a known command
-            else:
-                # Find the most similar commands
-                most_similar = most_similar_string(command, commands)
-                # If there are no similar strings (...)
-                if most_similar is None:
-                    # Create a list from the known help commands
-                    help_command_text = self.get_help_command_text()
-                    # Reply with help
-                    await self.simple_embed(channel, "[Unknown command]", "Try " + help_command_text + ".")
-                # If there is a similar command
+        # Split the message for parsing
+        split_message = message.content.split(" ")
+        if not help:
+            # If mod loading is done, proceed (make sure everything initialized)
+            if self.done_loading:
+                # Send the "is typing", for  a e s t h e t i c s
+                await client.send_typing(channel)
+                # Get a list of the mod commands
+                commands = list(self.mod_command_aliases.keys())
+                # If it's not a bot command
+                if command in commands:
+                    # Get the mod from the command dict and call the command handler on that mod
+                    await self.mod_command_aliases[command].command_called(message, command)
+                # If it's not a known command
                 else:
-                    # Reply with the most similar command
-                    await self.simple_embed(channel, "[Unknown command]", "Did you mean `" + most_similar + "`?")
-        # If mods are still loading
+                    # Find the most similar commands
+                    most_similar = most_similar_string(command, commands)
+                    # If there are no similar strings (...)
+                    if most_similar is None:
+                        # Get a string for how the user can access the help command
+                        help_command_text = Utils.get_help_command_text()
+                        # Reply with help
+                        await self.simple_embed(channel, "[Unknown command]", "Try " + help_command_text + ".")
+                    # If there is a similar command
+                    else:
+                        # Reply with the most similar command
+                        await self.simple_embed(channel, "[Unknown command]", "Did you mean `" + most_similar + "`?")
+            # If mods are still loading
+            else:
+                # Let the author know that the mods are still loading - Try again later
+                await self.simple_embed(channel, "[Error]", "The bot is still loading, please wait.")
         else:
-            # Let the author know that the mods are still loading - Try again later
-            await self.simple_embed(channel, "[Error]", "Loading , please wait")
+
+            # If it's help for a specific mod or one of its commands
+            if self.is_mod_name(split_message[1]):
+                await self.get_mod_help(split_message[1], message)
+            # If it's not a known mod or mod command
+            else:
+                # Start building an embed reply
+                embed = discord.Embed(title="[Help]", color=0x751DDF)
+                # Get a printable version of the known help commands
+                help_command_text = Utils.get_help_command_text()
+                # Add a field to the reply embed
+                embed.add_field(name="Unknown mod - " + split_message[1] + "",
+                                value="Try: " + help_command_text + ".")
+                # Reply with the created embed
+                await client.send_message(channel, embed=embed)
 
     # Replies to a channel with a simple embed
     async def simple_embed(self, channel, title, description, color=None):

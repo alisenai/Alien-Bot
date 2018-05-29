@@ -6,9 +6,8 @@ import Utils
 
 
 # TODO: Call command on other user if "admin" for add role / remove role / etc
-# TODO: Logging levels - the rest
 # TODO: Require role for command use
-# TODO: Delete ALL colors in current server (Purge command?)
+# TODO: Logging levels - the rest
 
 class ColoredRoles(Mod.Mod):
     def __init__(self, client, logging_level, embed_color):
@@ -49,8 +48,7 @@ class ColoredRoles(Mod.Mod):
                             # Give the user their color
                             await self.give_role(server, author, new_color_role)
                             await self.simple_embed_reply(channel, "[Add Role]",
-                                                          "Added " + hex_color + " to your roles.",
-                                                          hex_color)
+                                                          "Added " + hex_color + " to your roles.", hex_color)
                         else:
                             await self.simple_embed_reply(channel, "[Added Color]", "Max role count reached.",
                                                           hex_color=hex_color)

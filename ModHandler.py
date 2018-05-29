@@ -5,22 +5,23 @@ import difflib
 
 
 # TODO: Improve mod handling
-# TODO: Add mod perm/admin handling
-# TODO: Add channel restrictions
+# TODO: Add bot-wide channel restrictions
+# TODO: Add per-mod channel restrictions
+# TODO: Add per-mod perm handling
+# TODO: Add per-command channel restrictions
+# TODO: Add per-command perm handling
 class ModHandler:
-    mod_commands = {}
+    mod_command_aliases = {}
     mods = {}
     done_loading = False
 
     # Builds a mod handler with passed parameters
-    def __init__(self, client, nicknname, enabled_mods, logging_level, bot_commands, embed_color):
+    def __init__(self, client, enabled_mods, bot_command_aliases, logging_level, embed_color):
         # Var init
         self.client = client
-        self.nickname = nicknname
         self.enabled_mods = enabled_mods
         self.logging_level = logging_level
-        self.bot_commands = bot_commands
-        self.bot_command_aliases = [alias for command in bot_commands for alias in bot_commands[command]['Aliases']]
+        self.bot_command_aliases = bot_command_aliases
         self.embed_color = embed_color
 
     async def load_mods(self):
@@ -44,7 +45,7 @@ class ModHandler:
                 # Cycle through all the mod's commands and make sure there are no conflicting mod commands
                 for command_name in mod_commands:
                     for command in mod_commands[command_name]['Aliases']:
-                        if command in self.mod_commands.keys():
+                        if command in self.mod_command_aliases.keys():
                             # If there is a duplicate mod command, error
                             raise Exception("Duplicate mod commands - " + command)
                         elif command in self.bot_command_aliases:
@@ -52,7 +53,7 @@ class ModHandler:
                             raise Exception("Mod copies a default command")
                         else:
                             # Link the mod object to that command
-                            self.mod_commands[command] = mod
+                            self.mod_command_aliases[command] = mod
 
                 # Gets the mod's info
                 mod_info = mod.get_info()
@@ -76,42 +77,11 @@ class ModHandler:
             # Send the "is typing", for  a e s t h e t i c s
             await client.send_typing(channel)
             # Get a list of the mod commands
-            commands = list(self.mod_commands.keys())
-            # Check if the command called was a help command
-            if command in self.bot_command_aliases:
-                split_message = message.content.split(" ")
-                # Start building an embed reply
-                embed = discord.Embed(title="[Help]", color=0x751DDF)
-                # If it's help for a specific command, parse as so
-                if len(split_message) > 1:
-                    # If it's help for known mod command
-                    if split_message[1] in self.mods.keys():
-                        # Get help from that mod
-                        await self.mods[split_message[1]]['Mod'].get_help(message)
-                        # Return since the help command executed on the mod will reply instead
-                        return
-                    elif split_message[1] == self.nickname:
-                        raise Exception("Self-help not implemented!")
-                    # If it's help for an unknown mod command
-                    else:
-                        # Get a printable version of the known help commands
-                        help_command_text = self.get_help_command_text()
-                        # Add a field to the reply embed
-                        embed.add_field(name="Unknown mod - " + split_message[1] + "",
-                                        value="Try: " + help_command_text + ".")
-                # Otherwise, it's a full general list and parse as so
-                else:
-                    # Add a field for the main bot commands
-                    embed.add_field(name=self.nickname, value="Default bot commands", inline=False)
-                    # Loop through all mods and create fields for their info
-                    for mod in self.mods.keys():
-                        embed.add_field(name=mod, value=self.mods[mod]['Description'], inline=False)
-                # Reply with the created embed
-                await self.client.send_message(channel, embed=embed)
-            # If it's not a help command
-            elif command in commands:
+            commands = list(self.mod_command_aliases.keys())
+            # If it's not a bot command
+            if command in commands:
                 # Get the mod from the command dict and call the command handler on that mod
-                await self.mod_commands[command].command_called(message, command)
+                await self.mod_command_aliases[command].command_called(message, command)
             # If it's not a known command
             else:
                 # Find the most similar commands
@@ -143,14 +113,26 @@ class ModHandler:
                                                                     description=description,
                                                                     color=discord.Color(int(color_to_use, 16))))
 
-    # Used to get a printable version of the help commands
-    def get_help_command_text(self):
-        help_command_text = ""
-        # Build all the help commands
-        for command in self.bot_commands['Help Command']['Aliases']:
-            help_command_text += command + ", "
-        # Return built text
-        return help_command_text[0:-2]
+    def get_mod_descriptions(self):
+        mod_descriptions = {}
+        for mod in self.mods:
+            mod_descriptions[mod] = self.mods[mod]['Description']
+        return mod_descriptions
+
+    # Check if a command is a known command alias
+    def is_mod_command_alias(self, command):
+        if command in self.mod_command_aliases:
+            return True
+        return False
+
+    def is_mod_name(self, name):
+        if name in self.mods:
+            return True
+        return False
+
+    # Calls the help command on a specific mod, given one of its commands
+    async def get_mod_help(self, mod_command, message):
+        await self.mod_command_aliases[mod_command].get_help(message)
 
 
 # Get the most similar string from an array, given a string

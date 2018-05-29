@@ -68,6 +68,7 @@ async def on_ready():
     configManager.write_data('EnabledMods', new_enabled_mods)
 
 
+# TODO: Wait for mod handler to finish
 # When a message is received by the bot
 @client.event
 async def on_message(message):
@@ -86,22 +87,19 @@ async def on_message(message):
                 embed = discord.Embed(title="[Help]", color=0x751DDF)
                 # If it's help for something specific, parse as so
                 if len(split_message) > 1:
-                    # If it's help for known mod command
-                    if mod_handler.is_mod_command_alias(split_message[1]):
-                        # Get help from that mod
-                        await mod_handler.get_mod_help(split_message[1], message)
                     # If it's help for the bot
-                    elif split_message[1] == bot_nick:
+                    if split_message[1] == bot_nick:
                         raise Exception("Self-help not implemented yet!")
-                    # If it's help for a specific mod
+                    # If it's help for a specific mod or known mod command
                     elif mod_handler.is_mod_name(split_message[1]):
+                        await mod_handler.get_mod_help(split_message[1], message)
                         return
                     # If it's help for an unknown mod command
                     else:
                         # Get a printable version of the known help commands
                         help_command_text = get_help_command_text()
                         # Add a field to the reply embed
-                        embed.add_field(name="Unknown mod or command - " + split_message[1] + "",
+                        embed.add_field(name="Unknown mod - " + split_message[1] + "",
                                         value="Try: " + help_command_text + ".")
                 # Otherwise, it's a full general list and parse as so
                 else:

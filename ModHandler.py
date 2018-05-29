@@ -113,26 +113,22 @@ class ModHandler:
                                                                     description=description,
                                                                     color=discord.Color(int(color_to_use, 16))))
 
+    # Returns a dictionary - {mod name : mod description}
     def get_mod_descriptions(self):
         mod_descriptions = {}
         for mod in self.mods:
             mod_descriptions[mod] = self.mods[mod]['Description']
         return mod_descriptions
 
-    # Check if a command is a known command alias
-    def is_mod_command_alias(self, command):
-        if command in self.mod_command_aliases:
-            return True
-        return False
-
+    # Checks if the passed var is a known mod name
     def is_mod_name(self, name):
         if name in self.mods:
             return True
         return False
 
     # Calls the help command on a specific mod, given one of its commands
-    async def get_mod_help(self, mod_command, message):
-        await self.mod_command_aliases[mod_command].get_help(message)
+    async def get_mod_help(self, mod, message):
+        await self.mods[mod]['Mod'].get_help(message)
 
 
 # Get the most similar string from an array, given a string

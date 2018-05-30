@@ -55,8 +55,6 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name=status))
     # Use the mod handler to load mods
     mods = await mod_handler.load_mods()
-    # Allow for other processes to do their work
-    mods_loaded = True
     # Get the known enabled mods from the config
     enabled_mods = config['EnabledMods']
     # Create an objects to set new config values
@@ -130,7 +128,8 @@ def get_help_command_text():
     return help_command_text[0:-2]
 
 
-Utils.get_help_command_text = get_help_command_text
+# Setup the help command text function
+ModHandler.get_help_command_text = get_help_command_text
 
 # Make sure there is a token in the config
 print("[Attempting to login]")

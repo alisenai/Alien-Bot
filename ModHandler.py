@@ -10,9 +10,6 @@ import difflib
 # TODO: Add per-mod perm handling
 # TODO: Add per-command channel restrictions
 # TODO: Add per-command perm handling
-import Utils
-
-
 class ModHandler:
     mod_command_aliases = {}
     mods = {}
@@ -95,7 +92,7 @@ class ModHandler:
                     # If there are no similar strings (...)
                     if most_similar is None:
                         # Get a string for how the user can access the help command
-                        help_command_text = Utils.get_help_command_text()
+                        help_command_text = get_help_command_text()
                         # Reply with help
                         await self.simple_embed(channel, "[Unknown command]", "Try " + help_command_text + ".")
                     # If there is a similar command
@@ -116,7 +113,7 @@ class ModHandler:
                 # Start building an embed reply
                 embed = discord.Embed(title="[Help]", color=0x751DDF)
                 # Get a printable version of the known help commands
-                help_command_text = Utils.get_help_command_text()
+                help_command_text = get_help_command_text()
                 # Add a field to the reply embed
                 embed.add_field(name="Unknown mod - " + split_message[1] + "",
                                 value="Try: " + help_command_text + ".")
@@ -151,6 +148,12 @@ class ModHandler:
     # Calls the help command on a specific mod, given one of its commands
     async def get_mod_help(self, mod, message):
         await self.mods[mod]['Mod'].get_help(message)
+
+
+# Todo: Workaround?
+# Returns help text
+def get_help_command_text():
+    return ""
 
 
 # Get the most similar string from an array, given a string

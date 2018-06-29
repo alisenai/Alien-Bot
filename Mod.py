@@ -38,11 +38,10 @@ class Mod:
         return {'Name': self.name, 'Description': self.description, 'Commands': self.mod_commands(),
                 'Mod Command': self.mod_command}
 
-    # Returns a list of commands that this mod "owns"
+    # Returns a list of known commands from this mod
     def mod_commands(self):
         return self.commands
 
-    # Prints the help message for the mod
     # Gets help - All of it, or specifics
     async def get_help(self, message):
         # Sets up an embed to return

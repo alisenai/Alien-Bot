@@ -13,7 +13,7 @@ class DataManager:
     def write_data(self, key, data):
         self.database[key] = data
         with open(self.store_file, 'w', encoding="utf-8") as outfile:
-            json.dump(self.database, outfile)
+            json.dump(self.database, outfile, indent=2)
 
     # Gets data from the local DB
     def get_data(self, key=None):

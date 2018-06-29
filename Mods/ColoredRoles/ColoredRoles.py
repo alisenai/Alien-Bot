@@ -23,7 +23,7 @@ class ColoredRoles(Mod.Mod):
         # Generate a fresh DB
         self.generate_db()
 
-        # Init the super mod with all the info from this mod
+        # Init the super with all the info from this mod
         super().__init__(client, self.config['ModDescription'], self.config['ModCommand'],
                          self.commands, logging_level, embed_color)
 
@@ -36,14 +36,15 @@ class ColoredRoles(Mod.Mod):
             if command in self.commands['Add Color Command']['Aliases']:
                 # Check command format
                 if len(split_message) > 1:
+                    # If the first parameter is hex
                     if Utils.is_hex(split_message[1]):
                         hex_color = split_message[1].upper()
-                        # If the role hasn't been created and max color count hasn't been reached, create it
+                        # If role hasn't been created and max color count hasn't been reached -> Create Role
                         if len(self.roles[server.id]) < self.max_colors:
                             if self.get_role_by_hex(server, hex_color) is None:
                                 new_color_role = await self.create_role(server, hex_color)
+                            # Role already exists -> Get it
                             else:
-                                # If the role already exists, get it
                                 new_color_role = self.get_role_by_hex(server, hex_color)
                             # Give the user their color
                             await self.give_role(server, author, new_color_role)
@@ -52,17 +53,17 @@ class ColoredRoles(Mod.Mod):
                         else:
                             await self.simple_embed_reply(channel, "[Added Color]", "Max role count reached.",
                                                           hex_color=hex_color)
+                    # First parameter is not a valid hex value -> Error
                     else:
                         self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                # Hex parameter not supplied -> Error
                 else:
                     self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Removing a role
             elif command in self.commands["Remove Color Command"]["Aliases"]:
-                # Get the current role id
+                # Get current role info
                 current_color_role_id = self.users[server.id][author.id]
-                # Get the current role
                 current_color_role = Utils.get_role_by_id(server, current_color_role_id)
-                # Get the current role's color
                 hex_color = current_color_role.name
                 # Remove the role
                 await self.remove_role(server, author, current_color_role)
@@ -72,76 +73,78 @@ class ColoredRoles(Mod.Mod):
                                               hex_color=hex_color)
             # Deleting a role
             elif command in self.commands["Delete Color Command"]["Aliases"]:
+                # If the hex color was supplied
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
                         hex_color = split_message[1].upper()
-                        # Get the role
                         color_role = self.get_role_by_hex(server, hex_color)
+                        # If the role doesn't exist -> Error
                         if color_role is None:
                             await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
+                        # Role found -> Delete it and let the user know
                         else:
                             await self.delete_role(server, color_role)
                             # Reply
                             await self.simple_embed_reply(channel, "[Deleted Color]", "Deleted " + hex_color + ".",
                                                           hex_color=hex_color)
+                    # First parameter is not a valid hex value -> Error
                     else:
                         await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                # Hex parameter not supplied -> Error
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # Listing roles
             elif command in self.commands["List Colors Command"]["Aliases"]:
-                # Create the text
                 roles_text = ""
-                # Check if roles exist
+                # If roles exist
                 if len(self.roles[server.id]) > 0:
+                    # Build text from every role name
                     for role in self.roles[server.id]:
                         roles_text += Utils.get_role_by_id(server, role).name + "\n"
+                # No roles exist -> state so
                 else:
-                    # If no roles exist, state so
                     roles_text = "No roles exist."
-                # Reply
+                # Reply with the list
                 await self.simple_embed_reply(channel, "[Color List]", roles_text)
             # Listing users equipped with role
             elif command in self.commands["Equipped Users Command"]["Aliases"]:
-                # Check command format
+                # If the hex color was supplied
                 if len(split_message) > 1:
                     if Utils.is_hex(split_message[1]):
                         hex_color = split_message[1].upper()
-                        # Get role
                         role = self.get_role_by_hex(server, hex_color)
+                        # If the role exists
                         if role is not None:
-                            # Create the text
                             users_text = ""
                             # Check if users are equipped with this role
                             if len(self.roles[server.id][role.id]) > 0:
                                 for user_id in self.roles[server.id][role.id]:
                                     user = Utils.get_user_by_id(server, user_id)
                                     users_text += user.name + "\n"
+                            # No users are equipped -> State so
                             else:
-                                # If no users are equipped, state so
                                 users_text = "No users are equipped with this role."
                             # Reply with the equipped roles
                             await self.simple_embed_reply(channel, "[" + role.name + " Equipped List]", users_text,
                                                           hex_color)
-                        # If the color given doesn't have an associated role, error
+                        # Hex parameter doesn't have an associated role -> Error
                         else:
                             await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
-                    # If the given hex value can't be parsed, error
+                    # First parameter is not a valid hex value -> Error
                     else:
                         await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
-                # If the message didn't contain the color parameter, error
+                # Hex parameter not supplied -> Error
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
             # List all info known by this mod for current server
             elif command in self.commands["Color Info Command"]["Aliases"]:
-                # Check if there are existing roles
+                # If roles exist
                 if len(self.roles[server.id]) > 0:
                     # Begin reply crafting
                     embed = discord.Embed(title="[Info]", color=0x751DDF)
-                    # Cycle all the roles
+                    # Cycle all the roles, creating user list per role
                     for role_id in self.roles[server.id]:
                         role = Utils.get_role_by_id(server, role_id)
-                        # Create user list per role
                         users_text = ""
                         for user_id in self.roles[server.id][role_id]:
                             user = Utils.get_user_by_id(server, user_id)
@@ -150,34 +153,31 @@ class ColoredRoles(Mod.Mod):
                         embed.add_field(name=role.name, value=users_text)
                     # Reply
                     await self.client.send_message(channel, embed=embed)
-                # If there are no used roles, state so
+                # No used roles -> state so
                 else:
                     await self.simple_embed_reply(channel, "[Info]", "No color exist.")
             # Purge a given role
             elif command in self.commands["Purge Color Command"]["Aliases"]:
-                # Check if the hex color was supplied
+                # If the hex color was supplied
                 if len(split_message) > 1:
-                    # Check if the given parameter is a hex value
                     if Utils.is_hex(split_message[1]):
-                        # Get the hex color from the message
                         hex_color = split_message[1].upper()
-                        # Get the role by the given hex color
                         role = self.get_role_by_hex(server, hex_color)
+                        # If the role exists
                         if role is not None:
-                            # Delete the role
+                            # Delete the role and state so
                             await self.delete_role(server, role)
-                            # State that it was purged
                             await self.simple_embed_reply(channel, "[Purged Color]", "Purged " + hex_color + ".")
-                        # If the color given doesn't have an associated role, error
+                        # Hex parameter doesn't have an associated role -> Error
                         else:
                             await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
-                    # If the given color parameter could not be parsed, error
+                    # First parameter is not a valid hex value -> Error
                     else:
                         await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
-                # If no hex color was supplied, error
+                # Hex parameter not supplied -> Error
                 else:
                     await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
-        # If the bot isn't supplied with sufficient perms, error
+        # Bot isn't supplied with sufficient perms -> Error
         except discord.errors.Forbidden as e:
             await self.simple_embed_reply(channel, "[Error]", "Bot does not have enough perms.")
             logging.exception("An error occurred.")
@@ -188,21 +188,20 @@ class ColoredRoles(Mod.Mod):
 
     # Used to give a role to a user and record it in the mod DB
     async def give_role(self, server, user, role):
-        # Attempt to get the old role id
         old_role_id = self.users[server.id][user.id]
-        # If the user has an old role, delete it
+        # If the user has an old role -> Delete old role
         if old_role_id is not None:
-            # Get the old role from id
             old_role = Utils.get_role_by_id(server, old_role_id)
-            # If the role isn't the same, remove it form the user
+            # If the role isn't what's needed -> Delete old role
             if old_role.name is not role.name:
-                # Remove the old role from the user
                 await self.remove_role(server, user, old_role)
         # Give role to user
         await self.client.add_roles(user, role)
-        # Save new user color to user's data
+        # Save new user role to user's data
         self.users[server.id][user.id] = role.id
-        # Save user to the color's list
+        # Save user to the color's data
+        # Color data exists        -> Append user id
+        # Color data doesn't exist -> Create and append it
         if role.id in self.roles[server.id].keys():
             self.roles[server.id][role.id].append(user.id)
         else:
@@ -234,6 +233,7 @@ class ColoredRoles(Mod.Mod):
         role = await self.client.create_role(server, name=color, color=Utils.get_color(color),
                                              permissions=discord.Permissions(permissions=0))
         self.roles[server.id][role.id] = []
+        # Move it to top priority (so other roles's colors get over-written)
         await self.role_max_shift(server, role)
         return role
 
@@ -261,7 +261,7 @@ class ColoredRoles(Mod.Mod):
                 # Create a role database for each user
                 self.users[server.id][user.id] = None
                 for role in user.roles:
-                    # If a user's role is a color, save it
+                    # If a user's role is a color -> Save it
                     if Utils.is_hex(role.name):
                         self.users[server.id][user.id] = role.id
                         if role.id in self.roles[server.id].keys():

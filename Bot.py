@@ -1,13 +1,13 @@
-import Utils
 from DataManager import DataManager
 import ModHandler
 import discord
 import random
 
+# TODO: Self-help (scroll down)
 # Create a client object
 client = discord.Client()
 # Initialize the config data manager
-configManager = DataManager("Config/config.json")
+configManager = DataManager("Config/Config.json")
 # Load the config
 config = configManager.get_data()
 # Grab the bot's nickname
@@ -53,20 +53,18 @@ async def on_ready():
     print("[Chose status \"" + status + "\"]")
     # Set status
     await client.change_presence(game=discord.Game(name=status))
-    # Use the mod handler to load mods
+    # Load mods, getting their names
     mods = await mod_handler.load_mods()
-    # Get the known enabled mods from the config
+    # Re-generate config, deleting old mod and creating new mod configs
+    # New mod     -> Auto-enable
+    # Stale mod   -> No changes
+    # Removed mod -> Remove from config
     enabled_mods = config['EnabledMods']
-    # Create an objects to set new config values
     new_enabled_mods = {}
-    # Loop through all the mods
     for mod in mods:
-        # Check if it's already in the config
         if mod in enabled_mods:
-            # If so, keep the vale
             new_enabled_mods[mod] = enabled_mods[mod]
         else:
-            # Otherwise it's new and auto-enable it
             new_enabled_mods[mod] = True
     configManager.write_data('EnabledMods', new_enabled_mods)
 
@@ -75,53 +73,47 @@ async def on_ready():
 # When a message is received by the bot
 @client.event
 async def on_message(message):
-    # Grab the messages's channel
     channel = message.channel
     # Check if the message is a possible command
     if message.content[0:len(config['CommandPrefix'])] == config['CommandPrefix']:
-        # Split the message up for parsing
         split_message = message.content.split(" ")
-        # If it's a possible command, parse it
+        # Get the command without the pesky prefixes or parameters
         command = split_message[0][len(config['CommandPrefix']):]
         # Check if the command called was a bot command
         if command in bot_command_aliases:
+            # Help command called
             if command in bot_commands['Help Command']['Aliases']:
                 # If it's help for something specific, parse as so
                 if len(split_message) > 1:
                     # If it's help for the bot
                     if split_message[1] == bot_nick:
                         raise Exception("Self-help not implemented yet!")
-                    # If it's help for a possible mod or mod's command
                     else:
-                        # Let the mod handler deal with the mods
-                        await mod_handler.command_called(client, message, command, help=True)
+                        # Let the mod handler deal with possible mod commands
+                        await mod_handler.command_called(client, message, command, is_help=True)
                 # Otherwise, it's a full general list and parse as so
                 else:
-                    # Start building an embed reply
+                    # Start building an embed
                     embed = discord.Embed(title="[Help]", color=0x751DDF)
-                    # Add a field for the main bot commands
                     embed.add_field(name=bot_nick, value="Default bot commands", inline=False)
-                    # Get all the mods' descriptions
                     mod_descriptions = mod_handler.get_mod_descriptions()
                     # Loop through all mods' descriptions and create their fields
                     for mod in mod_descriptions:
-                        # Grab the description
                         description = mod_descriptions[mod]
-                        # Add a field
                         embed.add_field(name=mod, value=description, inline=False)
                     # Reply with the created embed
                     await client.send_message(channel, embed=embed)
             elif command in bot_commands['Channel Command']['Aliases']:
-                raise Exception("Self-help not implemented yet!")
+                raise Exception("Not implemented yet!")
         else:
-            # Use mod handler to parse the command
+            # Not a bot command; use mod handler to parse the command
             await mod_handler.command_called(client, message, command)
 
 
 # Used to get a printable version of the help commands
 def get_help_command_text():
-    help_command_text = ""
     # Build all the help commands
+    help_command_text = ""
     for command in bot_commands['Help Command']['Aliases']:
         help_command_text += command + ", "
     # Return built text
@@ -134,6 +126,7 @@ ModHandler.get_help_command_text = get_help_command_text
 # Make sure there is a token in the config
 print("[Attempting to login]")
 try:
+    # TODO: Chance to regex test
     if config['Token'] == "TOKEN":
         print("Please add a token in the config file")
     else:

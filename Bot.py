@@ -2,6 +2,7 @@ import Utils
 import random
 import discord
 import ModHandler
+from Command import Command
 from DataManager import DataManager
 
 # TODO: Self-help (scroll down)
@@ -15,6 +16,10 @@ config = configManager.get_data()
 bot_nick = config['Nickname']
 # bot_nick = Grab the bot's commands from the config
 bot_commands = config['Commands']
+# TODO: Implement the below
+# bot_commands = []
+# for command in config['Commands']:
+#     bot_commands.append(Command(None, command, config['Commands'][command]['Aliases'], True, config['Commands'][command]['Help']))
 # Build a list of bot command aliases
 bot_command_aliases = [alias for command in bot_commands for alias in bot_commands[command]['Aliases']]
 # Initialize database data manager

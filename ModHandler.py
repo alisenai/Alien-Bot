@@ -14,9 +14,10 @@ from DataManager import DataManager
 # TODO: Add per-command perm handling
 # TODO: Add "message received" function for non-command parsing and mod passing
 class ModHandler:
-    mod_command_aliases = {}
     mods = {}
+    registered_commands = []
     done_loading = False
+    mod_command_aliases = []
 
     # Builds a mod handler with passed parameters
     def __init__(self, client, mod_configs, bot_command_aliases, logging_level, embed_color):
@@ -53,17 +54,16 @@ class ModHandler:
                 mod.set_name(mod_name)
                 # Register the import as a mod and get the mod's info
                 mod_command, mod_commands = mod.register_mod()
-                # Cycle through all the mod's commands and make sure there are no conflicting mod commands
-                for command_name in mod_commands:
-                    for command in mod_commands[command_name]['Aliases']:
+                # Check for command conflicts and store commands
+                for command in mod_commands:
+                    for alias in command:
                         # Check for conflicting commands
-                        if command in self.mod_command_aliases.keys():
-                            raise Exception("Duplicate mod commands - " + command)
-                        elif command in self.bot_command_aliases:
-                            raise Exception("Mod copies a default command")
-                        # If all checks pass, link the mod object to that command
-                        else:
-                            self.mod_command_aliases[command] = mod
+                        assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command
+                        assert alias not in self.bot_command_aliases, "Mod copies a bot command - " + command
+                        # Add as known alias for further conflict checks
+                        self.mod_command_aliases.append(alias)
+                    # Register command
+                    self.registered_commands.append(command)
                 # Get mod's info
                 mod_info = mod.get_info()
                 mod_info['Mod'] = mod
@@ -107,25 +107,24 @@ class ModHandler:
             if self.done_loading:
                 # Send "is typing", for  a e s t h e t i c s
                 await client.send_typing(channel)
-                # Get a list of the mods' commands' aliases
-                commands = list(self.mod_command_aliases.keys())
-                # If it's a known command, forward it to the appropriate mod
-                if command in commands:
-                    # TODO: Add check for enabled / disabled
-                    await self.mod_command_aliases[command].command_called(message, command)
-                # Not a known command
+
+                # If it's a known command -> call it
+                for registered_command in self.registered_commands:
+                    if registered_command.is_alias(command):
+                        await registered_command.call_command(message)
+                        return
+
+                # No command called -> Not a known command
+                most_similar_commands = most_similar_string(command, self.mod_command_aliases)
+                # No similar commands -> Reply with help commands
+                if most_similar_commands is None:
+                    help_command_text = get_help_command_text()
+                    await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
+                                                   "Try " + help_command_text + ".")
+                # Similar-looking command exists -> Reply with it
                 else:
-                    # Find the most similar commands
-                    most_similar = most_similar_string(command, commands)
-                    # No similar commands -> Reply with help commands
-                    if most_similar is None:
-                        help_command_text = get_help_command_text()
-                        await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
-                                                       "Try " + help_command_text + ".")
-                    # Similar-looking command exists -> Reply with it
-                    else:
-                        await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
-                                                       "Did you mean `" + most_similar + "`?")
+                    await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
+                                                   "Did you mean `" + most_similar_commands + "`?")
             # Mods are still loading -> Let the author know
             else:
                 await Utils.simple_embed_reply(self.client, channel, "[Error]",

@@ -3,11 +3,13 @@ import discord
 import logging
 import json
 import Utils
+from Command import Command
 
 
 # TODO: Call command on other user if "admin" for add role / remove role / etc
 # TODO: Require role for command use
 # TODO: Logging levels - the rest
+
 
 class ColoredRoles(Mod.Mod):
     def __init__(self, client, logging_level, embed_color):
@@ -19,10 +21,13 @@ class ColoredRoles(Mod.Mod):
         # Config var init
         self.config = json.loads("".join(open("Mods/ColoredRoles/ColorRolesConfig.json", encoding="utf-8").readlines()))
         self.max_colors = self.config['MaxColors']
-        self.commands = self.config['Commands']
+        # Build command objects
+        self.commands = []
+        for command in self.config['Commands']:
+            self.commands.append(Command(self, command, self.config['Commands'][command]['Aliases'], True,
+                                         self.config['Commands'][command]['Help']))
         # Generate a fresh DB
         self.generate_db()
-
         # Init the super with all the info from this mod
         super().__init__(client, self.config['ModDescription'], self.config['ModCommand'],
                          self.commands, logging_level, embed_color)

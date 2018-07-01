@@ -1,4 +1,5 @@
 import discord
+from Command import Command
 import Utils
 import sys
 import os
@@ -10,17 +11,15 @@ import os
 class Mod:
     def __init__(self, client, description="No description", mod_command="", commands=None,
                  logging_level=Utils.LoggingLevels.VERBOSE, embed_color="0xab12ba"):
-        # Check if the mod's info is valid
-        if commands is None:
-            commands = [""]
-        if ' ' in mod_command:
-            raise Exception("Mod command \"", mod_command, "\" contains a space")
-        if not Utils.is_hex(embed_color):
-            raise Exception("Embed Color \"", embed_color, "\" is not a valid hex color")
+        # Check if parameters are valid
+        assert ' ' not in mod_command, "Mod command \"" + mod_command + "\" contains a space"
+        assert Utils.is_hex(embed_color), "Embed Color \"" + embed_color + "\" is not a valid hex color"
+        for command in commands:
+            assert type(command) is Command, "Mod commands are not of type \"Command\""
         # Var init
+        self.commands = [""] if commands is None else commands
         self.name = "No name set"  # Name will be set by ModHandler
         self.client = client
-        self.commands = commands
         self.embed_color = embed_color
         self.mod_command = mod_command
         self.description = description
@@ -68,8 +67,8 @@ class Mod:
         # If it's not asking for a specific command, recursively return everything
         if specific_command is None:
             generated_help = []
-            for command_name in self.commands:
-                generated_help.append(self.generate_help(self.commands[command_name]['Aliases'][0]))
+            for command in self.commands:
+                generated_help.append(self.generate_help(command.aliases[0]))
             if len(generated_help) == 0:
                 return [["Help Does Not Exist", "There is no help for this mod"]]
             return generated_help
@@ -77,12 +76,12 @@ class Mod:
         else:
             # Figures out which command was called and begins building a help message
             command_name, command_list, command_help = None, None, None
-            for command_name in self.commands:
-                command_info = self.commands[command_name]
-                if specific_command in command_info['Aliases']:
+            for command in self.commands:
+                if command.is_alias(specific_command):
                     # Builds the help message with the command's help and aliases
-                    command_list = command_info['Aliases']
-                    command_help = command_info['Help']
+                    command_name = command.name
+                    command_list = command.aliases
+                    command_help = command.help
                     break
             if command_name is None or command_list is None or command_help is None:
                 # If passed something that doesn't exist, let them know

@@ -1,7 +1,9 @@
 import os
 import sys
+import Utils
 import discord
 import difflib
+from DataManager import DataManager
 
 
 # TODO: Improve mod handling
@@ -10,40 +12,45 @@ import difflib
 # TODO: Add per-mod perm handling
 # TODO: Add per-command channel restrictions
 # TODO: Add per-command perm handling
-from DataManager import DataManager
-
-
+# TODO: Add "message received" function for non-command parsing and mod passing
 class ModHandler:
     mod_command_aliases = {}
     mods = {}
     done_loading = False
 
     # Builds a mod handler with passed parameters
-    def __init__(self, client, enabled_mods, bot_command_aliases, logging_level, embed_color):
+    def __init__(self, client, mod_configs, bot_command_aliases, logging_level, embed_color):
         # Var Init
         self.client = client
-        self.enabled_mods = enabled_mods
+        self.modConfigManager = DataManager(mod_configs)
         self.logging_level = logging_level
         self.bot_command_aliases = bot_command_aliases
         self.embed_color = embed_color
-        self.modConfigManager = DataManager("Config/ModConfig.json")
 
     async def load_mods(self):
-        mod_dir = "Mods/"
         print("[Loading Mods]")
+        mod_configs = self.modConfigManager.get_data()
+        new_mod_config = {}
         mod_names = []
         # Cycle through all the files within the mod dir
-        for mod_name in os.listdir(mod_dir):
+        for mod_name in os.listdir("Mods/"):
             # Store the mod names to return them
             mod_names.append(mod_name)
             # Check if it's a newly installed mod or if the mod is enabled
             # Mod doesn't exist -> Newly installed -> Load it
             # Mod exists        -> Not disabled    -> Load it
-            if mod_name not in self.enabled_mods or self.enabled_mods[mod_name] is not False:
+            if mod_name not in mod_configs.keys() or mod_configs[mod_name]['Enabled'] is not False:
+                if mod_name not in mod_configs.keys():
+                    new_mod_config[mod_name] = {"Enabled": True, "DisabledServers": [], "DisabledChannels": []}
+                else:
+                    # Append for config cleaning
+                    new_mod_config[mod_name] = mod_configs[mod_name]
                 # Make the python files importable and import them
-                sys.path.insert(0, mod_dir + mod_name)
+                sys.path.insert(0, 'Mods/' + mod_name)
                 print("[Loading: " + mod_name + "]")
+                # Import and call mod init to get object
                 mod = getattr(__import__(mod_name), mod_name)(self.client, self.logging_level, self.embed_color)
+                mod.set_name(mod_name)
                 # Register the import as a mod and get the mod's info
                 mod_command, mod_commands = mod.register_mod()
                 # Cycle through all the mod's commands and make sure there are no conflicting mod commands
@@ -64,7 +71,11 @@ class ModHandler:
                 self.mods[mod_command] = mod_info
             # Mod exists -> Disabled -> Don't load it, as per config
             else:
+                if mod_configs[mod_name]['Enabled'] is False:
+                    # Append for config cleaning
+                    new_mod_config[mod_name] = mod_configs[mod_name]
                 print("[Not Loading: " + mod_name + "]")
+        self.modConfigManager.write_data(new_mod_config)
         self.done_loading = True
         print("[Done loading Mods]")
         return mod_names
@@ -109,31 +120,22 @@ class ModHandler:
                     # No similar commands -> Reply with help commands
                     if most_similar is None:
                         help_command_text = get_help_command_text()
-                        await self.simple_embed(channel, "[Unknown command]", "Try " + help_command_text + ".")
+                        await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
+                                                       "Try " + help_command_text + ".")
                     # Similar-looking command exists -> Reply with it
                     else:
-                        await self.simple_embed(channel, "[Unknown command]", "Did you mean `" + most_similar + "`?")
+                        await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
+                                                       "Did you mean `" + most_similar + "`?")
             # Mods are still loading -> Let the author know
             else:
-                await self.simple_embed(channel, "[Error]", "The bot is still loading, please wait.")
-
-    # Replies to a channel with a simple embed
-    async def simple_embed(self, channel, title, description, color=None):
-        # Pick which color to use (if the function was passed a color)
-        if color is None:
-            color_to_use = self.embed_color
-        else:
-            color_to_use = color
-        # Reply with a built embed
-        await self.client.send_message(channel, embed=discord.Embed(title=title,
-                                                                    description=description,
-                                                                    color=discord.Color(int(color_to_use, 16))))
+                await Utils.simple_embed_reply(self.client, channel, "[Error]",
+                                               "The bot is still loading, please wait.")
 
     # Returns a dictionary - {mod name : mod description}
     def get_mod_descriptions(self):
         mod_descriptions = {}
         for mod in self.mods:
-            mod_descriptions[mod] = self.mods[mod]['Description']
+            mod_descriptions[self.mods[mod]['Name']] = self.mods[mod]['Description']
         return mod_descriptions
 
     # Checks if the passed var is a known mod name
@@ -145,6 +147,10 @@ class ModHandler:
     # Calls the help command on a specific mod, given one of its commands
     async def get_mod_help(self, mod, message):
         await self.mods[mod]['Mod'].get_help(message)
+
+    # Returns if ModHandler is done loading mods
+    def is_done_loading(self):
+        return self.done_loading
 
 
 # Todo: Workaround?

@@ -48,17 +48,19 @@ class ColoredRoles(Mod.Mod):
                                 new_color_role = self.get_role_by_hex(server, hex_color)
                             # Give the user their color
                             await self.give_role(server, author, new_color_role)
-                            await self.simple_embed_reply(channel, "[Add Role]",
-                                                          "Added " + hex_color + " to your roles.", hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[Add Role]",
+                                                           "Added " + hex_color + " to your roles.", hex_color)
                         else:
-                            await self.simple_embed_reply(channel, "[Added Color]", "Max role count reached.",
-                                                          hex_color=hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[Added Color]",
+                                                           "Max role count reached.",
+                                                           hex_color=hex_color)
                     # First parameter is not a valid hex value -> Error
                     else:
-                        self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                        Utils.simple_embed_reply(self.client, channel, "[Error]", "Invalid hex value.",
+                                                 split_message[1])
                 # Hex parameter not supplied -> Error
                 else:
-                    self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
+                    Utils.simple_embed_reply(self.client, channel, "[Error]", "Missing color parameter.")
             # Removing a role
             elif command in self.commands["Remove Color Command"]["Aliases"]:
                 # Get current role info
@@ -68,9 +70,9 @@ class ColoredRoles(Mod.Mod):
                 # Remove the role
                 await self.remove_role(server, author, current_color_role)
                 # Reply
-                await self.simple_embed_reply(channel, "[Removed Color]",
-                                              "Removed " + hex_color + " from your roles.",
-                                              hex_color=hex_color)
+                await Utils.simple_embed_reply(self.client, channel, "[Removed Color]",
+                                               "Removed " + hex_color + " from your roles.",
+                                               hex_color=hex_color)
             # Deleting a role
             elif command in self.commands["Delete Color Command"]["Aliases"]:
                 # If the hex color was supplied
@@ -80,19 +82,22 @@ class ColoredRoles(Mod.Mod):
                         color_role = self.get_role_by_hex(server, hex_color)
                         # If the role doesn't exist -> Error
                         if color_role is None:
-                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[Error]", "Color not found.",
+                                                           hex_color)
                         # Role found -> Delete it and let the user know
                         else:
                             await self.delete_role(server, color_role)
                             # Reply
-                            await self.simple_embed_reply(channel, "[Deleted Color]", "Deleted " + hex_color + ".",
-                                                          hex_color=hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[Deleted Color]",
+                                                           "Deleted " + hex_color + ".",
+                                                           hex_color=hex_color)
                     # First parameter is not a valid hex value -> Error
                     else:
-                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                        await Utils.simple_embed_reply(self.client, channel, "[Error]", "Invalid hex value.",
+                                                       split_message[1])
                 # Hex parameter not supplied -> Error
                 else:
-                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
+                    await Utils.simple_embed_reply(self.client, channel, "[Error]", "Missing color parameter.")
             # Listing roles
             elif command in self.commands["List Colors Command"]["Aliases"]:
                 roles_text = ""
@@ -105,7 +110,7 @@ class ColoredRoles(Mod.Mod):
                 else:
                     roles_text = "No roles exist."
                 # Reply with the list
-                await self.simple_embed_reply(channel, "[Color List]", roles_text)
+                await Utils.simple_embed_reply(self.client, channel, "[Color List]", roles_text)
             # Listing users equipped with role
             elif command in self.commands["Equipped Users Command"]["Aliases"]:
                 # If the hex color was supplied
@@ -125,17 +130,20 @@ class ColoredRoles(Mod.Mod):
                             else:
                                 users_text = "No users are equipped with this role."
                             # Reply with the equipped roles
-                            await self.simple_embed_reply(channel, "[" + role.name + " Equipped List]", users_text,
-                                                          hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[" + role.name + " Equipped List]",
+                                                           users_text,
+                                                           hex_color)
                         # Hex parameter doesn't have an associated role -> Error
                         else:
-                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[Error]", "Color not found.",
+                                                           hex_color)
                     # First parameter is not a valid hex value -> Error
                     else:
-                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                        await Utils.simple_embed_reply(self.client, channel, "[Error]", "Invalid hex value.",
+                                                       split_message[1])
                 # Hex parameter not supplied -> Error
                 else:
-                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
+                    await Utils.simple_embed_reply(self.client, channel, "[Error]", "Missing color parameter.")
             # List all info known by this mod for current server
             elif command in self.commands["Color Info Command"]["Aliases"]:
                 # If roles exist
@@ -155,7 +163,7 @@ class ColoredRoles(Mod.Mod):
                     await self.client.send_message(channel, embed=embed)
                 # No used roles -> state so
                 else:
-                    await self.simple_embed_reply(channel, "[Info]", "No color exist.")
+                    await Utils.simple_embed_reply(self.client, channel, "[Info]", "No color exist.")
             # Purge a given role
             elif command in self.commands["Purge Color Command"]["Aliases"]:
                 # If the hex color was supplied
@@ -167,23 +175,26 @@ class ColoredRoles(Mod.Mod):
                         if role is not None:
                             # Delete the role and state so
                             await self.delete_role(server, role)
-                            await self.simple_embed_reply(channel, "[Purged Color]", "Purged " + hex_color + ".")
+                            await Utils.simple_embed_reply(self.client, channel, "[Purged Color]",
+                                                           "Purged " + hex_color + ".")
                         # Hex parameter doesn't have an associated role -> Error
                         else:
-                            await self.simple_embed_reply(channel, "[Error]", "Color not found.", hex_color)
+                            await Utils.simple_embed_reply(self.client, channel, "[Error]", "Color not found.",
+                                                           hex_color)
                     # First parameter is not a valid hex value -> Error
                     else:
-                        await self.simple_embed_reply(channel, "[Error]", "Invalid hex value.", split_message[1])
+                        await Utils.simple_embed_reply(self.client, channel, "[Error]", "Invalid hex value.",
+                                                       split_message[1])
                 # Hex parameter not supplied -> Error
                 else:
-                    await self.simple_embed_reply(channel, "[Error]", "Missing color parameter.")
+                    await Utils.simple_embed_reply(self.client, channel, "[Error]", "Missing color parameter.")
         # Bot isn't supplied with sufficient perms -> Error
         except discord.errors.Forbidden as e:
-            await self.simple_embed_reply(channel, "[Error]", "Bot does not have enough perms.")
+            await Utils.simple_embed_reply(self.client, channel, "[Error]", "Bot does not have enough perms.")
             logging.exception("An error occurred.")
         # Some error I don't know of occurred, PING ALIEN!
         except Exception as e:  # Leave as a general exception!
-            await self.simple_embed_reply(channel, "[Error]", "Unknown error occurred (Ping Alien).")
+            await Utils.simple_embed_reply(self.client, channel, "[Error]", "Unknown error occurred (Ping Alien).")
             logging.exception("An error occurred.")
 
     # Used to give a role to a user and record it in the mod DB

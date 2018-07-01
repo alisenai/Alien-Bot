@@ -1,0 +1,12 @@
+{
+  "ColoredRoles": {
+    "Enabled": true,
+    "DisabledChannels": [],
+    "DisabledServers": []
+  },
+  "ExampleMod": {
+    "Enabled": true,
+    "DisabledChannels": [],
+    "DisabledServers": []
+  }
+}

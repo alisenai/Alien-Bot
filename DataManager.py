@@ -4,14 +4,17 @@ import json
 class DataManager:
     # Initializes the dataManager with a local DB
     def __init__(self, save_file):
-        print("[Loading", save_file, "DB]")
+        print("[Loading", save_file, "...]")
         self.store_file = save_file
         self.database = self.get_data()
-        print("[Done loading DB]")
+        print("[Done loading]")
 
     # Writes data to the DB
-    def write_data(self, key, data):
-        self.database[key] = data
+    def write_data(self, data, key=None):
+        if key is None:
+            self.database = data
+        else:
+            self.database[key] = data
         with open(self.store_file, 'w', encoding="utf-8") as outfile:
             json.dump(self.database, outfile, indent=2)
 

@@ -1,5 +1,6 @@
 import discord
 import Utils
+import sys
 import os
 
 
@@ -7,17 +8,17 @@ import os
 # TODO: Add examples for each command
 # Extendable class for mods
 class Mod:
-    def __init__(self, client, description="None", mod_command="", commands=None,
+    def __init__(self, client, description="No description", mod_command="", commands=None,
                  logging_level=Utils.LoggingLevels.VERBOSE, embed_color="0xab12ba"):
         # Check if the mod's info is valid
         if commands is None:
             commands = [""]
         if ' ' in mod_command:
-            raise Exception("Mod command \",  mod_command, \" contains a space")
+            raise Exception("Mod command \"", mod_command, "\" contains a space")
         if not Utils.is_hex(embed_color):
             raise Exception("Embed Color \"", embed_color, "\" is not a valid hex color")
         # Var init
-        self.name = os.getcwd().split(os.sep)[-1]
+        self.name = "No name set"  # Name will be set by ModHandler
         self.client = client
         self.commands = commands
         self.embed_color = embed_color
@@ -27,7 +28,8 @@ class Mod:
 
     # Called when the bot receives a message
     async def command_called(self, message, command):
-        await self.simple_embed_reply(message.channel, "[Error]", "No command parsing implemented for this mod")
+        await Utils.simple_embed_reply(self.client, message.channel, "[Error]",
+                                       "No command parsing implemented for this mod")
 
     # Returns the registration info about this mod
     def register_mod(self):
@@ -73,11 +75,12 @@ class Mod:
             return generated_help
         # Otherwise, return help for a specific command
         else:
-            # Figures out which command was called and beings building a help message
+            # Figures out which command was called and begins building a help message
             command_name, command_list, command_help = None, None, None
             for command_name in self.commands:
                 command_info = self.commands[command_name]
                 if specific_command in command_info['Aliases']:
+                    # Builds the help message with the command's help and aliases
                     command_list = command_info['Aliases']
                     command_help = command_info['Help']
                     break
@@ -91,14 +94,12 @@ class Mod:
             # Return the help message built
             return message[0:-2], command_help
 
-    # Used for replying with a simple, formatted, embed
-    async def simple_embed_reply(self, channel, title, message, hex_color=None):
-        # Get a color to use
-        color = self.embed_color if hex_color is None else hex_color
-        # Craft and reply with a simple embed
-        await self.client.send_message(channel, embed=discord.Embed(title=title, description=message,
-                                                                    color=Utils.get_color(color)))
-
     # Used for quickly replying to a channel with a message
     async def reply(self, channel, message):
         await self.client.send_message(channel, message)
+
+    # Sets the mod's name
+    def set_name(self, name):
+        if ' ' in name:
+            raise Exception("Mod name \"", name, "\" contains a space")
+        self.name = name

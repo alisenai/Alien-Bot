@@ -27,6 +27,16 @@ def get_color(color):
     return discord.Color(int(color, 16))
 
 
+# Replies to a channel with a simple embed
+async def simple_embed_reply(client, channel, title, description, hex_color=None):
+    # Pick which color to use (if the function was passed a color)
+    color = "0x751DDF" if hex_color is None else hex_color
+    # Reply with a built embed
+    await client.send_message(channel, embed=discord.Embed(title=title,
+                                                           description=description,
+                                                           color=discord.Color(int(color, 16))))
+
+
 # An "enum" to determine logging levels
 class LoggingLevels:
     VERBOSE = "Verbose"

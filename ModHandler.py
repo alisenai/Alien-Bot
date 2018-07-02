@@ -20,9 +20,8 @@ class ModHandler:
     mod_command_aliases = []
 
     # Builds a mod handler with passed parameters
-    def __init__(self, client, mod_configs, bot_command_aliases, logging_level, embed_color):
+    def __init__(self, mod_configs, bot_command_aliases, logging_level, embed_color):
         # Var Init
-        self.client = client
         self.modConfigManager = DataManager(mod_configs)
         self.logging_level = logging_level
         self.bot_command_aliases = bot_command_aliases
@@ -50,12 +49,13 @@ class ModHandler:
                 sys.path.insert(0, 'Mods/' + mod_name)
                 print("[Loading: " + mod_name + "]")
                 # Import and call mod init to get object
-                mod = getattr(__import__(mod_name), mod_name)(self.client, self.logging_level, self.embed_color)
+                mod = getattr(__import__(mod_name), mod_name)(self.logging_level, self.embed_color)
                 mod.set_name(mod_name)
                 # Register the import as a mod and get the mod's info
                 mod_command, mod_commands = mod.register_mod()
                 # Check for command conflicts and store commands
-                for command in mod_commands:
+                for command_name in mod_commands:
+                    command = mod_commands[command_name]
                     for alias in command:
                         # Check for conflicting commands
                         assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command
@@ -87,9 +87,16 @@ class ModHandler:
         split_message = message.content.split(" ")
         # If it's a help command
         if is_help:
-            # If it's help for a specific mod or one of its commands
-            if self.is_mod_name(split_message[1]):
-                await self.get_mod_help(split_message[1], message)
+            # If it's help for a mod or a mod command
+            # Mod -> Given mod name -> Get help
+            # Command -> Get mod name -> Get help
+            if self.is_mod_name(split_message[1]) or split_message[1] in self.mod_command_aliases:
+                mod = split_message[1]
+                for mod_name in self.mods:
+                    for alias in self.mods[mod_name]['Mod'].command_aliases:
+                        if split_message[1] == alias:
+                            mod = mod_name
+                await self.get_mod_help(mod, message)
             # Not a known mod or mod command
             else:
                 # Start building an embed reply
@@ -110,7 +117,7 @@ class ModHandler:
 
                 # If it's a known command -> call it
                 for registered_command in self.registered_commands:
-                    if registered_command.is_alias(command):
+                    if command in registered_command:
                         await registered_command.call_command(message)
                         return
 
@@ -119,15 +126,15 @@ class ModHandler:
                 # No similar commands -> Reply with help commands
                 if most_similar_commands is None:
                     help_command_text = get_help_command_text()
-                    await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
+                    await Utils.simple_embed_reply(Utils.client, channel, "[Unknown command]",
                                                    "Try " + help_command_text + ".")
                 # Similar-looking command exists -> Reply with it
                 else:
-                    await Utils.simple_embed_reply(self.client, channel, "[Unknown command]",
+                    await Utils.simple_embed_reply(Utils.client, channel, "[Unknown command]",
                                                    "Did you mean `" + most_similar_commands + "`?")
             # Mods are still loading -> Let the author know
             else:
-                await Utils.simple_embed_reply(self.client, channel, "[Error]",
+                await Utils.simple_embed_reply(Utils.client, channel, "[Error]",
                                                "The bot is still loading, please wait.")
 
     # Returns a dictionary - {mod name : mod description}

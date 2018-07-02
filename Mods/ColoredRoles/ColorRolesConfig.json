@@ -1,7 +1,7 @@
 {
-  "ModCommand": "ColoredRoles",
-  "ModDescription": "Gives users the ability to manage their own colors",
-  "MaxColors": 100,
+  "Mod Command": "ColoredRoles",
+  "Mod Description": "Gives users the ability to manage their own colors",
+  "Max Colors": 100,
   "Commands": {
     "Add Color Command": {
       "Aliases": [
@@ -10,7 +10,11 @@
         "ac"
       ],
       "Help": "Adds color to user.",
-      "Enabled": true
+      "Enabled": true,
+      "Useage": [
+        "addColor {HEX}",
+        "addColor {0x751DDF}"
+      ]
     },
     "Remove Color Command": {
       "Aliases": [
@@ -20,6 +24,8 @@
         "rc"
       ],
       "Help": "Removes color from user.",
+      "Useage": [
+      ],
       "Enabled": true
     },
     "Delete Color Command": {
@@ -30,6 +36,8 @@
         "dc"
       ],
       "Help": "Deletes a color from all users.",
+      "Useage": [
+      ],
       "Enabled": true
     },
     "Equipped Users Command": {
@@ -40,6 +48,8 @@
         "ec"
       ],
       "Help": "Lists users equipped with a color.",
+      "Useage": [
+      ],
       "Enabled": true
     },
     "List Colors Command": {
@@ -49,6 +59,8 @@
         "lc"
       ],
       "Help": "Lists all colors.",
+      "Useage": [
+      ],
       "Enabled": true
     },
     "Color Info Command": {
@@ -58,15 +70,20 @@
         "ic"
       ],
       "Help": "Lists colors and equipped users.",
+      "Useage": [
+        "infoColor"
+      ],
       "Enabled": true
     },
-    "Purge Color Command": {
+    "Clear Colors Command": {
       "Aliases": [
-        "purgeColor",
-        "pColor",
-        "pc"
+        "clearColor",
+        "cColor",
+        "cc"
       ],
-      "Help": "Deletes all colors",
+      "Help": "Deletes all colors.",
+      "Useage": [
+      ],
       "Enabled": true
     }
   }

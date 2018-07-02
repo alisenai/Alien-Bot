@@ -6,7 +6,6 @@ import difflib
 from DataManager import DataManager
 
 
-# TODO: Improve mod handling
 # TODO: Add bot-wide channel restrictions
 # TODO: Add per-mod channel restrictions
 # TODO: Add per-mod perm handling

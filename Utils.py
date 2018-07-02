@@ -15,6 +15,7 @@ def set_prefix(bot_prefix):
     global prefix
     prefix = bot_prefix
 
+
 # Used to check if a string is a hex value
 def is_hex(string):
     if re.match(r'^0[xX][0-9a-fA-F]{3,6}$', string):

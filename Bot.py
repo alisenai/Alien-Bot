@@ -2,7 +2,6 @@ import Utils
 import random
 import discord
 import ModHandler
-from Command import Command
 from DataManager import DataManager
 
 # TODO: Implement bot command enable/disable
@@ -33,7 +32,6 @@ mod_handler = ModHandler.ModHandler(config['Mod Config'], bot_command_aliases, c
 mods_loaded = False
 
 
-# TODO: Command class
 # When the bot is ready to be worked with
 @client.event
 async def on_ready():

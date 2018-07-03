@@ -1,16 +1,22 @@
 {
   "ExampleMod": {
+    "Enabled": true,
     "Disabled Servers": [],
-    "Disabled Channels": [],
-    "Enabled": true
+    "Disabled Channels": []
   },
   "ColoredRoles": {
-    "Disabled Servers": [],
-    "DisabledChannels": [],
     "Enabled": true,
-    "TODO: Command Perms": {
-      "Disabled Servers": [],
-      "Disabled Channels": []
-    }
+    "Disabled Servers": [],
+    "Command Perms": {
+      "Command 1": {
+        "Disabled Servers": [],
+        "Disabled Channels": []
+      },
+      "Command 2": {
+        "Disabled Servers": [],
+        "Disabled Channels": []
+      }
+    },
+    "DisabledChannels": []
   }
 }

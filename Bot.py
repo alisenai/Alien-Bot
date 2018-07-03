@@ -75,11 +75,11 @@ async def on_message(message):
         # Check if the mod handler is ready to be worked with
         if mod_handler.is_done_loading():
             # Get the command without the pesky prefixes or parameters
-            command = split_message[0][len(command_prefix):]
+            command_alias = split_message[0][len(command_prefix):]
             # Check if the command called was a bot command
-            if command in bot_command_aliases:
+            if command_alias in bot_command_aliases:
                 # Help command called
-                if bot_commands['Help Command'].is_alias(command):
+                if command_alias in bot_commands['Help Command']:
                     # If it's help for something specific, parse as so
                     if len(split_message) > 1:
                         # If it's help for the bot, call help util
@@ -87,7 +87,7 @@ async def on_message(message):
                             await Utils.get_help(message, bot_nick, bot_commands, split_message[1] == bot_nick)
                         else:
                             # Let the mod handler deal with possible mod help
-                            await mod_handler.command_called(client, message, command, is_help=True)
+                            await mod_handler.command_called(client, message, command_alias, is_help=True)
                     # Otherwise, it's a full general list and parse as so
                     else:
                         # Start building an embed
@@ -100,11 +100,13 @@ async def on_message(message):
                             embed.add_field(name=mod, value=description, inline=False)
                         # Reply with the created embed
                         await client.send_message(channel, embed=embed)
-                elif bot_commands['Channel Command'].is_alias(command):
+                elif command_alias in bot_commands['Channel Command']:
+                    raise Exception("Not implemented yet!")
+                elif command_alias in bot_commands['Permissions Command']:
                     raise Exception("Not implemented yet!")
             else:
                 # Not a bot command; use mod handler to parse the command
-                await mod_handler.command_called(client, message, command)
+                await mod_handler.command_called(client, message, command_alias)
         # Mod handler is not ready -> Let the author know
         else:
             await Utils.simple_embed_reply(client, channel, "[Error]", "The bot is still loading, please wait.")

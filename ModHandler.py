@@ -14,7 +14,7 @@ from DataManager import DataManager
 # TODO: Add "message received" function for non-command parsing and mod passing
 class ModHandler:
     mods = {}
-    registered_commands = []
+    commands = []
     done_loading = False
     mod_command_aliases = []
 
@@ -54,15 +54,15 @@ class ModHandler:
                 mod_command, mod_commands = mod.register_mod()
                 # Check for command conflicts and store commands
                 for command_name in mod_commands:
-                    command = mod_commands[command_name]
-                    for alias in command:
+                    command_alias = mod_commands[command_name]
+                    for alias in command_alias:
                         # Check for conflicting commands
-                        assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command
-                        assert alias not in self.bot_command_aliases, "Mod copies a bot command - " + command
+                        assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command_alias
+                        assert alias not in self.bot_command_aliases, "Mod copies a bot command - " + command_alias
                         # Add as known alias for further conflict checks
                         self.mod_command_aliases.append(alias)
                     # Register command
-                    self.registered_commands.append(command)
+                    self.commands.append(command_alias)
                 # Get mod's info
                 mod_info = mod.get_info()
                 mod_info['Mod'] = mod
@@ -80,9 +80,8 @@ class ModHandler:
         return mod_names
 
     # Called when a user message looks like a command, and it attempts to work with that command
-    async def command_called(self, client, message, command, is_help=False):
+    async def command_called(self, client, message, command_alias, is_help=False):
         channel = message.channel
-        server = message.server
         split_message = message.content.split(" ")
         # If it's a help command
         if is_help:
@@ -115,13 +114,13 @@ class ModHandler:
                 await client.send_typing(channel)
 
                 # If it's a known command -> call it
-                for registered_command in self.registered_commands:
-                    if command in registered_command:
-                        await registered_command.call_command(message)
+                for command in self.commands:
+                    if command_alias in command:
+                        await command.call_command(message)
                         return
 
                 # No command called -> Not a known command
-                most_similar_commands = most_similar_string(command, self.mod_command_aliases)
+                most_similar_commands = most_similar_string(command_alias, self.mod_command_aliases)
                 # No similar commands -> Reply with help commands
                 if most_similar_commands is None:
                     help_command_text = get_help_command_text()

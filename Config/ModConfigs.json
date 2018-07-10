@@ -1,13 +1,11 @@
 {
   "ExampleMod": {
     "Disabled Channels": [],
-    "Disabled Servers": [],
-    "Enabled": true
+    "Enabled": true,
+    "Disabled Servers": []
   },
   "ColoredRoles": {
-    "Disabled Servers": [],
     "DisabledChannels": [],
-    "Enabled": true,
     "Command Perms": {
       "Command 1": {
         "Disabled Channels": [],
@@ -17,6 +15,8 @@
         "Disabled Channels": [],
         "Disabled Servers": []
       }
-    }
+    },
+    "Enabled": true,
+    "Disabled Servers": []
   }
 }

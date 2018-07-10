@@ -1,8 +1,8 @@
-import Utils
+import Common.Utils as Utils
 import random
 import discord
-import ModHandler
-from DataManager import DataManager
+import Common.ModHandler as ModHandler
+from Common.DataManager import DataManager
 
 # TODO: Implement bot command enable/disable
 # Create a client object
@@ -26,7 +26,7 @@ bot_command_aliases = [alias for command in bot_commands for alias in bot_comman
 # Initialize database data manager
 dataBaseManager = DataManager(config['Save File'])
 # Initialize the mod handler
-mod_handler = ModHandler.ModHandler(config['Mod Config'], bot_command_aliases, config['Logging Level'],
+mod_handler = ModHandler.ModHandler("Config\ModConfigs.json", bot_command_aliases, config['Logging Level'],
                                     config['Embed Color'])
 # Boolean to keep track of when it's safe to start parsing commands
 mods_loaded = False

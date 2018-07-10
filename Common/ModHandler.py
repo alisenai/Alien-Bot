@@ -1,9 +1,9 @@
 import os
 import sys
-import Utils
+import Common.Utils as Utils
 import discord
 import difflib
-from DataManager import DataManager
+from Common.DataManager import DataManager
 
 
 # TODO: Add bot-wide channel restrictions

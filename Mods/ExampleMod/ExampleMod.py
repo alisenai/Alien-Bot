@@ -1,4 +1,4 @@
-import Mod
+import Common.Mod as Mod
 
 
 # Literally just an example mod

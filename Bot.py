@@ -1,10 +1,12 @@
-import Utils
+import Common.Utils as Utils
 import random
 import discord
-import ModHandler
-from DataManager import DataManager
+import Common.ModHandler as ModHandler
+from Common.DataManager import DataManager
 
 # TODO: Implement bot command enable/disable
+# TODO: Bot nickname
+# TODO: Error handling
 # Create a client object
 client = discord.Client()
 # Set the client to be globally accessible
@@ -26,7 +28,7 @@ bot_command_aliases = [alias for command in bot_commands for alias in bot_comman
 # Initialize database data manager
 dataBaseManager = DataManager(config['Save File'])
 # Initialize the mod handler
-mod_handler = ModHandler.ModHandler(config['Mod Config'], bot_command_aliases, config['Logging Level'],
+mod_handler = ModHandler.ModHandler("Config/ModConfigs.json", bot_command_aliases, config['Logging Level'],
                                     config['Embed Color'])
 # Boolean to keep track of when it's safe to start parsing commands
 mods_loaded = False
@@ -41,7 +43,7 @@ async def on_ready():
     # Change the bot nickname and get a "self" user
     for server in client.servers:
         self = server.me
-        await client.change_nickname(self, config['Nickname'])
+        await client.change_nickname(self, bot_nick)
     # Change the avatar if it's not already set
     pfp_hash = self.avatar
     if dataBaseManager.get_data('Avatar Hash') == pfp_hash:
@@ -120,6 +122,11 @@ def get_help_command_text():
         help_command_text += command + ", "
     # Return built text
     return help_command_text[0:-2]
+
+
+# Returns user permissions given their id
+def get_user_permissions(user_id):
+    return dataBaseManager.get_data(user_id)
 
 
 # Setup the help command text function

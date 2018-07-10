@@ -2,7 +2,6 @@
   "Command Prefix": ";",
   "Bot_Name": "Alien-Bot",
   "Save File": "Config/Database.json",
-  "Mod Config": "Config/ModConfigs.json",
   "Commands": {
     "Channel Command": {
       "Enabled": true,

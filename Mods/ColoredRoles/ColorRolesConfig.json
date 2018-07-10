@@ -83,6 +83,7 @@
       ],
       "Help": "Deletes all colors.",
       "Useage": [
+        ";cc"
       ],
       "Enabled": true
     }

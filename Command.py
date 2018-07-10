@@ -31,7 +31,9 @@ class Command:
     def is_alias(self, string):
         return string in self.aliases
 
-    # Calls the command if it's enabled
-    async def call_command(self, message):
+    # Calls the command if it's enabled and if the user has perms
+    async def call_command(self, message, user):
         if self.enabled:
             await self.parent_mod.command_called(message, self)
+        # else:
+            # return self.command_not_enabled_message

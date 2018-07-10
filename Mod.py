@@ -28,6 +28,10 @@ class Mod:
         await Utils.simple_embed_reply(Utils.client, message.channel, "[Error]",
                                        "No command parsing implemented for this mod")
 
+    # Returns true if the passed command alias is known by the mod
+    def is_command_alias(self, command_alias):
+        return command_alias in self.command_aliases
+
     # Replies with help (specific or broad)
     async def get_help(self, message):
         split_message = message.content.split(" ")

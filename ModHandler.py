@@ -91,9 +91,8 @@ class ModHandler:
             if self.is_mod_name(split_message[1]) or split_message[1] in self.mod_command_aliases:
                 mod = split_message[1]
                 for mod_name in self.mods:
-                    for alias in self.mods[mod_name]['Mod'].command_aliases:
-                        if split_message[1] == alias:
-                            mod = mod_name
+                    if split_message[1] in self.mods[mod_name]['Mod'].command_aliases:
+                        mod = mod_name
                 await self.get_mod_help(mod, message)
             # Not a known mod or mod command
             else:

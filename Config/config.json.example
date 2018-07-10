@@ -32,6 +32,11 @@
     "ColoredRoles": true,
     "ExampleMod": true
   },
+  "Permissions":{
+    "Admin": 2,
+    "Moderator": 1,
+    "User": 0
+  },
   "Embed Color": "0x751DDF",
   "Bot Emoji": "\ud83e\udd5d",
   "Nickname": "Alien-Bot",

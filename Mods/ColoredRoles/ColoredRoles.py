@@ -3,13 +3,11 @@ import discord
 import logging
 import json
 import Utils
-from Command import Command
 
 
 # TODO: Call command on other user if "admin" for add role / remove role / etc
 # TODO: Require role for command use
 # TODO: Logging levels - the rest
-# TODO: Fix purge command
 
 class ColoredRoles(Mod.Mod):
     def __init__(self, logging_level, embed_color):

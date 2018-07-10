@@ -1,8 +1,8 @@
-import Common.Mod as Mod
+import Mod
 import discord
 import logging
 import json
-import Common.Utils as Utils
+import Utils
 
 
 # TODO: Call command on other user if "admin" for add role / remove role / etc

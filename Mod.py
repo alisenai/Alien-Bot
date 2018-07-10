@@ -1,5 +1,5 @@
-from Common.Command import Command
-import Common.Utils as Utils
+from Command import Command
+import Utils
 
 
 # TODO: Admin and per-command role handling here? Maybe DB integration as well
@@ -27,10 +27,6 @@ class Mod:
     async def command_called(self, message, command):
         await Utils.simple_embed_reply(Utils.client, message.channel, "[Error]",
                                        "No command parsing implemented for this mod")
-
-    # For possible overriding
-    async def message_received(self, message):
-        pass
 
     # Returns true if the passed command alias is known by the mod
     def is_command_alias(self, command_alias):

@@ -1,6 +1,6 @@
 import re
 import discord
-from Common.Command import Command
+from Command import Command
 
 client = None
 prefix = None

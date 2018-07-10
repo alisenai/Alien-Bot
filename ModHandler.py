@@ -1,9 +1,9 @@
 import os
 import sys
-import Common.Utils as Utils
+import Utils
 import discord
 import difflib
-from Common.DataManager import DataManager
+from DataManager import DataManager
 
 
 # TODO: Add bot-wide channel restrictions
@@ -133,11 +133,6 @@ class ModHandler:
             else:
                 await Utils.simple_embed_reply(Utils.client, channel, "[Error]",
                                                "The bot is still loading, please wait.")
-
-    # Called when ANY message is received
-    async def message_received(self, message):
-        for mod_name in self.mods:
-            await self.mods[mod_name].message_received(message)
 
     # Returns a dictionary - {mod name : mod description}
     def get_mod_descriptions(self):

@@ -38,8 +38,18 @@ The primary config is found under `Config\config.json`
 ### Mod Config
 Not to be confused with individual mod configs, it is found under `Config/ModConfig.json`
 
-The config will contain each mod, by name, which will each have the following parameters:
-* `Enabled` Sets whether mod is enabled bot-wide
-* ***WIP***
+* The config will contain each mod, by name, which will each have the following parameters:
+    * `Enabled` Sets whether mod is enabled bot-wide
+    * ***WIP***
+## Database Config
+This config is usually left untouched, but contains a persistent database for the bot and mods.
 ## Mods
+Mods are modules that can be added on top of the vanilla Alien-Bot.
+### Add A Mod
+#### Installation
+To add a mod, place the mod's folder under `Mods/`
+#### Config
+Some mods come with a config, check the mod's source for a config explanation.
+
+You can also config the mod from 
 

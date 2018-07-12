@@ -1,9 +1,9 @@
 import os
 import sys
-import Common.Utils as Utils
 import discord
 import difflib
-from Common.DataManager import DataManager
+from Common import Utils
+from Common import DataManager
 
 
 # TODO: Add bot-wide channel restrictions
@@ -19,22 +19,20 @@ class ModHandler:
     mod_command_aliases = []
 
     # Builds a mod handler with passed parameters
-    def __init__(self, mod_configs, bot_command_aliases, logging_level, embed_color):
+    def __init__(self, bot_command_aliases, logging_level, embed_color):
         # Var Init
-        self.modConfigManager = DataManager(mod_configs)
         self.logging_level = logging_level
         self.bot_command_aliases = bot_command_aliases
         self.embed_color = embed_color
 
     async def load_mods(self):
         print("[Loading Mods]")
-        mod_configs = self.modConfigManager.get_data()
+        mod_config_manager = DataManager.get_manager("mod_config")
+        mod_configs = mod_config_manager.get_data()
         new_mod_config = {}
-        mod_names = []
         # Cycle through all the files within the mod dir
         for mod_name in os.listdir("Mods/"):
             # Store the mod names to return them
-            mod_names.append(mod_name)
             # Check if it's a newly installed mod or if the mod is enabled
             # Mod doesn't exist -> Newly installed -> Load it
             # Mod exists        -> Not disabled    -> Load it
@@ -74,10 +72,9 @@ class ModHandler:
                     # Append for config cleaning
                     new_mod_config[mod_name] = mod_configs[mod_name]
                 print("[Not Loading: " + mod_name + "]")
-        self.modConfigManager.write_data(new_mod_config)
+        mod_config_manager.write_data(new_mod_config)
         self.done_loading = True
         print("[Done loading Mods]")
-        return mod_names
 
     # Called when a user message looks like a command, and it attempts to work with that command
     async def command_called(self, client, message, command_alias, is_help=False):

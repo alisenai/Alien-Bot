@@ -1,8 +1,46 @@
 {
+  "Nickname": "Alien-Bot",
+  "Profile Picture": "pfp_default.jpg",
+  "Token": "TOKEN",
+  "Permissions": [
+    {
+      "Title": "Owner",
+      "Has Permissions": true,
+      "Default": false
+    },
+    {
+      "Title": "Admin",
+      "Has Permissions": true,
+      "Default": false
+    },
+    {
+      "Title": "Moderator",
+      "Has Permissions": true,
+      "Default": false
+    },
+    {
+      "Title": "User",
+      "Has Permissions": true,
+      "Default": true
+    },
+    {
+      "Title": "Restricted",
+      "Has Permissions": false,
+      "Default": false
+    }
+  ],
+  "Embed Color": "0x751DDF",
+  "Bot Emoji": "\ud83e\udd5d",
+  "Game Status": [
+    "With Alien Sensei",
+    "With Mods",
+    "Between Lines of Code",
+    "With Fire",
+    "01000011011011110110010001100101",
+    "With Your Data",
+    "#751DDF"
+  ],
   "Command Prefix": ";",
-  "Bot_Name": "Alien-Bot",
-  "Save File": "Config/Database.json",
-  "Mod Config": "Config/ModConfigs.json",
   "Commands": {
     "Channel Command": {
       "Enabled": true,
@@ -28,29 +66,6 @@
       ]
     }
   },
-  "Enabled Mods": {
-    "ColoredRoles": true,
-    "ExampleMod": true
-  },
-  "Permissions":{
-    "Admin": 2,
-    "Moderator": 1,
-    "User": 0
-  },
-  "Embed Color": "0x751DDF",
-  "Bot Emoji": "\ud83e\udd5d",
-  "Nickname": "Alien-Bot",
-  "Game Status": [
-    "With Alien Sensei",
-    "With Mods",
-    "Between Lines of Code",
-    "With Fire",
-    "01000011011011110110010001100101",
-    "With Your Data",
-    "#751DDF"
-  ],
-  "Owner ID": "208845952251985920",
-  "Profile Picture": "pfp_default.jpg",
-  "Token": "TOKEN",
+  "Database": "Config/Database.json",
   "Logging Level": "Verbose"
 }

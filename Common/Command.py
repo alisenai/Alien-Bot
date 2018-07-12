@@ -1,6 +1,7 @@
 # TODO: Add logging levels?
+# TODO: Command not enabled message
 class Command:
-    def __init__(self, parent_mod, name, aliases, enabled=False, command_help="No help", useage="No useage"):
+    def __init__(self, parent_mod, name, aliases, enabled=False, minimum_permissions="Owner", command_help="No help", useage="No useage"):
         # Check if parameters are valid
         assert name is not None or "", "Command not given a valid name"
         assert aliases is not None and len(aliases) > 0, "Command not given aliases"
@@ -9,6 +10,7 @@ class Command:
         self.name = name
         self.aliases = aliases
         self.enabled = enabled
+        self.minimum_permissions = minimum_permissions
         self.help = command_help
         self.useage = useage
 
@@ -32,8 +34,9 @@ class Command:
         return string in self.aliases
 
     # Calls the command if it's enabled and if the user has perms
-    async def call_command(self, message, user):
+    async def call_command(self, message, user_id):
         if self.enabled:
+            # if user.perm_level > self.minimum_permissions:
             await self.parent_mod.command_called(message, self)
         # else:
             # return self.command_not_enabled_message

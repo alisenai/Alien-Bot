@@ -1,5 +1,5 @@
+from Common import Utils
 from Common.Command import Command
-import Common.Utils as Utils
 
 
 # TODO: Admin and per-command role handling here? Maybe DB integration as well

@@ -1,18 +1,21 @@
-import Common.Utils as Utils
 import random
 import discord
-import Common.ModHandler as ModHandler
-from Common.DataManager import DataManager
+from Common import Utils
+from Common import ModHandler
+from Common import DataManager
 
 # TODO: Implement bot command enable/disable
+MOD_CONFIG = "Config\ModConfigs.json"
 # Create a client object
 client = discord.Client()
 # Set the client to be globally accessible
 Utils.set_client(client)
-# Initialize the config data manager
-configManager = DataManager("Config/Config.json")
-# Load the config
-config = configManager.get_data()
+# Initialize the config data manager and load the config
+config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
+# Initialize database data manager
+dataBaseManager = DataManager.add_manager("database", config['Database'])
+# Initialize mod config manager
+modConfigManager = DataManager.add_manager("mod_config", MOD_CONFIG)
 # Grab the bot's nickname
 bot_nick = config['Nickname']
 # Grab command prefix
@@ -23,10 +26,8 @@ Utils.set_prefix(command_prefix)
 bot_commands = Utils.parse_command_config(config['Commands'])
 # Build a list of bot command aliases
 bot_command_aliases = [alias for command in bot_commands for alias in bot_commands[command]]
-# Initialize database data manager
-dataBaseManager = DataManager(config['Save File'])
 # Initialize the mod handler
-mod_handler = ModHandler.ModHandler("Config\ModConfigs.json", bot_command_aliases, config['Logging Level'],
+mod_handler = ModHandler.ModHandler(bot_command_aliases, config['Logging Level'],
                                     config['Embed Color'])
 # Boolean to keep track of when it's safe to start parsing commands
 mods_loaded = False
@@ -60,8 +61,8 @@ async def on_ready():
     print("[Chose status \"" + status + "\"]")
     # Set status
     await client.change_presence(game=discord.Game(name=status))
-    # Load mods, getting their names
-    mods = await mod_handler.load_mods()
+    # Load mods
+    await mod_handler.load_mods()
 
 
 # TODO: Wait for mod handler to finish

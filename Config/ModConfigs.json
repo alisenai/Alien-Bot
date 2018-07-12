@@ -1,22 +1,36 @@
 {
-  "ExampleMod": {
-    "Disabled Channels": [],
-    "Enabled": true,
-    "Disabled Servers": []
-  },
   "ColoredRoles": {
-    "DisabledChannels": [],
     "Command Perms": {
       "Command 1": {
         "Disabled Channels": [],
-        "Disabled Servers": []
+        "Disabled Servers": [],
+        "Minimum Permissions": "Admin"
       },
       "Command 2": {
         "Disabled Channels": [],
-        "Disabled Servers": []
+        "Disabled Servers": [],
+        "Minimum Permissions": "Admin"
       }
     },
-    "Enabled": true,
-    "Disabled Servers": []
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
+  "ExampleMod": {
+    "Command Perms": {
+      "Command 1": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": "Admin"
+      },
+      "Command 2": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": "Admin"
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
   }
 }

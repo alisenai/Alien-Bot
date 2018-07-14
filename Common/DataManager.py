@@ -2,6 +2,7 @@ import json
 
 dataManagers = {}
 
+
 # TODO: Compress
 class File:
     # Initializes the dataManager with a local DB

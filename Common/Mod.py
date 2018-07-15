@@ -6,9 +6,9 @@ from Common.Command import Command
 # TODO: Add examples for each command
 # Extendable class for mods
 class Mod:
-    def __init__(self, description="No description", mod_command="", commands=None,
-                 logging_level=Utils.LoggingLevels.VERBOSE, embed_color="0xab12ba"):
+    def __init__(self, mod_name, description="No description", mod_command="", commands=None, embed_color="0xab12ba"):
         # Check if parameters are valid
+        assert ' ' not in mod_name, "Mod name \"" + mod_name + "\" contains a space"
         assert ' ' not in mod_command, "Mod command \"" + mod_command + "\" contains a space"
         assert Utils.is_hex(embed_color), "Embed Color \"" + embed_color + "\" is not a valid hex color"
         assert type(commands) is dict, "Mod command list is not of type dict"
@@ -16,11 +16,10 @@ class Mod:
             assert type(commands[command_name]) is Command, "Mod commands are not of type \"Command\""
         # Var init
         self.commands = {} if commands is None else commands
-        self.name = "No name set"  # Name will be set by ModHandler
+        self.name = mod_name
         self.embed_color = embed_color
         self.mod_command = mod_command
         self.description = description
-        self.logging_level = logging_level
         self.command_aliases = [alias for command_name in self.commands for alias in self.commands[command_name]]
 
     # Called when the bot receives a message
@@ -52,10 +51,4 @@ class Mod:
 
     # Used for quickly replying to a channel with a message
     async def reply(self, channel, message):
-        await Utils.client.send_message(channel, message)
-
-    # Sets the mod's name
-    def set_name(self, name):
-        if ' ' in name:
-            raise Exception("Mod name \"", name, "\" contains a space")
-        self.name = name
+        await self.client.send_message(channel, message)

@@ -19,9 +19,8 @@ class ModHandler:
     mod_command_aliases = []
 
     # Builds a mod handler with passed parameters
-    def __init__(self, bot_command_aliases, logging_level, embed_color):
+    def __init__(self, bot_command_aliases, embed_color):
         # Var Init
-        self.logging_level = logging_level
         self.bot_command_aliases = bot_command_aliases
         self.embed_color = embed_color
 
@@ -30,6 +29,18 @@ class ModHandler:
         mod_config_manager = DataManager.get_manager("mod_config")
         mod_configs = mod_config_manager.get_data()
         new_mod_config = {}
+        for mod_name in os.listdir("Mods/"):
+            if mod_name not in mod_configs.keys():
+                new_mod_config[mod_name] = {
+                    "Command Perms": {},
+                    "Enabled": True,
+                    "DisabledServers": [],
+                    "DisabledChannels": []
+                }
+            else:
+                # Append for config cleaning
+                new_mod_config[mod_name] = mod_configs[mod_name]
+            mod_config_manager.write_data(new_mod_config)
         # Cycle through all the files within the mod dir
         for mod_name in os.listdir("Mods/"):
             # Store the mod names to return them
@@ -37,17 +48,11 @@ class ModHandler:
             # Mod doesn't exist -> Newly installed -> Load it
             # Mod exists        -> Not disabled    -> Load it
             if mod_name not in mod_configs.keys() or mod_configs[mod_name]['Enabled'] is not False:
-                if mod_name not in mod_configs.keys():
-                    new_mod_config[mod_name] = {"Enabled": True, "DisabledServers": [], "DisabledChannels": []}
-                else:
-                    # Append for config cleaning
-                    new_mod_config[mod_name] = mod_configs[mod_name]
                 # Make the python files importable and import them
                 sys.path.insert(0, 'Mods/' + mod_name)
                 print("[Loading: " + mod_name + "]")
                 # Import and call mod init to get object
-                mod = getattr(__import__(mod_name), mod_name)(self.logging_level, self.embed_color)
-                mod.set_name(mod_name)
+                mod = getattr(__import__(mod_name), mod_name)(mod_name, self.embed_color)
                 # Register the import as a mod and get the mod's info
                 mod_command, mod_commands = mod.register_mod()
                 # Check for command conflicts and store commands
@@ -68,11 +73,7 @@ class ModHandler:
                 self.mods[mod_command] = mod_info
             # Mod exists -> Disabled -> Don't load it, as per config
             else:
-                if mod_configs[mod_name]['Enabled'] is False:
-                    # Append for config cleaning
-                    new_mod_config[mod_name] = mod_configs[mod_name]
                 print("[Not Loading: " + mod_name + "]")
-        mod_config_manager.write_data(new_mod_config)
         self.done_loading = True
         print("[Done loading Mods]")
 

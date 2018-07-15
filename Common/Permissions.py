@@ -5,11 +5,19 @@ from Common import DataManager
 
 permissions = {}
 
+"""
+{
+    "Title": "Owner",
+    "Has Permissions": true,
+    "Default": false,
+    "Inherits": "Admin"
+},"""
+
 
 def load_permissions():
     global permissions
     permissions_config = DataManager.get_data("bot_config", key="Permissions")
-
+    owner_permission = Permission("Owner", True, True, None)
     prev_permission = None
     for permission in permissions_config:
         title = permission["Title"]
@@ -23,7 +31,13 @@ def get_user_title(user_id):
 
 
 def has_permissions_by_id(user_id, permission_title):
-    return permissions[permission_title]
+    user_title = get_user_title(user_id)
+    while permissions[user_title] is not None:
+        if permissions[user_title].title == permission_title:
+            return True
+        else:
+            user_title = permissions[user_title].sub_permission.title
+    return False
 
 
 class Permission:

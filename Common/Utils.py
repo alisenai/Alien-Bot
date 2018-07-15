@@ -1,19 +1,11 @@
 import re
 import discord
+
+from Common import DataManager
 from Common.Command import Command
 
 client = None
 prefix = None
-
-
-def set_client(bot_client):
-    global client
-    client = bot_client
-
-
-def set_prefix(bot_prefix):
-    global prefix
-    prefix = bot_prefix
 
 
 # Used to check if a string is a hex value
@@ -106,16 +98,19 @@ def generate_help(commands, specific_command_alias=None, get_command_useage=Fals
 
 
 # Parses commands from standard config
-def parse_command_config(config):
-    # TODO Parse valid command gen
-    return {command_name: (Command(None, command_name, config[command_name]['Aliases'], True,
+def parse_command_config(parent, parent_name, config):
+    mod_config = DataManager.get_data("mod_config")
+    for command_name in config:
+        if command_name not in mod_config[parent_name]["Command Perms"]:
+            mod_config[parent_name]["Command Perms"][command_name] = {
+                "Disabled Channels": [],
+                "Disabled Servers": [],
+                "Minimum Permissions": "Owner"
+            }
+    DataManager.write_data("mod_config", mod_config)
+    # Delete old mods and commands?
+    return {command_name: (Command(parent, command_name, config[command_name]['Aliases'], True,
+                                   mod_config[parent_name]["Command Perms"][command_name]["Minimum Permissions"],
                                    config[command_name]['Help'],
                                    ''.join(use + "\n" for use in config[command_name]['Useage'])[0:-1]))
             for command_name in config}
-
-
-# An "enum" to determine logging levels
-class LoggingLevels:
-    VERBOSE = "Verbose"
-    INFORMATIONAL = "Informational"
-    MINIMAL = "Minimal"

@@ -1,15 +1,17 @@
 import random
 import discord
 from Common import Utils
-from Common import ModHandler
 from Common import DataManager
+from Common.Command import Command
+from Common.ModHandler import ModHandler
 
 # TODO: Implement bot command enable/disable
+# TODO:
 MOD_CONFIG = "Config\ModConfigs.json"
 # Create a client object
 client = discord.Client()
-# Set the client to be globally accessible
-Utils.set_client(client)
+# Set global client object
+Utils.client = client
 # Initialize the config data manager and load the config
 config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
 # Initialize database data manager
@@ -20,15 +22,18 @@ modConfigManager = DataManager.add_manager("mod_config", MOD_CONFIG)
 bot_nick = config['Nickname']
 # Grab command prefix
 command_prefix = config['Command Prefix']
-# Set the prefix to be globally accessible
-Utils.set_prefix(command_prefix)
 # Grab the bot's commands from the config
-bot_commands = Utils.parse_command_config(config['Commands'])
+command_config = config['Commands']
+# Build a list of bot commands
+bot_commands = {command_name: (Command(None, command_name, command_config[command_name]['Aliases'], True,
+                                       command_config[command_name]["Minimum Permissions"],
+                                       command_config[command_name]['Help'],
+                                       ''.join(use + "\n" for use in command_config[command_name]['Useage'])[0:-1]))
+                for command_name in command_config}
 # Build a list of bot command aliases
 bot_command_aliases = [alias for command in bot_commands for alias in bot_commands[command]]
 # Initialize the mod handler
-mod_handler = ModHandler.ModHandler(bot_command_aliases, config['Logging Level'],
-                                    config['Embed Color'])
+mod_handler = ModHandler(bot_command_aliases, config['Embed Color'])
 # Boolean to keep track of when it's safe to start parsing commands
 mods_loaded = False
 
@@ -65,7 +70,6 @@ async def on_ready():
     await mod_handler.load_mods()
 
 
-# TODO: Wait for mod handler to finish
 # When a message is received by the bot
 @client.event
 async def on_message(message):

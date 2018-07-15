@@ -2,29 +2,29 @@ import Common.Mod as Mod
 import discord
 import logging
 import json
-import Common.Utils as Utils
+from Common import Utils
 
 
 # TODO: Call command on other user if "admin" for add role / remove role / etc
 # TODO: Require role for command use
 # TODO: Logging levels - the rest
-
 class ColoredRoles(Mod.Mod):
-    def __init__(self, logging_level, embed_color):
+    def __init__(self, mod_name, embed_color):
         # General var init
         self.users = {}
         self.roles = {}
-        self.logging_level = logging_level
+        self.name = mod_name
+        self.embed_color = embed_color
         # Config var init
         self.config = json.loads("".join(open("Mods/ColoredRoles/ColorRolesConfig.json", encoding="utf-8").readlines()))
         self.max_colors = self.config['Max Colors']
         # Build command objects
-        self.commands = Utils.parse_command_config(self.config['Commands'])
+        self.commands = Utils.parse_command_config(self, mod_name, self.config['Commands'])
         # Generate a fresh DB
         self.generate_db()
         # Init the super with all the info from this mod
-        super().__init__(self.config['Mod Description'], self.config['Mod Command'],
-                         self.commands, logging_level, embed_color)
+        super().__init__(mod_name, self.config['Mod Description'], self.config['Mod Command'],
+                         self.commands, embed_color)
 
     # Called when the bot receives a message
     async def command_called(self, message, command):

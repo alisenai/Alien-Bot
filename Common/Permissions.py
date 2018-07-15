@@ -5,44 +5,39 @@ from Common import DataManager
 
 permissions = {}
 
-"""
-{
-    "Title": "Owner",
-    "Has Permissions": true,
-    "Default": false,
-    "Inherits": "Admin"
-},"""
-
 
 def load_permissions():
-    global permissions
+    print("[Loading permissions]")
     permissions_config = DataManager.get_data("bot_config", key="Permissions")
-    owner_permission = Permission("Owner", True, True, None)
-    prev_permission = None
-    for permission in permissions_config:
-        title = permission["Title"]
-        has_permissions = permission["Has Permissions"]
-        enabled = permission["Enabled"]
-        prev_permission = permissions[title] = Permission(title, has_permissions, enabled, prev_permission)
+    permissions["Owner"] = Permission("Owner", True, False, None)
+    for permission_name in permissions_config:
+        permission = permissions_config[permission_name]
+        permissions[permission_name] = Permission(permission_name, permission["Has Permissions"],
+                                                  permission["Default"], permission["Inherits"])
+    print("[Done loading permissions]")
 
 
 def get_user_title(user_id):
-    return DataManager.get_data("bot_config", key="Permissions")[str(user_id)]
+    return DataManager.get_data("database", key="Permissions")[str(user_id)]
 
 
-def has_permissions_by_id(user_id, permission_title):
+def has_permission(user_id, minimum_permission):
     user_title = get_user_title(user_id)
-    while permissions[user_title] is not None:
-        if permissions[user_title].title == permission_title:
-            return True
-        else:
-            user_title = permissions[user_title].sub_permission.title
-    return False
+    if permissions[user_title] is None:
+        return False
+    if permissions[user_title].has_permissions is False:
+        return False
+    if user_title == "Owner":
+        return True
+    if user_title == minimum_permission:
+        return True
+    # If the method hasn't returned, then call the method again with the sub-perm
+    has_permission(user_id, permissions[user_title].sub_permission.title)
 
 
 class Permission:
-    def __init__(self, title, has_permissions, enabled, sub_permission):
+    def __init__(self, title, has_permissions, default, sub_permissions):
         self.title = title
         self.has_permissions = has_permissions
-        self.enabled = enabled
-        self.sub_permissions = sub_permission
+        self.default = default
+        self.sub_permissions = sub_permissions

@@ -1,6 +1,7 @@
 {
   "Avatar Hash": "69996b8892bacb05b6145f77a3b1f358",
-  "User Permissions": {
-    "386432349627482115": "Admin"
+  "Permissions": {
+    "208845952251985920": "Owner",
+    "386432349627482115": "Restricted"
   }
 }

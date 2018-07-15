@@ -34,7 +34,7 @@ def get_color(color):
 
 
 # Replies to a channel with a simple embed
-async def simple_embed_reply(client, channel, title, description, hex_color=None):
+async def simple_embed_reply(channel, title, description, hex_color=None):
     # Pick which color to use (if the function was passed a color)
     color = "0x751DDF" if hex_color is None else hex_color
     # Reply with a built embed

@@ -1,6 +1,7 @@
-
-
 # TODO: Command not enabled message
+from Common import Permissions, Utils
+
+
 class Command:
     def __init__(self, parent_mod, name, aliases, enabled=False, minimum_permissions="Owner", command_help="No help",
                  useage="No useage"):
@@ -35,13 +36,14 @@ class Command:
     def is_alias(self, string):
         return string in self.aliases
 
+    # Returns true if the passed user ID has the permissions to call this command
     def has_permissions(self, user_id):
-        return False
+        return Permissions.has_permission(user_id, self.minimum_permissions)
 
     # Calls the command if it's enabled and if the user has perms
     async def call_command(self, message, user_id):
         if self.enabled:
-            # if user.perm_level > self.minimum_permissions:
-            await self.parent_mod.command_called(message, self)
-            # else:
-            # return self.command_not_enabled_message
+            if self.has_permissions(user_id):
+                # Send "is typing", for  a e s t h e t i c s
+                await Utils.client.send_typing(message.channel)
+                await self.parent_mod.command_called(message, self)

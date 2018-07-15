@@ -108,12 +108,12 @@ class ModHandler:
             # Make sure everything initialized
             if self.done_loading:
                 # Send "is typing", for  a e s t h e t i c s
-                await client.send_typing(channel)
+                # await client.send_typing(channel)
 
                 # If it's a known command -> call it
                 for command in self.commands:
                     if command_alias in command:
-                        await command.call_command(message)
+                        await command.call_command(message, message.author.id)
                         return
 
                 # No command called -> Not a known command

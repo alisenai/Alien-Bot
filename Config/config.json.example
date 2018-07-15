@@ -2,33 +2,28 @@
   "Nickname": "Alien-Bot",
   "Profile Picture": "pfp_default.jpg",
   "Token": "TOKEN",
-  "Permissions": [
-    {
-      "Title": "Owner",
+  "Permissions": {
+    "Admin": {
       "Has Permissions": true,
-      "Default": false
+      "Default": false,
+      "Inherits": "Moderator"
     },
-    {
-      "Title": "Admin",
+    "Moderator": {
       "Has Permissions": true,
-      "Default": false
+      "Default": false,
+      "Inherits": "User"
     },
-    {
-      "Title": "Moderator",
+    "User": {
       "Has Permissions": true,
-      "Default": false
+      "Default": true,
+      "Inherits": "Restricted"
     },
-    {
-      "Title": "User",
-      "Has Permissions": true,
-      "Default": true
-    },
-    {
-      "Title": "Restricted",
+    "Restricted": {
       "Has Permissions": false,
-      "Default": false
+      "Default": false,
+      "Inherits": null
     }
-  ],
+  },
   "Embed Color": "0x751DDF",
   "Bot Emoji": "\ud83e\udd5d",
   "Game Status": [
@@ -51,7 +46,8 @@
       "Help": "Changes the bot's presence in a channel",
       "Useage": [
         "channel {enable/disable}"
-      ]
+      ],
+      "Minimum Permissions": "Owner"
     },
     "Help Command": {
       "Enabled": true,
@@ -63,9 +59,9 @@
       "Useage": [
         "help {Mod}",
         "help {Command}"
-      ]
+      ],
+      "Minimum Permissions": "Owner"
     }
   },
-  "Database": "Config/Database.json",
-  "Logging Level": "Verbose"
+  "Database": "Config/Database.json"
 }

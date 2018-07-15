@@ -1,6 +1,7 @@
 import random
 import discord
 from Common import Utils
+from Common import Permissions
 from Common import DataManager
 from Common.Command import Command
 from Common.ModHandler import ModHandler
@@ -16,6 +17,8 @@ Utils.client = client
 config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
 # Initialize database data manager
 dataBaseManager = DataManager.add_manager("database", config['Database'])
+# Load permissions
+Permissions.load_permissions()
 # Initialize mod config manager
 modConfigManager = DataManager.add_manager("mod_config", MOD_CONFIG)
 # Grab the bot's nickname

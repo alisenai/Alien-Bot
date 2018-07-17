@@ -1,5 +1,5 @@
 # TODO: Command not enabled message
-from Common import Permissions, Utils
+from Common import Permissions, Utils, DataManager
 
 
 class Command:
@@ -43,10 +43,21 @@ class Command:
     # Calls the command if it's enabled and if the user has perms
     async def call_command(self, message):
         if self.enabled:
-            message_channel = message.channel
-            if self.has_permissions(message.author.id):
-                # Send "is typing", for  a e s t h e t i c s
-                await Utils.client.send_typing(message_channel)
-                await self.parent_mod.command_called(message, self)
+            server = message.server
+            channel = message.channel
+            author = message.author
+            mod_config = DataManager.get_data("mod_config")
+            # Check if the command is enabled in the server
+            if server.id not in mod_config[self.parent_mod.name]["Command Perms"][self.name]["Disabled Servers"]:
+                # Check if the command is enabled in the channel
+                if channel.id not in mod_config[self.parent_mod.name]["Command Perms"][self.name]["Disabled Channels"]:
+                    if self.has_permissions(author.id):
+                        # Send "is typing", for  a e s t h e t i c s
+                        await Utils.client.send_typing(channel)
+                        await self.parent_mod.command_called(message, self)
+                    # else:
+                    #     print("User", author, "does not have permissions to call", self.name)
+                # else:
+                #     print("Command", self.name, "cannot be used in the channel", channel)
             # else:
-            #     print("User", user_id, "does not have permissions to call", self.name)
+            #     print("Command", self.name, "cannot be used in the server", server)

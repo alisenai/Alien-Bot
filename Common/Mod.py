@@ -27,6 +27,10 @@ class Mod:
         await Utils.simple_embed_reply(Utils.client, message.channel, "[Error]",
                                        "No command parsing implemented for this mod")
 
+    # Called when the bot receives ANY message
+    async def message_received(self, message):
+        pass
+
     # Returns true if the passed command alias is known by the mod
     def is_command_alias(self, command_alias):
         return command_alias in self.command_aliases

@@ -6,12 +6,6 @@ from Common import Utils
 from Common import DataManager
 
 
-# TODO: Add bot-wide channel restrictions
-# TODO: Add per-mod channel restrictions
-# TODO: Add per-mod perm handling
-# TODO: Add per-command channel restrictions
-# TODO: Add per-command perm handling
-# TODO: Add "message received" function for non-command parsing and mod passing
 class ModHandler:
     mods = {}
     commands = []
@@ -29,13 +23,16 @@ class ModHandler:
         mod_config_manager = DataManager.get_manager("mod_config")
         mod_configs = mod_config_manager.get_data()
         new_mod_config = {}
+        # Cycle through all the mods in the mod directory
+        # If the mod config doesn't contain the mod -> Generate config
+        # If the mod config contains the mod        -> Keep Same config
         for mod_name in os.listdir("Mods/"):
             if mod_name not in mod_configs.keys():
                 new_mod_config[mod_name] = {
                     "Command Perms": {},
                     "Enabled": True,
-                    "DisabledServers": [],
-                    "DisabledChannels": []
+                    "Disabled Servers": [],
+                    "Disabled Channels": []
                 }
             else:
                 # Append for config cleaning
@@ -79,6 +76,7 @@ class ModHandler:
 
     # Called when a user message looks like a command, and it attempts to work with that command
     async def command_called(self, client, message, command_alias, is_help=False):
+        server = message.server
         channel = message.channel
         split_message = message.content.split(" ")
         # If it's a help command
@@ -110,10 +108,15 @@ class ModHandler:
                 # Send "is typing", for  a e s t h e t i c s
                 # await client.send_typing(channel)
 
-                # If it's a known command -> call it
+                # If it's a known command -> call it if it's enabled / allowed
                 for command in self.commands:
                     if command_alias in command:
-                        await command.call_command(message)
+                        mod_config = DataManager.get_data("mod_config")[command.parent_mod.name]
+                        # Check if command's parent mod is disabled in the current server
+                        if server.id not in mod_config["Disabled Servers"]:
+                            # Check if command's parent mod is disabled in the current channel
+                            if channel.id not in mod_config["Disabled Channels"]:
+                                await command.call_command(message)
                         return
 
                 # No command called -> Not a known command
@@ -131,6 +134,11 @@ class ModHandler:
             else:
                 await Utils.simple_embed_reply(Utils.client, channel, "[Error]",
                                                "The bot is still loading, please wait.")
+
+    # Called when ANY message is received by the bot
+    async def message_received(self, message):
+        for mod_command in self.mods:
+            await self.mods[mod_command]['Mod'].message_received(message)
 
     # Returns a dictionary - {mod name : mod description}
     def get_mod_descriptions(self):

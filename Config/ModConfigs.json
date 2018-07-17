@@ -37,14 +37,14 @@
         "Minimum Permissions": "Owner"
       }
     },
-    "DisabledChannels": [],
-    "DisabledServers": [],
+    "Disabled Channels": [],
+    "Disabled Servers": [],
     "Enabled": true
   },
   "ExampleMod": {
     "Command Perms": {},
-    "DisabledChannels": [],
-    "DisabledServers": [],
+    "Disabled Channels": [],
+    "Disabled Servers": [],
     "Enabled": true
   }
 }

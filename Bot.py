@@ -17,10 +17,10 @@ Utils.client = client
 config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
 # Initialize database data manager
 dataBaseManager = DataManager.add_manager("database", config['Database'])
-# Load permissions
-Permissions.load_permissions()
 # Initialize mod config manager
 modConfigManager = DataManager.add_manager("mod_config", MOD_CONFIG)
+# Load permissions
+Permissions.load_permissions()
 # Grab the bot's nickname
 bot_nick = config['Nickname']
 # Grab command prefix
@@ -118,6 +118,7 @@ async def on_message(message):
         # Mod handler is not ready -> Let the author know
         else:
             await Utils.simple_embed_reply(channel, "[Error]", "The bot is still loading, please wait.")
+    await mod_handler.message_received(message)
 
 
 # Used to get a printable version of the help commands

@@ -41,9 +41,12 @@ class Command:
         return Permissions.has_permission(user_id, self.minimum_permissions)
 
     # Calls the command if it's enabled and if the user has perms
-    async def call_command(self, message, user_id):
+    async def call_command(self, message):
         if self.enabled:
-            if self.has_permissions(user_id):
+            message_channel = message.channel
+            if self.has_permissions(message.author.id):
                 # Send "is typing", for  a e s t h e t i c s
-                await Utils.client.send_typing(message.channel)
+                await Utils.client.send_typing(message_channel)
                 await self.parent_mod.command_called(message, self)
+            # else:
+            #     print("User", user_id, "does not have permissions to call", self.name)

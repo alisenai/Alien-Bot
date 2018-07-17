@@ -117,7 +117,7 @@ async def on_message(message):
                 await mod_handler.command_called(client, message, command_alias)
         # Mod handler is not ready -> Let the author know
         else:
-            await Utils.simple_embed_reply(client, channel, "[Error]", "The bot is still loading, please wait.")
+            await Utils.simple_embed_reply(channel, "[Error]", "The bot is still loading, please wait.")
 
 
 # Used to get a printable version of the help commands

@@ -113,7 +113,7 @@ class ModHandler:
                 # If it's a known command -> call it
                 for command in self.commands:
                     if command_alias in command:
-                        await command.call_command(message, message.author.id)
+                        await command.call_command(message)
                         return
 
                 # No command called -> Not a known command

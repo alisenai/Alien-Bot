@@ -45,7 +45,6 @@ async def simple_embed_reply(channel, title, description, hex_color=None):
 
 # Gets help - All of it, or specifics
 async def get_help(message, name, commands, is_full_help):
-    global client
     # Sets up an embed to return
     embed = discord.Embed(title="[" + name + " Help]", color=0x751DDF)
     # Parses the help message
@@ -109,7 +108,8 @@ def parse_command_config(parent, parent_name, config):
             }
     DataManager.write_data("mod_config", mod_config)
     # Delete old mods and commands?
-    return {command_name: (Command(parent, command_name, config[command_name]['Aliases'], True,
+    return {command_name: (Command(parent, command_name, config[command_name]['Aliases'],
+                                   config[command_name]["Enabled"],
                                    mod_config[parent_name]["Command Perms"][command_name]["Minimum Permissions"],
                                    config[command_name]['Help'],
                                    ''.join(use + "\n" for use in config[command_name]['Useage'])[0:-1]))

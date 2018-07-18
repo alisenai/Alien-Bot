@@ -3,8 +3,10 @@ import json
 dataManagers = {}
 
 
-# TODO: Compress
-class File:
+# TODO: Multiple file type support
+# TODO: Replace database.json with database.db
+# TODO: Compress this code (It's pretty bad)
+class Config:
     # Initializes the dataManager with a local DB
     def __init__(self, save_file):
         print("[Loading", save_file, "...]")
@@ -32,7 +34,7 @@ class File:
 
 def add_manager(manager_name, save_file):
     global dataManagers
-    new_manager = File(save_file)
+    new_manager = Config(save_file)
     dataManagers[manager_name] = new_manager
     return new_manager
 

@@ -4,26 +4,31 @@
   "Token": "TOKEN",
   "Permissions": {
     "Admin": {
+      "Is Owner": true,
       "Has Permissions": true,
       "Default": false,
-      "Inherits": "Moderator"
+      "Inherits": "Guardian"
     },
-    "Moderator": {
+    "Guardian ": {
+      "Is Owner": false,
       "Has Permissions": true,
       "Default": false,
       "Inherits": "User"
     },
     "User": {
+      "Is Owner": false,
       "Has Permissions": true,
       "Default": true,
       "Inherits": "Restricted"
     },
     "Restricted": {
+      "Is Owner": false,
       "Has Permissions": false,
       "Default": false,
       "Inherits": null
     }
   },
+  "Disabled Channels": [],
   "Embed Color": "0x751DDF",
   "Bot Emoji": "\ud83e\udd5d",
   "Game Status": [

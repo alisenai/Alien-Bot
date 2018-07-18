@@ -6,8 +6,6 @@ from Common import DataManager
 from Common.Command import Command
 from Common.ModHandler import ModHandler
 
-# TODO: Implement bot command enable/disable
-# TODO:
 MOD_CONFIG = "Config\ModConfigs.json"
 # Create a client object
 client = discord.Client()
@@ -36,7 +34,7 @@ bot_commands = {command_name: (Command(None, command_name, command_config[comman
 # Build a list of bot command aliases
 bot_command_aliases = [alias for command in bot_commands for alias in bot_commands[command]]
 # Initialize the mod handler
-mod_handler = ModHandler(bot_command_aliases, config['Embed Color'])
+mod_handler = ModHandler(bot_commands, bot_command_aliases, config['Embed Color'])
 # Boolean to keep track of when it's safe to start parsing commands
 mods_loaded = False
 
@@ -84,10 +82,14 @@ async def on_message(message):
         if mod_handler.is_done_loading():
             # Get the command without the pesky prefixes or parameters
             command_alias = split_message[0][len(command_prefix):]
+            if command_alias is "<3" or "💜":
+                await client.send_message(message.channel, config["Bot Emoji"])
+                await mod_handler.message_received(message)
+                return
             # Check if the command called was a bot command
             if command_alias in bot_command_aliases:
                 # Help command called
-                if command_alias in bot_commands['Help Command']:
+                if command_alias in bot_commands['Help Command'] and bot_commands["Help Command"].enabled:
                     # If it's help for something specific, parse as so
                     if len(split_message) > 1:
                         # If it's help for the bot, call help util
@@ -108,9 +110,9 @@ async def on_message(message):
                             embed.add_field(name=mod, value=description, inline=False)
                         # Reply with the created embed
                         await client.send_message(channel, embed=embed)
-                elif command_alias in bot_commands['Channel Command']:
+                elif command_alias in bot_commands['Channel Command'] and bot_commands['Channel Command'].enabled:
                     raise Exception("Not implemented yet!")
-                elif command_alias in bot_commands['Permissions Command']:
+                elif command_alias in bot_commands['Permissions Command'] and bot_commands['Permissions Command'].enabled:
                     raise Exception("Not implemented yet!")
             else:
                 # Not a bot command; use mod handler to parse the command
@@ -120,19 +122,6 @@ async def on_message(message):
             await Utils.simple_embed_reply(channel, "[Error]", "The bot is still loading, please wait.")
     await mod_handler.message_received(message)
 
-
-# Used to get a printable version of the help commands
-def get_help_command_text():
-    # Build all the help commands
-    help_command_text = ""
-    for command in bot_commands['Help Command']:
-        help_command_text += command + ", "
-    # Return built text
-    return help_command_text[0:-2]
-
-
-# Setup the help command text function
-ModHandler.get_help_command_text = get_help_command_text
 
 # Make sure there is a token in the config
 print("[Attempting to login]")

@@ -6,6 +6,8 @@ from Common import Utils
 from Common import DataManager
 
 
+# TODO: Redo help so it only prints what the user's permissions allows
+# TODO: Add prefix when printing useage help
 class ModHandler:
     mods = {}
     commands = []
@@ -13,8 +15,9 @@ class ModHandler:
     mod_command_aliases = []
 
     # Builds a mod handler with passed parameters
-    def __init__(self, bot_command_aliases, embed_color):
+    def __init__(self, bot_commands, bot_command_aliases, embed_color):
         # Var Init
+        self.bot_commands = bot_commands
         self.bot_command_aliases = bot_command_aliases
         self.embed_color = embed_color
 
@@ -50,11 +53,9 @@ class ModHandler:
                 print("[Loading: " + mod_name + "]")
                 # Import and call mod init to get object
                 mod = getattr(__import__(mod_name), mod_name)(mod_name, self.embed_color)
-                # Register the import as a mod and get the mod's info
-                mod_command, mod_commands = mod.register_mod()
                 # Check for command conflicts and store commands
-                for command_name in mod_commands:
-                    command_alias = mod_commands[command_name]
+                for command_name in mod.commands:
+                    command_alias = mod.commands[command_name]
                     for alias in command_alias:
                         # Check for conflicting commands
                         assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command_alias
@@ -64,10 +65,8 @@ class ModHandler:
                     # Register command
                     self.commands.append(command_alias)
                 # Get mod's info
-                mod_info = mod.get_info()
-                mod_info['Mod'] = mod
                 # Store mod's info
-                self.mods[mod_command] = mod_info
+                self.mods[mod.name] = mod
             # Mod exists -> Disabled -> Don't load it, as per config
             else:
                 print("[Not Loading: " + mod_name + "]")
@@ -87,7 +86,7 @@ class ModHandler:
             if self.is_mod_name(split_message[1]) or split_message[1] in self.mod_command_aliases:
                 mod = split_message[1]
                 for mod_name in self.mods:
-                    if split_message[1] in self.mods[mod_name]['Mod'].command_aliases:
+                    if split_message[1] in self.mods[mod_name].command_aliases:
                         mod = mod_name
                 await self.get_mod_help(mod, message)
             # Not a known mod or mod command
@@ -95,7 +94,7 @@ class ModHandler:
                 # Start building an embed reply
                 embed = discord.Embed(title="[Help]", color=0x751DDF)
                 # Get a printable version of the known help commands
-                help_command_text = get_help_command_text()
+                help_command_text = self.get_help_command_text()
                 # Add a field to the reply embed
                 embed.add_field(name="Unknown mod - " + split_message[1] + "",
                                 value="Try: " + help_command_text + ".")
@@ -123,7 +122,7 @@ class ModHandler:
                 most_similar_commands = most_similar_string(command_alias, self.mod_command_aliases)
                 # No similar commands -> Reply with help commands
                 if most_similar_commands is None:
-                    help_command_text = get_help_command_text()
+                    help_command_text = self.get_help_command_text()
                     await Utils.simple_embed_reply(Utils.client, channel, "[Unknown command]",
                                                    "Try " + help_command_text + ".")
                 # Similar-looking command exists -> Reply with it
@@ -137,35 +136,39 @@ class ModHandler:
 
     # Called when ANY message is received by the bot
     async def message_received(self, message):
-        for mod_command in self.mods:
-            await self.mods[mod_command]['Mod'].message_received(message)
+        for mod_name in self.mods:
+            await self.mods[mod_name].message_received(message)
 
     # Returns a dictionary - {mod name : mod description}
     def get_mod_descriptions(self):
         mod_descriptions = {}
-        for mod in self.mods:
-            mod_descriptions[self.mods[mod]['Name']] = self.mods[mod]['Description']
+        for mod_name in self.mods:
+            mod_descriptions[mod_name] = self.mods[mod_name].description
         return mod_descriptions
 
     # Checks if the passed var is a known mod name
     def is_mod_name(self, name):
-        if name in self.mods:
-            return True
+        for mod_name in self.mods:
+            if name == mod_name:
+                return True
         return False
 
-    # Calls the help command on a specific mod, given one of its commands
+    # Calls the help command on a specific mod, given mod command
     async def get_mod_help(self, mod, message):
-        await self.mods[mod]['Mod'].get_help(message)
+        await self.mods[mod].get_help(message)
 
     # Returns if ModHandler is done loading mods
     def is_done_loading(self):
         return self.done_loading
 
-
-# Todo: Workaround?
-# Returns help text
-def get_help_command_text():
-    return ""
+    # Used to get a printable version of the help commands
+    def get_help_command_text(self):
+        # Build all the help commands
+        help_command_text = ""
+        for command_alias in self.bot_commands["Help Command"]:
+            help_command_text += command_alias + ", "
+        # Return built text
+        return help_command_text[0:-2]
 
 
 # Get the most similar string from an array, given a string

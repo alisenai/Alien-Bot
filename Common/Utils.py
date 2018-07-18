@@ -71,7 +71,7 @@ def generate_help(commands, specific_command_alias=None, get_command_useage=Fals
         for command_name in commands:
             generated_help.append(generate_help(commands, specific_command_alias=commands[command_name].aliases[0]))
         if len(generated_help) == 0:
-            return [["Help Does Not Exist", "There is no help for this mod"]]
+            return [["Help Does Not Exist", "There is no help for this mod, as it has no commands"]]
         return generated_help
     # Otherwise, return help for a specific command
     else:

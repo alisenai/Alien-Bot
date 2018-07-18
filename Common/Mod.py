@@ -2,14 +2,12 @@ from Common import Utils
 from Common.Command import Command
 
 
-# TODO: Admin and per-command role handling here? Maybe DB integration as well
-# TODO: Add examples for each command
+# TODO: Maybe DB integration as well
 # Extendable class for mods
 class Mod:
-    def __init__(self, mod_name, description="No description", mod_command="", commands=None, embed_color="0xab12ba"):
+    def __init__(self, mod_name, description="No description", commands=None, embed_color="0xab12ba"):
         # Check if parameters are valid
         assert ' ' not in mod_name, "Mod name \"" + mod_name + "\" contains a space"
-        assert ' ' not in mod_command, "Mod command \"" + mod_command + "\" contains a space"
         assert Utils.is_hex(embed_color), "Embed Color \"" + embed_color + "\" is not a valid hex color"
         assert type(commands) is dict, "Mod command list is not of type dict"
         for command_name in commands:
@@ -18,7 +16,6 @@ class Mod:
         self.commands = {} if commands is None else commands
         self.name = mod_name
         self.embed_color = embed_color
-        self.mod_command = mod_command
         self.description = description
         self.command_aliases = [alias for command_name in self.commands for alias in self.commands[command_name]]
 
@@ -40,14 +37,10 @@ class Mod:
         split_message = message.content.split(" ")
         await Utils.get_help(message, self.name, self.commands, split_message[1] == self.name)
 
-    # Returns the registration info about this mod
-    def register_mod(self):
-        return self.mod_command, self.commands
-
+    # TODO: Update info returned by the mod
     # Returns the important info about this mod
     def get_info(self):
-        return {'Name': self.name, 'Description': self.description, 'Commands': self.mod_commands(),
-                'Mod Command': self.mod_command}
+        return {'Name': self.name, 'Description': self.description, 'Commands': self.mod_commands()}
 
     # Returns a list of known commands from this mod
     def mod_commands(self):

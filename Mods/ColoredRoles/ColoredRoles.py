@@ -6,8 +6,6 @@ from Common import Utils
 
 
 # TODO: Call command on other user if "admin" for add role / remove role / etc
-# TODO: Require role for command use
-# TODO: Logging levels - the rest
 class ColoredRoles(Mod.Mod):
     def __init__(self, mod_name, embed_color):
         # General var init
@@ -23,8 +21,7 @@ class ColoredRoles(Mod.Mod):
         # Generate a fresh DB
         self.generate_db()
         # Init the super with all the info from this mod
-        super().__init__(mod_name, self.config['Mod Description'], self.config['Mod Command'],
-                         self.commands, embed_color)
+        super().__init__(mod_name, self.config['Mod Description'], self.commands, embed_color)
 
     # Called when the bot receives a message
     async def command_called(self, message, command):

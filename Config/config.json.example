@@ -1,6 +1,6 @@
 {
   "Nickname": "Alien-Bot",
-  "Profile Picture": "pfp_default.jpg",
+  "Profile Picture": "Config\\pfp_default.jpg",
   "Token": "TOKEN",
   "Permissions": {
     "Admin": {
@@ -68,5 +68,5 @@
       "Minimum Permissions": "Owner"
     }
   },
-  "Database": "Config/Database.json"
+  "Database": "Config\\Database.db"
 }

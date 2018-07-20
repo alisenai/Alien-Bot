@@ -67,6 +67,7 @@ class ModHandler:
                 # Get mod's info
                 # Store mod's info
                 self.mods[mod.name] = mod
+                print("[Done loading " + mod_name + "]")
             # Mod exists -> Disabled -> Don't load it, as per config
             else:
                 print("[Not Loading: " + mod_name + "]")
@@ -110,7 +111,7 @@ class ModHandler:
                 # If it's a known command -> call it if it's enabled / allowed
                 for command in self.commands:
                     if command_alias in command:
-                        mod_config = DataManager.get_data("mod_config")[command.parent_mod.name]
+                        mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
                         # Check if command's parent mod is disabled in the current server
                         if server.id not in mod_config["Disabled Servers"]:
                             # Check if command's parent mod is disabled in the current channel
@@ -169,6 +170,10 @@ class ModHandler:
             help_command_text += command_alias + ", "
         # Return built text
         return help_command_text[0:-2]
+
+    async def on_member_join(self, member):
+        for mod_name in self.mods:
+            await self.mods[mod_name].on_member_join(member)
 
 
 # Get the most similar string from an array, given a string

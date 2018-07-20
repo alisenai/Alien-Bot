@@ -1,6 +1,6 @@
 {
   "Mod Command": "ColoredRoles",
-  "Mod Description": "Gives users the ability to manage their own colors",
+  "Mod Description": "Gives users the ability to manage their own colors.",
   "Max Colors": 100,
   "Commands": {
     "Add Color Command": {

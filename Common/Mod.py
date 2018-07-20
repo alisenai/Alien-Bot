@@ -28,6 +28,10 @@ class Mod:
     async def message_received(self, message):
         pass
 
+    # Called when a member joins a server the bot is in
+    async def on_member_join(self, member):
+        pass
+
     # Returns true if the passed command alias is known by the mod
     def is_command_alias(self, command_alias):
         return command_alias in self.command_aliases
@@ -45,7 +49,3 @@ class Mod:
     # Returns a list of known commands from this mod
     def mod_commands(self):
         return self.commands
-
-    # Used for quickly replying to a channel with a message
-    async def reply(self, channel, message):
-        await self.client.send_message(channel, message)

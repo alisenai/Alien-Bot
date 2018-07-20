@@ -45,7 +45,7 @@ class Command:
             server = message.server
             channel = message.channel
             author = message.author
-            mod_config = DataManager.get_data("mod_config")
+            mod_config = DataManager.get_manager("mod_config").get_data()
             # Check if the command is enabled in the server
             if server.id not in mod_config[self.parent_mod.name]["Command Perms"][self.name]["Disabled Servers"]:
                 # Check if the command is enabled in the channel

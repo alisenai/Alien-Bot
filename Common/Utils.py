@@ -98,7 +98,7 @@ def generate_help(commands, specific_command_alias=None, get_command_useage=Fals
 
 # Parses commands from standard config
 def parse_command_config(parent, parent_name, config):
-    mod_config = DataManager.get_data("mod_config")
+    mod_config = DataManager.get_manager("mod_config").get_data()
     # TODO: Implement command cleaning
     # Generate config if it doesn't exist
     for command_name in config:
@@ -108,7 +108,7 @@ def parse_command_config(parent, parent_name, config):
                 "Disabled Servers": [],
                 "Minimum Permissions": "Owner"
             }
-    DataManager.write_data("mod_config", mod_config)
+    DataManager.get_manager("mod_config").write_data(mod_config)
     # Delete old mods and commands?
     return {command_name: (Command(parent, command_name, config[command_name]['Aliases'],
                                    config[command_name]["Enabled"],

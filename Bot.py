@@ -12,9 +12,9 @@ client = discord.Client()
 # Set global client object
 Utils.client = client
 # Initialize the config data manager and load the config
-config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
+config = DataManager.add_manager("bot_config", "Config\Config.json").get_data()
 # Initialize database data manager
-dataBaseManager = DataManager.add_manager("database", config['Database'])
+dataBaseManager = DataManager.add_manager("database", config['Database'], file_type=DataManager.FileType.SQL)
 # Initialize mod config manager
 modConfigManager = DataManager.add_manager("mod_config", MOD_CONFIG)
 # Load permissions
@@ -50,18 +50,20 @@ async def on_ready():
         self = server.me
         await client.change_nickname(self, config['Nickname'])
     # Change the avatar if it's not already set
-    pfp_hash = self.avatar
-    if dataBaseManager.get_data('Avatar Hash') == pfp_hash:
+    avatar_hash = self.avatar
+    dataBaseManager.execute("CREATE TABLE IF NOT EXISTS bot_data(name TEXT, value TEXT)")
+    hash_from_database = dataBaseManager.execute("SELECT value FROM bot_data WHERE name='avatar_hash'")
+    if len(hash_from_database) != 0 and hash_from_database[0] == avatar_hash:
         print("[Skipping Profile Picture Update]")
     else:
-        with open(config['ProfilePicture'], 'rb') as f:
-            print("[Attempting Profile Picture]")
+        with open(config['Profile Picture'], 'rb') as f:
+            print("[Attempting Profile Picture Update]")
             try:
                 await client.edit_profile(avatar=f.read())
+                dataBaseManager.execute("INSERT INTO bot_data VALUES('avatar_hash', '" + str(avatar_hash + "") + "')")
                 print("[Updated Profile Picture]")
             except discord.errors.HTTPException:
-                print("[Skipping Profile Picture Update - Throttled]")
-            dataBaseManager.write_data(self.avatar, key='AvatarHash')
+                print("[Skipping Profile Picture Update (Throttled)]")
     # Pick a random status
     status = config['Game Status'][random.randint(0, len(config['Game Status']) - 1)]
     print("[Chose status \"" + status + "\"]")
@@ -121,6 +123,11 @@ async def on_message(message):
         else:
             await Utils.simple_embed_reply(channel, "[Error]", "The bot is still loading, please wait.")
     await mod_handler.message_received(message)
+
+
+@client.event
+async def on_member_join(member):
+    await mod_handler.on_member_join(member)
 
 
 # Make sure there is a token in the config

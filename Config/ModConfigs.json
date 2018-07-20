@@ -41,6 +41,18 @@
     "Disabled Servers": [],
     "Enabled": true
   },
+  "Economy": {
+    "Command Perms": {
+      "Balance Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": "Owner"
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
   "ExampleMod": {
     "Command Perms": {},
     "Disabled Channels": [],

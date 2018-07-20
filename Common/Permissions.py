@@ -8,8 +8,8 @@ default = None
 # TODO: Remove single owner
 def load_permissions():
     global default
-    print("[Loading permissions]")
-    permissions_config = DataManager.get_data("bot_config", key="Permissions")
+    print("[Loading permissions]", end='')
+    permissions_config = DataManager.get_manager("bot_config").get_data(key="Permissions")
     for permission_name in permissions_config:
         permission_config = permissions_config[permission_name]
         permission = Permission(permission_name, permission_config["Has Permissions"],
@@ -17,11 +17,11 @@ def load_permissions():
         permissions[permission_name] = permission
         if permission_config["Default"]:
             default = permission
-    print("[Done loading permissions]")
+    print("[Done]")
 
 
 def get_user_title(user_id):
-    return DataManager.get_data("database", key="Permissions")[str(user_id)]
+    return DataManager.get_manager("database").get_data(key="Permissions")[str(user_id)]
 
 
 def has_permission(user_id, minimum_permission):

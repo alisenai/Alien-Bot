@@ -47,6 +47,11 @@
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": "Owner"
+      },
+      "Set Currency Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": "Owner"
       }
     },
     "Disabled Channels": [],

@@ -14,9 +14,9 @@ Utils.client = client
 # Initialize the config data manager and load the config
 config = DataManager.add_manager("bot_config", "Config\Config.json").get_data()
 # Initialize database data manager
-dataBaseManager = DataManager.add_manager("database", config['Database'], file_type=DataManager.FileType.SQL)
+database_manager = DataManager.add_manager("database", config['Database'], file_type=DataManager.FileType.SQL)
 # Initialize mod config manager
-modConfigManager = DataManager.add_manager("mod_config", MOD_CONFIG)
+mod_config_manager = DataManager.add_manager("mod_config", MOD_CONFIG)
 # Load permissions
 Permissions.load_permissions()
 # Grab the bot's nickname
@@ -51,8 +51,8 @@ async def on_ready():
         await client.change_nickname(self, config['Nickname'])
     # Change the avatar if it's not already set
     avatar_hash = self.avatar
-    dataBaseManager.execute("CREATE TABLE IF NOT EXISTS bot_data(name TEXT, value TEXT)")
-    hash_from_database = dataBaseManager.execute("SELECT value FROM bot_data WHERE name='avatar_hash'")
+    database_manager.execute("CREATE TABLE IF NOT EXISTS bot_data(name TEXT, value TEXT)")
+    hash_from_database = database_manager.execute("SELECT value FROM bot_data WHERE name='avatar_hash'")
     if len(hash_from_database) != 0 and hash_from_database[0] == avatar_hash:
         print("[Skipping Profile Picture Update]")
     else:
@@ -60,7 +60,7 @@ async def on_ready():
             print("[Attempting Profile Picture Update]")
             try:
                 await client.edit_profile(avatar=f.read())
-                dataBaseManager.execute("INSERT INTO bot_data VALUES('avatar_hash', '" + str(avatar_hash + "") + "')")
+                database_manager.execute("INSERT INTO bot_data VALUES('avatar_hash', '" + str(avatar_hash + "") + "')")
                 print("[Updated Profile Picture]")
             except discord.errors.HTTPException:
                 print("[Skipping Profile Picture Update (Throttled)]")
@@ -84,7 +84,7 @@ async def on_message(message):
         if mod_handler.is_done_loading():
             # Get the command without the pesky prefixes or parameters
             command_alias = split_message[0][len(command_prefix):]
-            if command_alias is "<3" or "💜":
+            if command_alias == "<3" or command_alias == "💜":
                 await client.send_message(message.channel, config["Bot Emoji"])
                 await mod_handler.message_received(message)
                 return

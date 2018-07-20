@@ -124,15 +124,15 @@ class ModHandler:
                 # No similar commands -> Reply with help commands
                 if most_similar_commands is None:
                     help_command_text = self.get_help_command_text()
-                    await Utils.simple_embed_reply(Utils.client, channel, "[Unknown command]",
+                    await Utils.simple_embed_reply(channel, "[Unknown command]",
                                                    "Try " + help_command_text + ".")
                 # Similar-looking command exists -> Reply with it
                 else:
-                    await Utils.simple_embed_reply(Utils.client, channel, "[Unknown command]",
+                    await Utils.simple_embed_reply(channel, "[Unknown command]",
                                                    "Did you mean `" + most_similar_commands + "`?")
             # Mods are still loading -> Let the author know
             else:
-                await Utils.simple_embed_reply(Utils.client, channel, "[Error]",
+                await Utils.simple_embed_reply(channel, "[Error]",
                                                "The bot is still loading, please wait.")
 
     # Called when ANY message is received by the bot

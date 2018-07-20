@@ -14,24 +14,29 @@ class Economy(Mod):
         self.name = mod_name
         self.embed_color = embed_color
         # Config var init
-        self.config = json.loads("".join(open("Mods/Economy/EconomyConfig.json", encoding="utf-8").readlines()))
+        self.config = DataManager.JSON("Mods/Economy/EconomyConfig.json")
         # Database var init
         self.database = DataManager.add_manager("bank_database", "Mods/Economy/Bank.db",
                                                 file_type=DataManager.FileType.SQL)
         # Build command objects
-        self.commands = Utils.parse_command_config(self, mod_name, self.config['Commands'])
+        self.commands = Utils.parse_command_config(self, mod_name, self.config.get_data('Commands'))
         # Generate and Update DB
         self.generate_db()
         # Init the super with all the info from this mod
-        super().__init__(mod_name, self.config['Mod Description'], self.commands, embed_color)
+        super().__init__(mod_name, self.config.get_data('Mod Description'), self.commands, embed_color)
 
     async def command_called(self, message, command):
+        split_message = message.content.split(" ")
         server, channel, author = message.server, message.channel, message.author
-        if command in self.commands["Balance command"]:
-            await Utils.simple_embed_reply(channel, "Balance", self.database.execute("SELECT balance FROM " +
-                                                                                     server + " WHERE user='" +
-                                                                                     author.id + "'"))
-            print("BAL COMMAND DEBUG")
+        if command is self.commands["Balance Command"]:
+            user_balance = self.database.execute("SELECT balance FROM '" + server.id + "' WHERE user='" +
+                                                 author.id + "'LIMIT 1")[0]
+            await Utils.simple_embed_reply(channel, "[Balance]", str(user_balance) + self.config.get_data("Currency"))
+        elif command is self.commands["Set Currency Command"]:
+            if len(split_message) > 1:
+                self.config.write_data(split_message[1], key="Currency")
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]", "Currency parameter not supplied.")
 
     # Generates the bank DB and removes old data
     def generate_db(self):
@@ -43,11 +48,8 @@ class Economy(Mod):
                 user_ids.append(user.id)
                 if len(self.database.execute("SELECT balance FROM '" + server.id + "' WHERE user=" + str(
                         user.id) + " LIMIT 1")) == 0:
-                    self.database.execute("INSERT INTO '" + server.id + "' VALUES(" + user.id + ", " + str(
-                        self.config["Starting Balance"]) + ", 0)")
-                    # Delete old data
-                    # for user in server_data:
-                    #     if user not in user_ids
+                    self.database.execute("INSERT INTO '" + server.id + "' VALUES('" + user.id + "', " +
+                                          str(self.config.get_data("Starting Balance")) + ", 0)")
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):

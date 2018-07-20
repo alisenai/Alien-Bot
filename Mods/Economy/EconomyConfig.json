@@ -1,7 +1,4 @@
 {
-  "Mod Command": "EconomyMod",
-  "Mod Description": "A mod that manages server economics.",
-  "Starting Balance": 200,
   "Commands": {
     "Balance Command": {
       "Aliases": [
@@ -10,23 +7,26 @@
         "wallet",
         "wal"
       ],
-      "Help": "Check your balance, or another user's balance.",
       "Enabled": true,
+      "Help": "Check your balance, or another user's balance.",
       "Useage": [
         "balance",
         "balance {user}"
       ]
+    },
+    "Set Currency Command": {
+      "Aliases": [
+        "set-currency"
+      ],
+      "Enabled": true,
+      "Help": "Check your balance, or another user's balance.",
+      "Useage": [
+        "set-currency {Currency}"
+      ]
     }
   },
-  "Set Currency Command": {
-    "Aliases": [
-      "set-currency"
-    ],
-    "Help": "Check your balance, or another user's balance.",
-    "Enabled": true,
-    "Useage": [
-      "set-currency {Currency}"
-    ]
-  },
-  "Currency": "\ud83e\udd5d"
+  "Currency": "\ud83e\udd5d",
+  "Mod Command": "EconomyMod",
+  "Mod Description": "A mod that manages server economics.",
+  "Starting Balance": 200
 }

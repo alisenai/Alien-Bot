@@ -14,14 +14,170 @@
         "balance {user}"
       ]
     },
+    "Crime Command": {
+      "Aliases": [
+        "crime"
+      ],
+      "Enabled": true,
+      "Failure": {
+        "Deduction": {
+          "Max": 500,
+          "Min": 100
+        },
+        "Messages": [
+          "Failure! {$}"
+        ]
+      },
+      "Help": "Do something illegal and get paid.",
+      "Success": {
+        "Messages": [
+          "Well done Neal Caffrey. You made {$}."
+        ],
+        "Payout": {
+          "Max": 500,
+          "Min": 100
+        }
+      },
+      "Success Rate": "50",
+      "Useage": [
+        "crime"
+      ]
+    },
+    "Rob Command": {
+      "Aliases": [
+        "rob"
+      ],
+      "Enabled": true,
+      "Failure": {
+        "Deduction": {
+          "Max": 500,
+          "Min": 100
+        },
+        "Messages": [
+          "Failure! {$}"
+        ]
+      },
+      "Help": "Rob another user's balance.",
+      "Success": {
+        "Messages": [
+          "Success! {$}"
+        ],
+        "Payout": {
+          "Max": 500,
+          "Min": 100
+        }
+      },
+      "Success Rate": "20",
+      "Useage": [
+        "rob {user}"
+      ]
+    },
+    "Set Crime Command": {
+      "Aliases": [
+        "set-crime"
+      ],
+      "Enabled": true,
+      "Help": "Sets the success rate of the Crime Command.",
+      "Useage": [
+        "set-crime {1-100}"
+      ]
+    },
     "Set Currency Command": {
       "Aliases": [
         "set-currency"
       ],
       "Enabled": true,
-      "Help": "Check your balance, or another user's balance.",
+      "Help": "Sets the server's currency.",
       "Useage": [
         "set-currency {Currency}"
+      ]
+    },
+    "Set Rob Command": {
+      "Aliases": [
+        "set-rob"
+      ],
+      "Enabled": true,
+      "Help": "Sets the success rate of the Rob Command.",
+      "Useage": [
+        "set-rob {1-100}"
+      ]
+    },
+    "Set Slut Command": {
+      "Aliases": [
+        "set-slut"
+      ],
+      "Enabled": true,
+      "Help": "Sets the success rate of the Slut Command.",
+      "Useage": [
+        "set-slut {1-100}"
+      ]
+    },
+    "Set Work Command": {
+      "Aliases": [
+        "set-work"
+      ],
+      "Enabled": true,
+      "Help": "Sets the success rate of the Work Command.",
+      "Useage": [
+        "set-work {1-100}"
+      ]
+    },
+    "Slut Command": {
+      "Aliases": [
+        "slut"
+      ],
+      "Enabled": true,
+      "Failure": {
+        "Deduction": {
+          "Max": 500,
+          "Min": 100
+        },
+        "Messages": [
+          "Failure! {$}"
+        ]
+      },
+      "Help": "\"Work\" and get paid.",
+      "Success": {
+        "Messages": [
+          "Success! {$}"
+        ],
+        "Payout": {
+          "Max": 500,
+          "Min": 100
+        }
+      },
+      "Success Rate": "40",
+      "Useage": [
+        "slut"
+      ]
+    },
+    "Work Command": {
+      "Aliases": [
+        "work"
+      ],
+      "Enabled": true,
+      "Failure": {
+        "Deduction": {
+          "Max": 500,
+          "Min": 100
+        },
+        "Messages": [
+          "Failure! {$}"
+        ]
+      },
+      "Help": "Work and get paid.",
+      "Success": {
+        "Messages": [
+          "Success! {$}"
+        ],
+        "Payout": {
+          "Max": 500,
+          "Min": 100
+        }
+      },
+      "Success Rate": "30",
+      "Useage": [
+        "work"
       ]
     }
   },

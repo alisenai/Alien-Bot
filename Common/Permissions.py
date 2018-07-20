@@ -5,7 +5,6 @@ permissions = {}
 default = None
 
 
-# TODO: Remove single owner
 def load_permissions():
     global default
     print("[Loading permissions]", end='')

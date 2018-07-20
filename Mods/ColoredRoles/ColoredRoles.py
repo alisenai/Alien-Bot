@@ -5,7 +5,7 @@ import logging
 import json
 
 
-# TODO: Call command on other user if "admin" for add role / remove role / etc
+# TODO: Chance from in-memory DB to on-disk DB (probably SQL)
 class ColoredRoles(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init
@@ -16,7 +16,6 @@ class ColoredRoles(Mod):
         # Config var init
         self.config = json.loads(
             "".join(open("Mods/ColoredRoles/ColoredRolesConfig.json", encoding="utf-8").readlines()))
-        self.max_colors = self.config['Max Colors']
         # Build command objects
         self.commands = Utils.parse_command_config(self, mod_name, self.config['Commands'])
         # Generate a fresh DB
@@ -37,7 +36,7 @@ class ColoredRoles(Mod):
                     if Utils.is_hex(split_message[1]):
                         hex_color = split_message[1].upper()
                         # If role hasn't been created and max color count hasn't been reached -> Create Role
-                        if len(self.roles[server.id]) < self.max_colors:
+                        if len(self.roles[server.id]) < self.config['Max Colors']:
                             if self.get_role_by_hex(server, hex_color) is None:
                                 new_color_role = await self.create_role(server, hex_color)
                             # Role already exists -> Get it
@@ -234,6 +233,11 @@ class ColoredRoles(Mod):
     # Used for getting a role by hex value in given server
     def get_role_by_hex(self, server, role_hex):
         return discord.utils.get(server.roles, name=role_hex)
+
+    # TODO: When a member joins mid-running-time, add them to the internal DB
+    # Called when a member joins a server the bot is in
+    async def on_member_join(self, member):
+        pass
 
     # Generates a fresh database on users and their color roles for every server the bot is in
     def generate_db(self):

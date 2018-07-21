@@ -32,6 +32,19 @@ class Economy(Mod):
                 self.config.write_data(split_message[1], key="Currency")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Currency parameter not supplied.")
+        elif command is self.commands["Set Starting Balance Command"]:
+            if len(split_message) > 1:
+                starting_balance = split_message[1]
+                if starting_balance.isdigit():
+                    self.config.write_data(int(starting_balance), key="Starting Balance")
+                    await Utils.simple_embed_reply(message.channel, "[Success]",
+                                                   "Starting balance set to `" + starting_balance + "`.")
+                else:
+                    await Utils.simple_embed_reply(message.channel, "[Error]",
+                                                   "Starting balance command parameter is not a digit.")
+            else:
+                await Utils.simple_embed_reply(message.channel, "[Error]",
+                                               "Starting balance command parameter not supplied.")
         elif command is self.commands["Balance Command"]:
             user_balance = self.database.execute("SELECT balance FROM '" + server.id + "' WHERE user='" +
                                                  author.id + "'LIMIT 1")[0]
@@ -64,7 +77,7 @@ class Economy(Mod):
                                                            "Success rate parameter not between 0 and 100.")
                     else:
                         await Utils.simple_embed_reply(message.channel, "[Error]",
-                                                       "Success rate parameter not supplied.")
+                                                       "Success rate parameter is not a digit.")
                 else:
                     await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
             else:

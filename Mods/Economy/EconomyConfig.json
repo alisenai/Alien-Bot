@@ -104,6 +104,17 @@
         "set-currency $"
       ]
     },
+    "Set Starting Balance Command": {
+      "Aliases": [
+        "set-starting-balance"
+      ],
+      "Enabled": true,
+      "Help": "Sets the starting balance for new users.",
+      "Useage": [
+        "set-starting-balance {number}",
+        "set-starting-balance 200"
+      ]
+    },
     "Set Success Rate Command": {
       "Aliases": [
         "set-success-rate"
@@ -155,20 +166,22 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {amount}"
+          "{user} lost {amount}",
+          "{user} tried so hard but still lost {amount}."
         ]
       },
       "Help": "Work and get paid.",
       "Success": {
         "Messages": [
-          "Success! {amount}"
+          "{user} worked and made {amount}.",
+          "{user} made {amount} by working the night shift."
         ],
         "Payout": {
           "Max": 500,
           "Min": 100
         }
       },
-      "Success Rate": 30,
+      "Success Rate": 100,
       "Useage": [
         "work"
       ]
@@ -177,5 +190,5 @@
   "Currency": "\ud83e\udd5d",
   "Mod Command": "EconomyMod",
   "Mod Description": "A mod that manages server economics.",
-  "Starting Balance": 200
+  "Starting Balance": 250
 }

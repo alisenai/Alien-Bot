@@ -73,6 +73,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Set Starting Balance Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Set Success Rate Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

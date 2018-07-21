@@ -1,5 +1,27 @@
 {
   "Commands": {
+    "Add Failure Reply Command": {
+      "Aliases": [
+        "add-failure-reply"
+      ],
+      "Enabled": true,
+      "Help": "Adds a failure reply message to an income command.",
+      "Useage": [
+        "add-failure-reply {crime/slut/work} {message}",
+        "add-failure-reply work You failed! {user} lost {amount}!"
+      ]
+    },
+    "Add Success Reply Command": {
+      "Aliases": [
+        "add-success-reply"
+      ],
+      "Enabled": true,
+      "Help": "Adds a success reply message to an income command.",
+      "Useage": [
+        "add-success-reply {crime/slut/work} {message}",
+        "add-success-reply work You succeeded! {user} gained {amount}!"
+      ]
+    },
     "Balance Command": {
       "Aliases": [
         "balance",
@@ -25,20 +47,20 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {$}"
+          "Failure! {user} lost {amount}"
         ]
       },
       "Help": "Do something illegal and get paid.",
       "Success": {
         "Messages": [
-          "Well done Neal Caffrey. You made {$}."
+          "Well done Neal Caffrey. You made {amount}."
         ],
         "Payout": {
           "Max": 500,
           "Min": 100
         }
       },
-      "Success Rate": "50",
+      "Success Rate": 0,
       "Useage": [
         "crime"
       ]
@@ -54,32 +76,21 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {$}"
+          "Failure! {amount}"
         ]
       },
       "Help": "Rob another user's balance.",
       "Success": {
         "Messages": [
-          "Success! {$}"
+          "Success! {amount}"
         ],
         "Payout": {
           "Max": 500,
           "Min": 100
         }
       },
-      "Success Rate": "20",
       "Useage": [
         "rob {user}"
-      ]
-    },
-    "Set Crime Command": {
-      "Aliases": [
-        "set-crime"
-      ],
-      "Enabled": true,
-      "Help": "Sets the success rate of the Crime Command.",
-      "Useage": [
-        "set-crime {1-100}"
       ]
     },
     "Set Currency Command": {
@@ -89,37 +100,19 @@
       "Enabled": true,
       "Help": "Sets the server's currency.",
       "Useage": [
-        "set-currency {Currency}"
+        "set-currency {Currency}",
+        "set-currency $"
       ]
     },
-    "Set Rob Command": {
+    "Set Success Rate Command": {
       "Aliases": [
-        "set-rob"
+        "set-success-rate"
       ],
       "Enabled": true,
-      "Help": "Sets the success rate of the Rob Command.",
+      "Help": "Sets the success rate of an income command.",
       "Useage": [
-        "set-rob {1-100}"
-      ]
-    },
-    "Set Slut Command": {
-      "Aliases": [
-        "set-slut"
-      ],
-      "Enabled": true,
-      "Help": "Sets the success rate of the Slut Command.",
-      "Useage": [
-        "set-slut {1-100}"
-      ]
-    },
-    "Set Work Command": {
-      "Aliases": [
-        "set-work"
-      ],
-      "Enabled": true,
-      "Help": "Sets the success rate of the Work Command.",
-      "Useage": [
-        "set-work {1-100}"
+        "set-success-rate {crime/slut/work} {0-100}",
+        "set-success-rate work 75"
       ]
     },
     "Slut Command": {
@@ -133,20 +126,20 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {$}"
+          "Failure! {amount}"
         ]
       },
       "Help": "\"Work\" and get paid.",
       "Success": {
         "Messages": [
-          "Success! {$}"
+          "Success! {amount}"
         ],
         "Payout": {
           "Max": 500,
           "Min": 100
         }
       },
-      "Success Rate": "40",
+      "Success Rate": 75,
       "Useage": [
         "slut"
       ]
@@ -162,20 +155,20 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {$}"
+          "Failure! {amount}"
         ]
       },
       "Help": "Work and get paid.",
       "Success": {
         "Messages": [
-          "Success! {$}"
+          "Success! {amount}"
         ],
         "Payout": {
           "Max": 500,
           "Min": 100
         }
       },
-      "Success Rate": "30",
+      "Success Rate": 30,
       "Useage": [
         "work"
       ]

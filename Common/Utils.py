@@ -106,7 +106,7 @@ def parse_command_config(parent, parent_name, config):
             mod_config[parent_name]["Command Perms"][command_name] = {
                 "Disabled Channels": [],
                 "Disabled Servers": [],
-                "Minimum Permissions": "Owner"
+                "Minimum Permissions": ""
             }
     DataManager.get_manager("mod_config").write_data(mod_config)
     # Delete old mods and commands?

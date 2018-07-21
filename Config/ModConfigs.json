@@ -4,37 +4,37 @@
       "Add Color Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Clear Colors Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Color Info Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Delete Color Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Equipped Users Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "List Colors Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Remove Color Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],
@@ -43,55 +43,50 @@
   },
   "Economy": {
     "Command Perms": {
+      "Add Failure Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Add Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Balance Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Crime Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Rob Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
-      },
-      "Set Crime Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Set Currency Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
-      "Set Rob Command": {
+      "Set Success Rate Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
-      },
-      "Set Slut Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
-      },
-      "Set Work Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Slut Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       },
       "Work Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "Admin"
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],

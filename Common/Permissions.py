@@ -33,20 +33,22 @@ def get_user_title(user_id):
 def has_permission(user_id, minimum_permission):
     user_title = get_user_title(user_id)
     user_permissions = permissions[user_title]
-    # If the user is a bot owner, they can use any command (that is enabled) -> Return True
-    if user_permissions.is_owner:
-        return True
-    # If user title has no permissions -> Return false
-    if user_permissions.has_permissions is False:
-        return False
-    # If user permissions meets the minimum requirement -> Return True
-    if user_title == minimum_permission:
-        return True
-    # Must be the lowest rank and thus previous checks have already determined that this user doesn't have the perms
-    if user_permissions.sub_permissions is None:
-        return False
-    # If the method hasn't returned, then call the method again with the sub-perm
-    has_permission(user_id, user_permissions.sub_permissions.title)
+    # TODO: Try to make this not "while true", but "while {condition}" (where condition is not "True")
+    while True:
+        # If the user is a bot owner, they can use any command (that is enabled) -> Return True
+        if user_permissions.is_owner:
+            return True
+        # If user title has no permissions -> Return false
+        if user_permissions.has_permissions is False:
+            return False
+        # If user permissions meets the minimum requirement -> Return True
+        if user_title == minimum_permission:
+            return True
+        # Must be the lowest rank and thus previous checks have already determined that this user doesn't have the perms
+        if user_permissions.sub_permissions is None:
+            return False
+        # If the method hasn't returned, get sub permissions and loop again
+        user_permissions = permissions[user_permissions.sub_permissions]
 
 
 class Permission:

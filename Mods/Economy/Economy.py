@@ -49,23 +49,15 @@ class Economy(Mod):
             else:
                 await Utils.simple_embed_reply(message.channel, "[Error]",
                                                "Starting balance command parameter not supplied.")
-        elif command is self.commands["Set Payout Command"]:
-            await self.set_income_min_max(message, is_payout=True)
-        elif command is self.commands["Set Deduction Command"]:
-            await self.set_income_min_max(message, is_payout=False)
         elif command is self.commands["Balance Command"]:
-            user_balance = self.database.execute("SELECT balance FROM '" + server.id + "' WHERE user='" +
-                                                 author.id + "'LIMIT 1")[0]
-            await Utils.simple_embed_reply(channel, "[Balance]", str(user_balance) + self.config.get_data("Currency"))
-        # TODO: Determine how to calculate success chance
-        elif command is self.commands["Rob Command"]:
-            await Utils.simple_embed_reply(message.channel, "[Error]", "Awaiting method of calculating success rate")
-        elif command is self.commands["Work Command"]:
-            await self.roll_income(message, "Work Command")
-        elif command is self.commands["Slut Command"]:
-            await self.roll_income(message, "Slut Command")
-        elif command is self.commands["Crime Command"]:
-            await self.roll_income(message, "Crime Command")
+            user_cash = self.database.execute("SELECT balance FROM '" + server.id + "' WHERE user='" +
+                                              author.id + "'LIMIT 1")[0]
+            user_bank = self.database.execute("SELECT bank FROM '" + server.id + "' WHERE user='" +
+                                              author.id + "'LIMIT 1")[0]
+            embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
+            embed.add_field(name="Cash", value=str(int(user_cash)) + self.config.get_data("Currency"), inline=True)
+            embed.add_field(name="Bank", value=str(int(user_bank)) + self.config.get_data("Currency"), inline=True)
+            await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Set Success Rate Command"]:
             if len(split_message) > 2:
                 income_command = split_message[1]
@@ -102,6 +94,19 @@ class Economy(Mod):
             await self.delete_command_reply(message, True)
         elif command in self.commands["Delete Failure Reply Command"]:
             await self.delete_command_reply(message, False)
+        elif command is self.commands["Work Command"]:
+            await self.roll_income(message, "Work Command")
+        elif command is self.commands["Slut Command"]:
+            await self.roll_income(message, "Slut Command")
+        elif command is self.commands["Crime Command"]:
+            await self.roll_income(message, "Crime Command")
+        # TODO: Determine how to calculate success chance
+        elif command is self.commands["Rob Command"]:
+            await Utils.simple_embed_reply(message.channel, "[Error]", "Awaiting method of calculating success rate")
+        elif command is self.commands["Set Payout Command"]:
+            await self.set_income_min_max(message, is_payout=True)
+        elif command is self.commands["Set Deduction Command"]:
+            await self.set_income_min_max(message, is_payout=False)
 
     # TODO: Add max reply message count and length limits
     async def set_income_reply(self, message, is_success):

@@ -8,7 +8,7 @@
       "Help": "Adds a failure reply message to an income command.",
       "Useage": [
         "add-failure-reply {crime/slut/work} {message}",
-        "add-failure-reply work You failed! {user} lost {amount}!"
+        "add-failure-reply work You failed! {208845952251985920} lost {amount}!"
       ]
     },
     "Add Success Reply Command": {
@@ -19,7 +19,7 @@
       "Help": "Adds a success reply message to an income command.",
       "Useage": [
         "add-success-reply {crime/slut/work} {message}",
-        "add-success-reply work You succeeded! {user} gained {amount}!"
+        "add-success-reply work You succeeded! {208845952251985920} gained {amount}!"
       ]
     },
     "Balance Command": {
@@ -33,7 +33,7 @@
       "Help": "Check your balance, or another user's balance.",
       "Useage": [
         "balance",
-        "balance {user}"
+        "balance {208845952251985920}"
       ]
     },
     "Crime Command": {
@@ -47,7 +47,7 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {user} lost {amount}"
+          "Failure! {208845952251985920} lost {amount}"
         ]
       },
       "Help": "Do something illegal and get paid.",
@@ -63,6 +63,50 @@
       "Success Rate": 0,
       "Useage": [
         "crime"
+      ]
+    },
+    "Delete Failure Reply Command": {
+      "Aliases": [
+        "delete-failure-reply"
+      ],
+      "Enabled": true,
+      "Help": "Deletes a failure reply message from an income command.",
+      "Useage": [
+        "delete-failure-reply {crime/slut/work} {id}",
+        "delete-failure-reply work 1"
+      ]
+    },
+    "Delete Success Reply Command": {
+      "Aliases": [
+        "delete-success-reply"
+      ],
+      "Enabled": true,
+      "Help": "Deletes a success reply message from an income command.",
+      "Useage": [
+        "delete-success-reply {crime/slut/work} {id}",
+        "delete-success-reply work 1"
+      ]
+    },
+    "List Failure Reply Command": {
+      "Aliases": [
+        "list-failure-reply"
+      ],
+      "Enabled": true,
+      "Help": "List all failure reply messages for an income command.",
+      "Useage": [
+        "list-failure-reply {crime/slut/work}",
+        "list-failure-reply work"
+      ]
+    },
+    "List Success Reply Command": {
+      "Aliases": [
+        "list-success-reply"
+      ],
+      "Enabled": true,
+      "Help": "List all success reply messages for an income command.",
+      "Useage": [
+        "list-success-reply {crime/slut/work}",
+        "list-success-reply work"
       ]
     },
     "Rob Command": {
@@ -90,7 +134,7 @@
         }
       },
       "Useage": [
-        "rob {user}"
+        "rob {208845952251985920}"
       ]
     },
     "Set Currency Command": {
@@ -102,6 +146,28 @@
       "Useage": [
         "set-currency {Currency}",
         "set-currency $"
+      ]
+    },
+    "Set Deduction Command": {
+      "Aliases": [
+        "set-deduction"
+      ],
+      "Enabled": true,
+      "Help": "Sets the deduction range for an income command.",
+      "Useage": [
+        "set-deduction {crime/slut/work} {min} {max}",
+        "set-deduction work 100 500"
+      ]
+    },
+    "Set Payout Command": {
+      "Aliases": [
+        "set-payout"
+      ],
+      "Enabled": true,
+      "Help": "Sets the payout range for an income command.",
+      "Useage": [
+        "set-payout {crime/slut/work} {min} {max}",
+        "set-payout work 100 500"
       ]
     },
     "Set Starting Balance Command": {
@@ -166,15 +232,13 @@
           "Min": 100
         },
         "Messages": [
-          "{user} lost {amount}",
-          "{user} tried so hard but still lost {amount}."
+          "Failure! {amount}"
         ]
       },
       "Help": "Work and get paid.",
       "Success": {
         "Messages": [
-          "{user} worked and made {amount}.",
-          "{user} made {amount} by working the night shift."
+          "Success! {amount}"
         ],
         "Payout": {
           "Max": 500,

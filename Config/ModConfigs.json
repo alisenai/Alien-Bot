@@ -63,12 +63,42 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Delete Failure Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Delete Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "List Failure Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "List Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Rob Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
       "Set Currency Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Set Deduction Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Set Payout Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""

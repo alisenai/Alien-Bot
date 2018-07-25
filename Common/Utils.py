@@ -21,6 +21,15 @@ def get_user_by_id(server, user_id):
     return server.get_member(user_id)
 
 
+# Attempts to return a user given their ID or Tag
+def get_user(server, user_text):
+    if re.fullmatch(r"[0-9]{18}", user_text) is not None:
+        return (server, user_text)
+    elif re.fullmatch(r"<@[0-9]{18}>", user_text) is not None:
+        return get_user_by_id(server, user_text[2:-1])
+    else:
+        return None
+
 # Used for getting a role by id in given server
 def get_role_by_id(server, role_id):
     for role in server.roles:
@@ -110,9 +119,12 @@ def parse_command_config(parent, parent_name, config):
             }
     DataManager.get_manager("mod_config").write_data(mod_config)
     # Delete old mods and commands?
+    # Spawn commands based on config and return a dict with them
     return {command_name: (Command(parent, command_name, config[command_name]['Aliases'],
                                    config[command_name]["Enabled"],
                                    mod_config[parent_name]["Command Perms"][command_name]["Minimum Permissions"],
                                    config[command_name]['Help'],
-                                   ''.join(use + "\n" for use in config[command_name]['Useage'])[0:-1]))
+                                   ''.join(use + "\n" for use in config[command_name]['Useage'])[0:-1],
+                                   int(config[command_name]["Cool Down"]) if "Cool Down" in config[
+                                       command_name] else 0))
             for command_name in config}

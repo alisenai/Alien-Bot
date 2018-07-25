@@ -15,6 +15,8 @@ Utils.client = client
 config = DataManager.add_manager("bot_config", "Config\Config.json").get_data()
 # Initialize database data manager
 database_manager = DataManager.add_manager("database", config['Database'], file_type=DataManager.FileType.SQL)
+# Initialize cool down data manager
+cool_down_manager = DataManager.add_manager("commands", "Common\Command.db", file_type=DataManager.FileType.SQL)
 # Initialize mod config manager
 mod_config_manager = DataManager.add_manager("mod_config", MOD_CONFIG)
 # Load permissions

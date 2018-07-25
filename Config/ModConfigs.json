@@ -56,7 +56,7 @@
       "Balance Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": ""
+        "Minimum Permissions": "User"
       },
       "Crime Command": {
         "Disabled Channels": [],
@@ -69,6 +69,16 @@
         "Minimum Permissions": ""
       },
       "Delete Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Deposit Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Give Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
@@ -114,6 +124,11 @@
         "Minimum Permissions": ""
       },
       "Slut Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Withdraw Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""

@@ -32,14 +32,27 @@
       "Enabled": true,
       "Help": "Check your balance, or another user's balance.",
       "Useage": [
+        "balance {empty/user}",
         "balance",
-        "balance {208845952251985920}"
+        "balance 123456789012345678"
+      ]
+    },
+    "Give Command": {
+      "Aliases": [
+        "give"
+      ],
+      "Enabled": true,
+      "Help": "Give your cash to another user.",
+      "Useage": [
+        "give {user} {amount/all}",
+        "give 208845952251985920 200"
       ]
     },
     "Crime Command": {
       "Aliases": [
         "crime"
       ],
+      "Cool Down": 60,
       "Enabled": true,
       "Failure": {
         "Deduction": {
@@ -60,7 +73,7 @@
           "Min": 100
         }
       },
-      "Success Rate": 0,
+      "Success Rate": 100,
       "Useage": [
         "crime"
       ]
@@ -85,6 +98,19 @@
       "Useage": [
         "delete-success-reply {crime/slut/work} {id}",
         "delete-success-reply work 1"
+      ]
+    },
+    "Deposit Command": {
+      "Aliases": [
+        "deposit",
+        "dep"
+      ],
+      "Enabled": true,
+      "Help": "Deposit your cash into your bank account.",
+      "Useage": [
+        "deposit {amount/all}",
+        "deposit 100",
+        "deposit all"
       ]
     },
     "List Failure Reply Command": {
@@ -113,6 +139,7 @@
       "Aliases": [
         "rob"
       ],
+      "Cool Down": 10,
       "Enabled": true,
       "Failure": {
         "Deduction": {
@@ -196,6 +223,7 @@
       "Aliases": [
         "slut"
       ],
+      "Cool Down": 10,
       "Enabled": true,
       "Failure": {
         "Deduction": {
@@ -221,10 +249,24 @@
         "slut"
       ]
     },
+    "Withdraw Command": {
+      "Aliases": [
+        "withdraw",
+        "with"
+      ],
+      "Enabled": true,
+      "Help": "Withdraw from your bank account and turn it into cash.",
+      "Useage": [
+        "withdraw {amount/all}",
+        "withdraw 100",
+        "withdraw all"
+      ]
+    },
     "Work Command": {
       "Aliases": [
         "work"
       ],
+      "Cool Down": 10,
       "Enabled": true,
       "Failure": {
         "Deduction": {

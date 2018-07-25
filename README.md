@@ -4,6 +4,7 @@ A fully-customizable bot for dynamic module loading
 ### Prerequisites
 * [Python 3.4.2](https://www.python.org/downloads/release/python-342/)+
 * [Discord.py](https://github.com/Rapptz/discord.py)
+* Schedule
 ### Execution
 Put your Discord bot token in `Config\config.json` under `Token`
 

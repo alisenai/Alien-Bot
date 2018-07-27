@@ -188,7 +188,8 @@ class Economy(Mod):
                     return
             if page <= max_page:
                 if (len(user_rank_order) + 10) / 10 >= page:
-                    embed = discord.Embed(title="[Server Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
+                    embed = discord.Embed(title="[" + str(server) + " Leaderboard]",
+                                          color=discord.Color(int("0x751DDF", 16)))
                     for i in range(min(10, len(user_rank_order))):
                         user_rank = (page - 1) * 10 + i
                         rank_text = Utils.add_number_abbreviation(user_rank + 1)
@@ -206,6 +207,13 @@ class Economy(Mod):
             else:
                 await Utils.simple_embed_reply(channel, "[Error]",
                                                "You can only view a page between 1 and " + str(max_page) + ".")
+        elif command is self.commands["Bank Command"]:
+            embed = discord.Embed(title="[" + str(server) + " Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
+            total_balance = int(self.database.execute("SELECT SUM(bank + cash) FROM `" + server.id + "`")[0])
+            embed.add_field(name="Total Balance",
+                            value=str(total_balance) + self.config.get_data("Currency"), inline=True)
+            embed.set_footer(text="Monthly interest rate: " + str(self.config.get_data("Interest Rate")))
+            await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Award Command"]:
             await self.award_take(message, True)
         elif command is self.commands["Take Command"]:

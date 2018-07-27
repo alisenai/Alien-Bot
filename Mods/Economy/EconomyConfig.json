@@ -254,6 +254,16 @@
         "set-success-rate work 75"
       ]
     },
+    "Bank Command": {
+      "Aliases": [
+        "bank"
+      ],
+      "Enabled": true,
+      "Help": "Displays the total bank balance of the server.",
+      "Useage": [
+        "bank"
+      ]
+    },
     "Slut Command": {
       "Aliases": [
         "slut"
@@ -329,6 +339,7 @@
     }
   },
   "Currency": "\ud83e\udd5d",
+  "Interest Rate": 0.1,
   "Mod Command": "EconomyMod",
   "Mod Description": "A mod that manages server economics.",
   "Starting Balance": 250

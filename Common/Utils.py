@@ -44,6 +44,11 @@ def get_role(server, role_text):
         return None
 
 
+# Returns a the number with the appropriate abbreviation
+def add_number_abbreviation(number):
+    return str(number) + ("th" if 4 <= number % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(number % 10, "th"))
+
+
 # Used for getting a role by id in given server
 def get_role_by_id(server, role_id):
     for role in server.roles:

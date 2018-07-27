@@ -37,6 +37,19 @@
         "balance 123456789012345678"
       ]
     },
+    "Leaderboard Command": {
+      "Aliases": [
+        "leaderboard",
+        "ldb"
+      ],
+      "Enabled": true,
+      "Help": "Lists the richest users and their ranks.",
+      "Useage": [
+        "leaderboard {empty/page}",
+        "leaderboard",
+        "leaderboard 3"
+      ]
+    },
     "Give Command": {
       "Aliases": [
         "give"

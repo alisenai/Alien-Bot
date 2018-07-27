@@ -59,8 +59,7 @@ class Economy(Mod):
             user_cash = self.get_cash(server.id, user.id)
             user_bank = self.get_bank(server.id, user.id)
             user_rank = self.get_rank(server.id, user.id)
-            rank_text = str(user_rank) + (
-                "th" if 4 <= user_rank % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(user_rank % 10, "th"))
+            rank_text = Utils.add_number_abbreviation(user_rank)
             user_worth = user_cash + user_bank
             embed = discord.Embed(title="[" + str(user) + "]", description="Server Rank: " + str(rank_text),
                                   color=discord.Color(int("0x751DDF", 16)))
@@ -175,6 +174,38 @@ class Economy(Mod):
                                                    + self.config.get_data("Currency") + ".")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        # TODO: Optimize this
+        elif command is self.commands["Leaderboard Command"]:
+            page = 1
+            user_rank_order = self.database.execute("SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
+            max_page = int(len(user_rank_order) // 10)
+            if len(split_message) > 1:
+                page = split_message[1]
+                if page.isdigit():
+                    page = int(page)
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
+                    return
+            if page <= max_page:
+                if (len(user_rank_order) + 10) / 10 >= page:
+                    embed = discord.Embed(title="[Server Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
+                    for i in range(min(10, len(user_rank_order))):
+                        user_rank = (page - 1) * 10 + i
+                        rank_text = Utils.add_number_abbreviation(user_rank + 1)
+                        if len(user_rank_order) <= user_rank:
+                            break
+                        user_id = user_rank_order[user_rank]
+                        user = Utils.get_user_by_id(server, user_id)
+                        user_worth = self.get_bank(server.id, user_id) + self.get_cash(server.id, user_id)
+                        embed.add_field(name=str(user) + " : " + rank_text,
+                                        value=str(user_worth) + self.config.get_data("Currency"), inline=True)
+                    embed.set_footer(text="Page " + str(page) + "/" + str(max_page))
+                    await Utils.client.send_message(channel, embed=embed)
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Page number is too high.")
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]",
+                                               "You can only view a page between 1 and " + str(max_page) + ".")
         elif command is self.commands["Award Command"]:
             await self.award_take(message, True)
         elif command is self.commands["Take Command"]:
@@ -216,7 +247,7 @@ class Economy(Mod):
                 user = Utils.get_user(server, split_message[2])
                 if user is not None:
                     self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount * mode_change)
-                    await Utils.simple_embed_reply(channel, "[Error]",
+                    await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
                                                    "User `" + str(user) +
                                                    "` was " + mode_text + " " + str(amount) +
                                                    self.config.get_data("Currency") + ".")
@@ -230,7 +261,7 @@ class Economy(Mod):
                                               amount * mode_change)
                                 users.append(user)
                         if len(users) > 0:
-                            await Utils.simple_embed_reply(channel, "[Error]",
+                            await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
                                                            "Users with the role `" + str(given_role) +
                                                            "` were " + mode_text + " " + str(amount) +
                                                            self.config.get_data("Currency") + ".")

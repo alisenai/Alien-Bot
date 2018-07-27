@@ -83,6 +83,16 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Set Deduction Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Set Payout Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Set Success Rate Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
@@ -226,6 +236,12 @@
     "Enabled": true
   },
   "ExampleMod": {
+    "Command Perms": {},
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
+  "Shop": {
     "Command Perms": {},
     "Disabled Channels": [],
     "Disabled Servers": [],

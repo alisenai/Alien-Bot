@@ -1,6 +1,28 @@
 {
   "Mod Description": "Adds day-to-day and income commands for users.",
   "Commands": {
+    "Set Deduction Command": {
+      "Aliases": [
+        "set-deduction"
+      ],
+      "Enabled": true,
+      "Help": "Sets the deduction range for an income command.",
+      "Useage": [
+        "set-deduction {crime/slut/work} {min} {max}",
+        "set-deduction work 100 500"
+      ]
+    },
+    "Set Payout Command": {
+      "Aliases": [
+        "set-payout"
+      ],
+      "Enabled": true,
+      "Help": "Sets the payout range for an income command.",
+      "Useage": [
+        "set-payout {crime/slut/work} {min} {max}",
+        "set-payout work 100 500"
+      ]
+    },
     "Set Success Rate Command": {
       "Aliases": [
         "set-success-rate"

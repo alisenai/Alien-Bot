@@ -374,21 +374,24 @@ class Economy(Mod):
 
     # Deletes a success/failure reply message given an ID
     async def delete_command_reply(self, message, is_success):
-        server, channel, author = message.server, message.channel, message.author
         split_message = message.content.split(" ")
         if len(split_message) > 2:
             reply_type = "Success" if is_success else "Failure"
             income_command, index = split_message[1], split_message[2]
             if income_command == "slut" or "work" or "crime":
                 if index.isdigit():
+                    index = int(index)
                     income_command = "Slut Command" if income_command == "slut" else "Work Command" if income_command == "work" else "Crime Command"
                     economy_config = self.config.get_data()
                     messages = economy_config["Commands"][income_command][reply_type]["Messages"]
-                    message_to_remove = messages[int(index)]
-                    messages.remove(message_to_remove)
-                    self.config.write_data(economy_config)
-                    await Utils.simple_embed_reply(message.channel, "[Success]",
-                                                   "Deleted `" + message_to_remove + "` from `" + income_command + "`.")
+                    if index < len(messages):
+                        message_to_remove = messages[index]
+                        messages.remove(message_to_remove)
+                        self.config.write_data(economy_config)
+                        await Utils.simple_embed_reply(message.channel, "[Success]",
+                                                       "Deleted `" + message_to_remove + "` from `" + income_command + "`.")
+                    else:
+                        await Utils.simple_embed_reply(message.channel, "[Error]", "Given ID not found.")
                 else:
                     await Utils.simple_embed_reply(message.channel, "[Error]", "ID parameter is incorrect.")
             else:

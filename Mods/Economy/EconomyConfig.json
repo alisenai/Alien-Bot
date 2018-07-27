@@ -59,6 +59,17 @@
         "award 200 208845952251985920"
       ]
     },
+    "Take Command": {
+      "Aliases": [
+        "take"
+      ],
+      "Enabled": true,
+      "Help": "Deduct from specified user or role specified amount",
+      "Useage": [
+        "take {amount} {user tag/user ID/role tag/role ID}",
+        "take 200 208845952251985920"
+      ]
+    },
     "Crime Command": {
       "Aliases": [
         "crime"

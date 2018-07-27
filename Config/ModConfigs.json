@@ -133,6 +133,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Take Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Withdraw Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

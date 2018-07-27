@@ -1,7 +1,6 @@
 import Common.DataManager as DataManager
 from Common import Utils
 from Common.Mod import Mod
-import datetime
 import discord
 import random
 import time
@@ -177,39 +176,9 @@ class Economy(Mod):
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["Award Command"]:
-            if len(split_message) > 2:
-                amount = split_message[1]
-                if amount.isdigit():
-                    amount = int(amount)
-                    user = Utils.get_user(server, split_message[2])
-                    if user is not None:
-                        self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount)
-                        await Utils.simple_embed_reply(channel, "[Error]",
-                                                       "User `" + str(user) +
-                                                       "` was awarded " + str(amount) +
-                                                       self.config.get_data("Currency") + ".")
-                    else:
-                        given_role = Utils.get_role(server, ' '.join(split_message[2:]))
-                        users = []
-                        if given_role is not None:
-                            for user in server.members:
-                                if given_role in user.roles:
-                                    self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount)
-                                    users.append(user)
-                            if len(users) > 0:
-                                await Utils.simple_embed_reply(channel, "[Error]",
-                                                               "Users with the role `" + str(given_role) +
-                                                               "` were awarded " + str(amount) +
-                                                               self.config.get_data("Currency") + ".")
-                            else:
-                                await Utils.simple_embed_reply(channel, "[Error]",
-                                                               "No users are equipped with that role.")
-                        else:
-                            await Utils.simple_embed_reply(channel, "[Error]", "Invalid user or role supplied.")
-                else:
-                    await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
-            else:
-                await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+            await self.award_take(message, True)
+        elif command is self.commands["Take Command"]:
+            await self.award_take(message, False)
         elif command is self.commands["Add Success Reply Command"]:
             await self.set_income_reply(message, is_success=True)
         elif command is self.commands["Add Failure Reply Command"]:
@@ -235,6 +204,45 @@ class Economy(Mod):
             await self.set_income_min_max(message, is_payout=True)
         elif command is self.commands["Set Deduction Command"]:
             await self.set_income_min_max(message, is_payout=False)
+
+    async def award_take(self, message, is_award):
+        server, channel, author = message.server, message.channel, message.author
+        split_message = message.content.split(" ")
+        mode_text, mode_change = ("awarded", 1) if is_award else ("deducted", -1)
+        if len(split_message) > 2:
+            amount = split_message[1]
+            if amount.isdigit():
+                amount = int(amount)
+                user = Utils.get_user(server, split_message[2])
+                if user is not None:
+                    self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount * mode_change)
+                    await Utils.simple_embed_reply(channel, "[Error]",
+                                                   "User `" + str(user) +
+                                                   "` was " + mode_text + " " + str(amount) +
+                                                   self.config.get_data("Currency") + ".")
+                else:
+                    given_role = Utils.get_role(server, ''.join(split_message[2]))
+                    users = []
+                    if given_role is not None:
+                        for user in server.members:
+                            if given_role in user.roles:
+                                self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) +
+                                              amount * mode_change)
+                                users.append(user)
+                        if len(users) > 0:
+                            await Utils.simple_embed_reply(channel, "[Error]",
+                                                           "Users with the role `" + str(given_role) +
+                                                           "` were " + mode_text + " " + str(amount) +
+                                                           self.config.get_data("Currency") + ".")
+                        else:
+                            await Utils.simple_embed_reply(channel, "[Error]",
+                                                           "No users are equipped with that role.")
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Error]", "Invalid user or role supplied.")
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
+        else:
+            await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
     # Sets a given user's cash balance from a given server
     def set_cash(self, server_id, user_id, amount):

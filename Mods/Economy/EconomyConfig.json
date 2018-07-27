@@ -55,7 +55,7 @@
       "Enabled": true,
       "Help": "Award specified user or role specified amount",
       "Useage": [
-        "award {amount} {user tag/user ID/role ID}",
+        "award {amount} {user tag/user ID/role tag/role ID}",
         "award 200 208845952251985920"
       ]
     },

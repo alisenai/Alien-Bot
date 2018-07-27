@@ -17,16 +17,29 @@ def is_hex(string):
 
 # Used for getting user by user id in given server
 def get_user_by_id(server, user_id):
-    # Gets a user by their ID
     return server.get_member(user_id)
 
 
 # Attempts to return a user given their ID or Tag
 def get_user(server, user_text):
+    # By ID
     if re.fullmatch(r"[0-9]{18}", user_text) is not None:
         return get_user_by_id(server, user_text)
+    # By Tag
     elif re.fullmatch(r"<@[0-9]{18}>", user_text) is not None:
         return get_user_by_id(server, user_text[2:-1])
+    else:
+        return None
+
+
+# Attempts to return a role given its ID or Tag
+def get_role(server, role_text):
+    # By ID
+    if re.fullmatch(r"[0-9]{18}", role_text) is not None:
+        return get_role_by_id(server, role_text)
+    # By Tag
+    elif re.fullmatch(r"<@&[0-9]{18}>", role_text) is not None:
+        return get_role_by_id(server, role_text[3:-1])
     else:
         return None
 

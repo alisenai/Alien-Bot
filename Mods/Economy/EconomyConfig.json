@@ -48,6 +48,17 @@
         "give 208845952251985920 200"
       ]
     },
+    "Award Command": {
+      "Aliases": [
+        "award"
+      ],
+      "Enabled": true,
+      "Help": "Award specified user or role specified amount",
+      "Useage": [
+        "award {amount} {user tag/user ID/role ID}",
+        "award 200 208845952251985920"
+      ]
+    },
     "Crime Command": {
       "Aliases": [
         "crime"

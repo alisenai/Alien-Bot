@@ -53,6 +53,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Award Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Balance Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

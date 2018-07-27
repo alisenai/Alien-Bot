@@ -24,11 +24,12 @@ def get_user_by_id(server, user_id):
 # Attempts to return a user given their ID or Tag
 def get_user(server, user_text):
     if re.fullmatch(r"[0-9]{18}", user_text) is not None:
-        return (server, user_text)
+        return get_user_by_id(server, user_text)
     elif re.fullmatch(r"<@[0-9]{18}>", user_text) is not None:
         return get_user_by_id(server, user_text[2:-1])
     else:
         return None
+
 
 # Used for getting a role by id in given server
 def get_role_by_id(server, role_id):

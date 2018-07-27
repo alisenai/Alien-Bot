@@ -176,6 +176,33 @@ class Economy(Mod):
                                                    + self.config.get_data("Currency") + ".")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        elif command is self.commands["Award Command"]:
+            if len(split_message) > 2:
+                amount = split_message[1]
+                if amount.isdigit():
+                    amount = int(amount)
+                    user = Utils.get_user(server, split_message[2])
+                    if user is not None:
+                        self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount)
+                    else:
+                        role = ''.join(split_message[2:])
+                        users = []
+                        if role is not None:
+                            for user in server.members:
+                                if role in user.roles:
+                                    self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount)
+                                    users.append(user)
+                            if len(users) > 0:
+                                await Utils.simple_embed_reply(channel, "[Error]",
+                                                               "Users with the role " + str(role) +
+                                                               " were awarded with " + str(amount) + ".")
+                            else:
+                                await Utils.simple_embed_reply(channel, "[Error]",
+                                                               "No users are equipped with that role.")
+                        else:
+                            await Utils.simple_embed_reply(channel, "[Error]", "Invalid user or role supplied.")
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
         elif command is self.commands["Add Success Reply Command"]:
             await self.set_income_reply(message, is_success=True)
         elif command is self.commands["Add Failure Reply Command"]:

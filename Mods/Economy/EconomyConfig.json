@@ -1,27 +1,5 @@
 {
   "Commands": {
-    "Add Failure Reply Command": {
-      "Aliases": [
-        "add-failure-reply"
-      ],
-      "Enabled": true,
-      "Help": "Adds a failure reply message to an income command.",
-      "Useage": [
-        "add-failure-reply {crime/slut/work} {message}",
-        "add-failure-reply work You failed! {208845952251985920} lost {amount}!"
-      ]
-    },
-    "Add Success Reply Command": {
-      "Aliases": [
-        "add-success-reply"
-      ],
-      "Enabled": true,
-      "Help": "Adds a success reply message to an income command.",
-      "Useage": [
-        "add-success-reply {crime/slut/work} {message}",
-        "add-success-reply work You succeeded! {208845952251985920} gained {amount}!"
-      ]
-    },
     "Balance Command": {
       "Aliases": [
         "balance",
@@ -83,58 +61,6 @@
         "take 200 208845952251985920"
       ]
     },
-    "Crime Command": {
-      "Aliases": [
-        "crime"
-      ],
-      "Cool Down": 60,
-      "Enabled": true,
-      "Failure": {
-        "Deduction": {
-          "Max": 500,
-          "Min": 100
-        },
-        "Messages": [
-          "Failure! {208845952251985920} lost {amount}"
-        ]
-      },
-      "Help": "Do something illegal and get paid.",
-      "Success": {
-        "Messages": [
-          "Well done Neal Caffrey. You made {amount}."
-        ],
-        "Payout": {
-          "Max": 500,
-          "Min": 100
-        }
-      },
-      "Success Rate": 100,
-      "Useage": [
-        "crime"
-      ]
-    },
-    "Delete Failure Reply Command": {
-      "Aliases": [
-        "delete-failure-reply"
-      ],
-      "Enabled": true,
-      "Help": "Deletes a failure reply message from an income command.",
-      "Useage": [
-        "delete-failure-reply {crime/slut/work} {id}",
-        "delete-failure-reply work 1"
-      ]
-    },
-    "Delete Success Reply Command": {
-      "Aliases": [
-        "delete-success-reply"
-      ],
-      "Enabled": true,
-      "Help": "Deletes a success reply message from an income command.",
-      "Useage": [
-        "delete-success-reply {crime/slut/work} {id}",
-        "delete-success-reply work 1"
-      ]
-    },
     "Deposit Command": {
       "Aliases": [
         "deposit",
@@ -146,57 +72,6 @@
         "deposit {amount/all}",
         "deposit 100",
         "deposit all"
-      ]
-    },
-    "List Failure Reply Command": {
-      "Aliases": [
-        "list-failure-reply"
-      ],
-      "Enabled": true,
-      "Help": "List all failure reply messages for an income command.",
-      "Useage": [
-        "list-failure-reply {crime/slut/work}",
-        "list-failure-reply work"
-      ]
-    },
-    "List Success Reply Command": {
-      "Aliases": [
-        "list-success-reply"
-      ],
-      "Enabled": true,
-      "Help": "List all success reply messages for an income command.",
-      "Useage": [
-        "list-success-reply {crime/slut/work}",
-        "list-success-reply work"
-      ]
-    },
-    "Rob Command": {
-      "Aliases": [
-        "rob"
-      ],
-      "Cool Down": 10,
-      "Enabled": true,
-      "Failure": {
-        "Deduction": {
-          "Max": 500,
-          "Min": 100
-        },
-        "Messages": [
-          "Failure! {amount}"
-        ]
-      },
-      "Help": "Rob another user's balance.",
-      "Success": {
-        "Messages": [
-          "Success! {amount}"
-        ],
-        "Payout": {
-          "Max": 500,
-          "Min": 100
-        }
-      },
-      "Useage": [
-        "rob {208845952251985920}"
       ]
     },
     "Set Currency Command": {
@@ -243,17 +118,6 @@
         "set-starting-balance 200"
       ]
     },
-    "Set Success Rate Command": {
-      "Aliases": [
-        "set-success-rate"
-      ],
-      "Enabled": true,
-      "Help": "Sets the success rate of an income command.",
-      "Useage": [
-        "set-success-rate {crime/slut/work} {0-100}",
-        "set-success-rate work 75"
-      ]
-    },
     "Bank Command": {
       "Aliases": [
         "bank"
@@ -262,36 +126,6 @@
       "Help": "Displays the total bank balance of the server.",
       "Useage": [
         "bank"
-      ]
-    },
-    "Slut Command": {
-      "Aliases": [
-        "slut"
-      ],
-      "Cool Down": 10,
-      "Enabled": true,
-      "Failure": {
-        "Deduction": {
-          "Max": 500,
-          "Min": 100
-        },
-        "Messages": [
-          "Failure! {amount}"
-        ]
-      },
-      "Help": "\"Work\" and get paid.",
-      "Success": {
-        "Messages": [
-          "Success! {amount}"
-        ],
-        "Payout": {
-          "Max": 500,
-          "Min": 100
-        }
-      },
-      "Success Rate": 75,
-      "Useage": [
-        "slut"
       ]
     },
     "Withdraw Command": {
@@ -306,41 +140,10 @@
         "withdraw 100",
         "withdraw all"
       ]
-    },
-    "Work Command": {
-      "Aliases": [
-        "work"
-      ],
-      "Cool Down": 10,
-      "Enabled": true,
-      "Failure": {
-        "Deduction": {
-          "Max": 500,
-          "Min": 100
-        },
-        "Messages": [
-          "Failure! {amount}"
-        ]
-      },
-      "Help": "Work and get paid.",
-      "Success": {
-        "Messages": [
-          "Success! {amount}"
-        ],
-        "Payout": {
-          "Max": 500,
-          "Min": 100
-        }
-      },
-      "Success Rate": 100,
-      "Useage": [
-        "work"
-      ]
     }
   },
   "Currency": "\ud83e\udd5d",
   "Interest Rate": 0.1,
-  "Mod Command": "EconomyMod",
   "Mod Description": "A mod that manages server economics.",
   "Starting Balance": 250
 }

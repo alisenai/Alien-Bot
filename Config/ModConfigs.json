@@ -41,6 +41,68 @@
     "Disabled Servers": [],
     "Enabled": true
   },
+  "DailyEconomy": {
+    "Command Perms": {
+      "Add Failure Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Add Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Crime Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Delete Failure Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Delete Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "List Failure Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "List Success Reply Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Rob Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Set Success Rate Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Slut Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Work Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
   "Economy": {
     "Command Perms": {
       "Add Failure Reply Command": {

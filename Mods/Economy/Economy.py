@@ -1,25 +1,23 @@
 import Common.DataManager as DataManager
 from Common import Utils
 from Common.Mod import Mod
+from Mods.Economy import EconomyUtils
 import discord
-import random
 import time
-import re
 
 
 # TODO: Major commenting needed
 class Economy(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init
-        self.users = {}
-        self.roles = {}
         self.name = mod_name
         self.embed_color = embed_color
         # Config var init
         self.config = DataManager.JSON("Mods/Economy/EconomyConfig.json")
-        # Database var init
-        self.database = DataManager.add_manager("bank_database", "Mods/Economy/Bank.db",
-                                                file_type=DataManager.FileType.SQL)
+        # Init the bank DB for mods to use
+        EconomyUtils.init_database()
+        # Set the currency for mods to use
+        EconomyUtils.currency = self.config.get_data("Currency")
         # Build command objects
         self.commands = Utils.parse_command_config(self, mod_name, self.config.get_data('Commands'))
         # Generate and Update DB
@@ -56,16 +54,16 @@ class Economy(Mod):
                     user = given_user
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
-            user_cash = self.get_cash(server.id, user.id)
-            user_bank = self.get_bank(server.id, user.id)
-            user_rank = self.get_rank(server.id, user.id)
+            user_cash = EconomyUtils.get_cash(server.id, user.id)
+            user_bank = EconomyUtils.get_bank(server.id, user.id)
+            user_rank = EconomyUtils.get_rank(server.id, user.id)
             rank_text = Utils.add_number_abbreviation(user_rank)
             user_worth = user_cash + user_bank
             embed = discord.Embed(title="[" + str(user) + "]", description="Server Rank: " + str(rank_text),
                                   color=discord.Color(int("0x751DDF", 16)))
-            embed.add_field(name="Cash", value=str(user_cash) + self.config.get_data("Currency"), inline=True)
-            embed.add_field(name="Bank", value=str(user_bank) + self.config.get_data("Currency"), inline=True)
-            embed.add_field(name="Net Worth", value=str(user_worth) + self.config.get_data("Currency"), inline=True)
+            embed.add_field(name="Cash", value=str(user_cash) + EconomyUtils.currency, inline=True)
+            embed.add_field(name="Bank", value=str(user_bank) + EconomyUtils.currency, inline=True)
+            embed.add_field(name="Net Worth", value=str(user_worth) + EconomyUtils.currency, inline=True)
             await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Set Success Rate Command"]:
             if len(split_message) > 2:
@@ -94,25 +92,25 @@ class Economy(Mod):
         elif command is self.commands["Deposit Command"]:
             if len(split_message) > 1:
                 deposit_amount = split_message[1]
-                user_cash = self.get_cash(server.id, author.id)
-                user_bank = self.get_bank(server.id, author.id)
+                user_cash = EconomyUtils.get_cash(server.id, author.id)
+                user_bank = EconomyUtils.get_bank(server.id, author.id)
                 if user_cash != 0:
                     if deposit_amount.isdigit():
                         deposit_amount = int(deposit_amount)
                         if user_cash >= deposit_amount:
-                            self.set_cash(server.id, author.id, user_cash - deposit_amount)
-                            self.set_bank(server.id, author.id, user_bank + deposit_amount)
+                            EconomyUtils.set_cash(server.id, author.id, user_cash - deposit_amount)
+                            EconomyUtils.set_bank(server.id, author.id, user_bank + deposit_amount)
                             await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Deposited " +
-                                                           str(deposit_amount) + self.config.get_data("Currency") +
+                                                           str(deposit_amount) + EconomyUtils.currency +
                                                            " into your bank account.")
                         else:
                             await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
                                                            "Sorry, but you don't have enough money to do that.")
                     elif deposit_amount == "all":
-                        self.set_cash(server.id, author.id, 0)
-                        self.set_bank(server.id, author.id, user_bank + user_cash)
+                        EconomyUtils.set_cash(server.id, author.id, 0)
+                        EconomyUtils.set_bank(server.id, author.id, user_bank + user_cash)
                         await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Deposited " +
-                                                       str(user_cash) + self.config.get_data("Currency") +
+                                                       str(user_cash) + EconomyUtils.currency +
                                                        " into your bank account.")
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
@@ -124,25 +122,25 @@ class Economy(Mod):
         elif command is self.commands["Withdraw Command"]:
             if len(split_message) > 1:
                 withdraw_amount = split_message[1]
-                user_cash = self.get_cash(server.id, author.id)
-                user_bank = self.get_bank(server.id, author.id)
+                user_cash = EconomyUtils.get_cash(server.id, author.id)
+                user_bank = EconomyUtils.get_bank(server.id, author.id)
                 if user_bank != 0:
                     if withdraw_amount.isdigit():
                         withdraw_amount = int(withdraw_amount)
                         if user_bank >= withdraw_amount:
-                            self.set_cash(server.id, author.id, user_cash + withdraw_amount)
-                            self.set_bank(server.id, author.id, user_bank - withdraw_amount)
+                            EconomyUtils.set_cash(server.id, author.id, user_cash + withdraw_amount)
+                            EconomyUtils.set_bank(server.id, author.id, user_bank - withdraw_amount)
                             await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Withdrew " +
-                                                           str(withdraw_amount) + self.config.get_data("Currency") +
+                                                           str(withdraw_amount) + EconomyUtils.currency +
                                                            " into cash.")
                         else:
                             await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
                                                            "Sorry, but you don't have enough money to do that.")
                     elif withdraw_amount == "all":
-                        self.set_bank(server.id, author.id, 0)
-                        self.set_cash(server.id, author.id, user_cash + user_bank)
+                        EconomyUtils.set_bank(server.id, author.id, 0)
+                        EconomyUtils.set_cash(server.id, author.id, user_cash + user_bank)
                         await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Withdrew " +
-                                                       str(user_cash) + self.config.get_data("Currency") +
+                                                       str(user_cash) + EconomyUtils.currency +
                                                        " into cash.")
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
@@ -154,8 +152,8 @@ class Economy(Mod):
         elif command is self.commands["Give Command"]:
             if len(split_message) > 2:
                 user = Utils.get_user(server, split_message[1])
-                author_cash = self.get_cash(server.id, author.id)
-                user_cash = self.get_cash(server.id, user.id)
+                author_cash = EconomyUtils.get_cash(server.id, author.id)
+                user_cash = EconomyUtils.get_cash(server.id, user.id)
                 if user is None:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
                 else:
@@ -165,19 +163,20 @@ class Economy(Mod):
                             return await Utils.simple_embed_reply(channel, "[Error]",
                                                                   "You don't have enough cash to do that.")
                     elif split_message[2] == "all":
-                        give_amount = self.get_cash(server.id, author.id)
+                        give_amount = EconomyUtils.get_cash(server.id, author.id)
                     else:
                         return await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
-                    self.set_cash(server.id, author.id, author_cash - give_amount)
-                    self.set_cash(server.id, user.id, user_cash + give_amount)
+                    EconomyUtils.set_cash(server.id, author.id, author_cash - give_amount)
+                    EconomyUtils.set_cash(server.id, user.id, user_cash + give_amount)
                     await Utils.simple_embed_reply(channel, "[Error]", "You gave " + str(user) + " " + str(give_amount)
-                                                   + self.config.get_data("Currency") + ".")
+                                                   + EconomyUtils.currency + ".")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         # TODO: Optimize this
         elif command is self.commands["Leaderboard Command"]:
             page = 1
-            user_rank_order = self.database.execute("SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
+            user_rank_order = EconomyUtils.database_execute(
+                "SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
             max_page = int(len(user_rank_order) // 10)
             if len(split_message) > 1:
                 page = split_message[1]
@@ -197,9 +196,10 @@ class Economy(Mod):
                             break
                         user_id = user_rank_order[user_rank]
                         user = Utils.get_user_by_id(server, user_id)
-                        user_worth = self.get_bank(server.id, user_id) + self.get_cash(server.id, user_id)
+                        user_worth = EconomyUtils.get_bank(server.id, user_id) + EconomyUtils.get_cash(server.id,
+                                                                                                       user_id)
                         embed.add_field(name=str(user) + " : " + rank_text,
-                                        value=str(user_worth) + self.config.get_data("Currency"), inline=True)
+                                        value=str(user_worth) + EconomyUtils.currency, inline=True)
                     embed.set_footer(text="Page " + str(page) + "/" + str(max_page))
                     await Utils.client.send_message(channel, embed=embed)
                 else:
@@ -209,40 +209,15 @@ class Economy(Mod):
                                                "You can only view a page between 1 and " + str(max_page) + ".")
         elif command is self.commands["Bank Command"]:
             embed = discord.Embed(title="[" + str(server) + " Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
-            total_balance = int(self.database.execute("SELECT SUM(bank + cash) FROM `" + server.id + "`")[0])
+            total_balance = int(EconomyUtils.database_execute("SELECT SUM(bank + cash) FROM `" + server.id + "`")[0])
             embed.add_field(name="Total Balance",
-                            value=str(total_balance) + self.config.get_data("Currency"), inline=True)
+                            value=str(total_balance) + EconomyUtils.currency, inline=True)
             embed.set_footer(text="Monthly interest rate: " + str(self.config.get_data("Interest Rate")))
             await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Award Command"]:
             await self.award_take(message, True)
         elif command is self.commands["Take Command"]:
             await self.award_take(message, False)
-        elif command is self.commands["Add Success Reply Command"]:
-            await self.set_income_reply(message, is_success=True)
-        elif command is self.commands["Add Failure Reply Command"]:
-            await self.set_income_reply(message, is_success=False)
-        elif command is self.commands["List Success Reply Command"]:
-            await self.list_reply_commands(message, is_success=True)
-        elif command is self.commands["List Failure Reply Command"]:
-            await self.list_reply_commands(message, is_success=False)
-        elif command is self.commands["Delete Success Reply Command"]:
-            await self.delete_command_reply(message, True)
-        elif command is self.commands["Delete Failure Reply Command"]:
-            await self.delete_command_reply(message, False)
-        elif command is self.commands["Work Command"]:
-            await self.roll_income(message, "Work Command")
-        elif command is self.commands["Slut Command"]:
-            await self.roll_income(message, "Slut Command")
-        elif command is self.commands["Crime Command"]:
-            await self.roll_income(message, "Crime Command")
-        # TODO: Determine how to calculate success chance
-        elif command is self.commands["Rob Command"]:
-            await Utils.simple_embed_reply(channel, "[Error]", "Awaiting method of calculating success rate")
-        elif command is self.commands["Set Payout Command"]:
-            await self.set_income_min_max(message, is_payout=True)
-        elif command is self.commands["Set Deduction Command"]:
-            await self.set_income_min_max(message, is_payout=False)
 
     async def award_take(self, message, is_award):
         server, channel, author = message.server, message.channel, message.author
@@ -254,25 +229,26 @@ class Economy(Mod):
                 amount = int(amount)
                 user = Utils.get_user(server, split_message[2])
                 if user is not None:
-                    self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) + amount * mode_change)
+                    EconomyUtils.set_cash(server.id, user.id,
+                                          EconomyUtils.get_cash(server.id, user.id) + amount * mode_change)
                     await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
                                                    "User `" + str(user) +
                                                    "` was " + mode_text + " " + str(amount) +
-                                                   self.config.get_data("Currency") + ".")
+                                                   EconomyUtils.currency + ".")
                 else:
                     given_role = Utils.get_role(server, ''.join(split_message[2]))
                     users = []
                     if given_role is not None:
                         for user in server.members:
                             if given_role in user.roles:
-                                self.set_cash(server.id, user.id, self.get_cash(server.id, user.id) +
-                                              amount * mode_change)
+                                EconomyUtils.set_cash(server.id, user.id, EconomyUtils.get_cash(server.id, user.id) +
+                                                      amount * mode_change)
                                 users.append(user)
                         if len(users) > 0:
                             await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
                                                            "Users with the role `" + str(given_role) +
                                                            "` were " + mode_text + " " + str(amount) +
-                                                           self.config.get_data("Currency") + ".")
+                                                           EconomyUtils.currency + ".")
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]",
                                                            "No users are equipped with that role.")
@@ -283,207 +259,23 @@ class Economy(Mod):
         else:
             await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
-    # Sets a given user's cash balance from a given server
-    def set_cash(self, server_id, user_id, amount):
-        self.database.execute("UPDATE '" + server_id + "' SET cash=" + str(amount) + " WHERE user='" + user_id + "'")
-
-    # Sets a given user's bank balance from a given server
-    def set_bank(self, server_id, user_id, amount):
-        self.database.execute("UPDATE '" + server_id + "' SET bank=" + str(amount) + " WHERE user='" + user_id + "'")
-
-    # Gets a given user's cash balance from a given server
-    def get_cash(self, server_id, user_id):
-        return int(self.database.execute("SELECT cash FROM '" + server_id + "' WHERE user='" + user_id +
-                                         "' LIMIT 1")[0])
-
-    # Gets a given user's bank balance from a given server
-    def get_bank(self, server_id, user_id):
-        return int(self.database.execute("SELECT bank FROM '" + server_id + "' WHERE user='" + user_id +
-                                         "' LIMIT 1")[0])
-
-    # Gets a given user's rank from a given server
-    def get_rank(self, server_id, user_id):
-        return int(self.database.execute("SELECT COUNT(user) FROM '" + server_id +
-                                         "' WHERE bank + cash >= (SELECT bank + cash from '" + server_id +
-                                         "' WHERE user='" + user_id + "')")[0])
-
-    # TODO: Add max reply message count and length limits
-    async def set_income_reply(self, message, is_success):
-        server, channel, author = message.server, message.channel, message.author
-        split_message = message.content.split(" ")
-        if len(split_message) > 2:
-            income_command = split_message[1]
-            reply = message.content[len(split_message[0]) + len(split_message[1]) + 2:]
-            if income_command == "slut" or "work" or "crime":
-                income_command = "Slut Command" if income_command == "slut" else "Work Command" if income_command == "work" else "Crime Command"
-                economy_config = self.config.get_data()
-                reply_type = "Success" if is_success else "Failure"
-                # Check to make sure that and {user_id}s supplied are valid
-                for section in reply.split(" "):
-                    if re.fullmatch(r"{[0-9]{18}}", section) is not None:
-                        if Utils.get_user_by_id(server, section[1:-1]) is None:
-                            return await Utils.simple_embed_reply(channel, "[Error]",
-                                                                  "User ID `" + section[1:-1] + "` not found.")
-                economy_config["Commands"][income_command][reply_type]["Messages"].append(reply)
-                self.config.write_data(economy_config)
-                await Utils.simple_embed_reply(message.channel, "[Success]", "Added `" + reply + "` to `" +
-                                               income_command + "`'s replies.")
-            else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
-        else:
-            await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
-
     # TODO: Compress by putting the re-used code into a func
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
         user_id = member.id
         server_id = member.server.id
-        if len(self.database.execute("SELECT cash FROM '" + server_id + "' WHERE user=" + str(
+        if len(EconomyUtils.database_execute("SELECT cash FROM '" + server_id + "' WHERE user=" + str(
                 user_id) + " LIMIT 1")) == 0:
-            self.database.execute("INSERT INTO '" + server_id + "' VALUES('" + user_id + "', " +
-                                  str(self.config.get_data("Starting Balance")) + ", 0)")
-
-    # Pics a random win/loss based on the command and prints a win/loss message respectively
-    async def roll_income(self, message, command_name):
-        server, channel, author = message.server, message.channel, message.author
-        command_config = self.config.get_data(key="Commands")[command_name]
-        user_cash = self.get_cash(server.id, author.id)
-        # Pick success or failure
-        win_mode, change_mode, balance_change = ("Success", "Payout", 1) if roll(
-            int(self.config.get_data(key="Commands")[command_name]["Success Rate"])) else ("Failure", "Deduction", -1)
-        balance_change_range = command_config[win_mode][change_mode]
-        cash_change = random.randint(balance_change_range["Min"], balance_change_range["Max"]) * balance_change
-        messages = command_config[win_mode]["Messages"]
-        reply = messages[rng(len(messages) - 1)]
-        self.set_cash(server.id, author.id, user_cash + cash_change)
-        for section in reply.split(" "):
-            if re.fullmatch(r"{[0-9]{18}}", section) is not None:
-                reply = reply.replace(section, Utils.get_user_by_id(server, section[1:-1]).mention)
-        await Utils.simple_embed_reply(channel, "[" + str(author) + "]", reply.replace("{amount}",
-                                                                                       str(abs(cash_change)) +
-                                                                                       self.config.get_data(
-                                                                                           key="Currency")))
-
-    async def error_cool_down(self, message, command):
-        last_called = command.last_called(message.author.id)
-        minutes, seconds = divmod(command.cool_down_seconds - (time.time() - last_called), 60)
-        hours, minutes = divmod(minutes, 60)
-        days, hours = divmod(hours, 24)
-        days, hours, minutes, seconds = int(days), int(hours), int(minutes), int(seconds)
-        # Turn x hours y minutes and z seconds into text format
-        time_left_text = ((str(days) + "d ") if days != 0 else "") + \
-                         ((str(hours) + "h ") if hours != 0 else "") + \
-                         ((str(minutes) + "m ") if minutes != 0 else "") + \
-                         ((str(seconds) + "s") if seconds != 0 else "1s")
-        await Utils.simple_embed_reply(message.channel, str(message.author),
-                                       "You can call " + command.name + " again in " + time_left_text + ".",
-                                       self.embed_color)
+            EconomyUtils.database_execute("INSERT INTO '" + server_id + "' VALUES('" + user_id + "', " +
+                                          str(self.config.get_data("Starting Balance")) + ", 0)")
 
     # Generates the bank DB
     def generate_db(self):
         for server in Utils.client.servers:
-            self.database.execute("CREATE TABLE IF NOT EXISTS '" + server.id + "'(user TEXT, cash REAL, bank REAL)")
+            EconomyUtils.database_execute(
+                "CREATE TABLE IF NOT EXISTS '" + server.id + "'(user TEXT, cash REAL, bank REAL)")
             for user in server.members:
-                if len(self.database.execute("SELECT cash FROM '" + server.id + "' WHERE user=" + str(
+                if len(EconomyUtils.database_execute("SELECT cash FROM '" + server.id + "' WHERE user=" + str(
                         user.id) + " LIMIT 1")) == 0:
-                    self.database.execute("INSERT INTO '" + server.id + "' VALUES('" + user.id + "', 0, " +
-                                          str(self.config.get_data("Starting Balance")) + ")")
-
-    # Sets the range for a given income command
-    async def set_income_min_max(self, message, is_payout):
-        split_message = message.content.split(" ")
-        success_type, change_type = ("Success", "Payout") if is_payout else ("Failure", "Deduction")
-        if len(split_message) > 3:
-            income_command, minimum, maximum = split_message[1], split_message[2], split_message[3]
-            if income_command == "slut" or "work" or "crime":
-                income_command = "Slut Command" if income_command == "slut" else "Work Command" if income_command == "work" else "Crime Command"
-                if minimum.isdigit():
-                    if maximum.isdigit():
-                        # Make sure the minimum is lower than the maximum
-                        minimum, maximum = (minimum, maximum) if minimum < maximum else (maximum, minimum)
-                        economy_config = self.config.get_data()
-                        min_max_config = economy_config["Commands"][income_command][success_type][change_type]
-                        min_max_config["Min"], min_max_config["Max"] = int(minimum), int(maximum)
-                        self.config.write_data(economy_config)
-                        await Utils.simple_embed_reply(message.channel, "[Success]",
-                                                       "The `" + income_command + "` now has a " + change_type +
-                                                       " between " + minimum + " and " + maximum)
-                    else:
-                        await Utils.simple_embed_reply(message.channel, "[Error]",
-                                                       "Maximum parameter is incorrect.")
-                else:
-                    await Utils.simple_embed_reply(message.channel, "[Error]",
-                                                   "Minimum parameter is incorrect.")
-            else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
-        else:
-            await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
-
-    # Deletes a success/failure reply message given an ID
-    async def delete_command_reply(self, message, is_success):
-        split_message = message.content.split(" ")
-        if len(split_message) > 2:
-            reply_type = "Success" if is_success else "Failure"
-            income_command, index = split_message[1], split_message[2]
-            if income_command == "slut" or "work" or "crime":
-                if index.isdigit():
-                    index = int(index)
-                    income_command = "Slut Command" if income_command == "slut" else "Work Command" if income_command == "work" else "Crime Command"
-                    economy_config = self.config.get_data()
-                    messages = economy_config["Commands"][income_command][reply_type]["Messages"]
-                    if index < len(messages):
-                        message_to_remove = messages[index]
-                        messages.remove(message_to_remove)
-                        self.config.write_data(economy_config)
-                        await Utils.simple_embed_reply(message.channel, "[Success]",
-                                                       "Deleted `" + message_to_remove + "` from `" + income_command + "`.")
-                    else:
-                        await Utils.simple_embed_reply(message.channel, "[Error]", "Given ID not found.")
-                else:
-                    await Utils.simple_embed_reply(message.channel, "[Error]", "ID parameter is incorrect.")
-            else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
-        else:
-            await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
-
-    # Lists all the success or failure reply messages for an income command
-    async def list_reply_commands(self, message, is_success):
-        server, channel, author = message.server, message.channel, message.author
-        split_message = message.content.split(" ")
-        if len(split_message) > 1:
-            reply_type = "Success" if is_success else "Failure"
-            income_command = split_message[1]
-            if income_command == "slut" or "work" or "crime":
-                income_command = "Slut Command" if income_command == "slut" else "Work Command" if income_command == "work" else "Crime Command"
-                current_index = 0
-                embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
-                messages = self.config.get_data(key="Commands")[income_command][reply_type]["Messages"]
-                max_number_length = len(str(len(messages)))
-                embed_text = ""
-                for reply_message in messages:
-                    current_index += 1
-                    if len(reply_message) > 50 - max_number_length:
-                        embed_text += reply_message[0: 50 - max_number_length - 3] + "...\n"
-                    else:
-                        embed_text += reply_message + "\n"
-                embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
-                embed.add_field(name="Message", value=embed_text, inline=True)
-                await Utils.client.send_message(channel, embed=embed)
-            else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
-        else:
-            await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
-
-
-# Roll a True/Fall with a given success chance
-def roll(success_percent_chance):
-    if success_percent_chance > random.randint(0, 100):
-        return True
-    return False
-
-
-# Returns a random number between 0 and max_value
-def rng(max_value):
-    # Some more RNG
-    random.seed(random.randint(0, 1000))
-    return random.randint(0, max_value)
+                    EconomyUtils.database_execute("INSERT INTO '" + server.id + "' VALUES('" + user.id + "', 0, " +
+                                                  str(self.config.get_data("Starting Balance")) + ")")

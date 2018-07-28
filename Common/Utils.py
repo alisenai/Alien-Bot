@@ -138,7 +138,7 @@ def parse_command_config(parent, parent_name, config):
             }
     DataManager.get_manager("mod_config").write_data(mod_config)
     # Delete old mods and commands?
-    # Spawn commands based on config and return a dict with them
+    # Spawn command objects based on config and return a dictionary with them
     return {command_name: (Command(parent, command_name, config[command_name]['Aliases'],
                                    config[command_name]["Enabled"],
                                    mod_config[parent_name]["Command Perms"][command_name]["Minimum Permissions"],

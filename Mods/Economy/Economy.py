@@ -272,8 +272,8 @@ class Economy(Mod):
     # Generates the bank DB
     def generate_db(self):
         for server in Utils.client.servers:
-            EconomyUtils.database_execute(
-                "CREATE TABLE IF NOT EXISTS '" + server.id + "'(user TEXT, cash REAL, bank REAL)")
+            EconomyUtils.database_execute("CREATE TABLE IF NOT EXISTS '" +
+                                          server.id + "'(user TEXT, cash REAL, bank REAL)")
             for user in server.members:
                 if len(EconomyUtils.database_execute("SELECT cash FROM '" + server.id + "' WHERE user=" + str(
                         user.id) + " LIMIT 1")) == 0:

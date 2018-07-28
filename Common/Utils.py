@@ -1,6 +1,5 @@
 import re
 import discord
-
 from Common import DataManager
 from Common.Command import Command
 
@@ -122,6 +121,11 @@ def generate_help(commands, specific_command_alias=None, get_command_useage=Fals
             message += command + ", "
         # Return the help message built
         return message[0:-2], command_help + (("\n" + command_useage) if get_command_useage else "")
+
+
+# Deletes given message
+async def delete_message(message):
+    await client.delete_message(message)
 
 
 # Parses commands from standard config

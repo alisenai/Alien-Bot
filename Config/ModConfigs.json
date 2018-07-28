@@ -242,7 +242,13 @@
     "Enabled": true
   },
   "Shop": {
-    "Command Perms": {},
+    "Command Perms": {
+      "Set Shop Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      }
+    },
     "Disabled Channels": [],
     "Disabled Servers": [],
     "Enabled": true

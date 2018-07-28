@@ -9,7 +9,7 @@
       "Default": false,
       "Inherits": "Guardian"
     },
-    "Guardian ": {
+    "Guardian": {
       "Is Owner": false,
       "Has Permissions": true,
       "Default": false,

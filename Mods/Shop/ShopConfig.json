@@ -1,4 +1,16 @@
 {
   "Mod Description": "Adds a configurable shop.",
-  "Commands": {}
+  "Commands": {
+    "Set Shop Command": {
+      "Aliases": [
+        "set-shop"
+      ],
+      "Help": "Sets the current channel as a shop channel.",
+      "Useage": [
+        "set-shop {name}",
+        "set-shop Roles"
+      ],
+      "Enabled": true
+    }
+  }
 }

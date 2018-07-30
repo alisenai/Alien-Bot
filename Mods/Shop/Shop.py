@@ -1,5 +1,8 @@
 import asyncio
 import re
+
+import discord
+
 from Common import Utils
 from Common.Mod import Mod
 from Common import DataManager
@@ -42,12 +45,32 @@ class Shop(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid shop name.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        elif command is self.commands["List Shops Command"]:
+            shop_names = self.database.execute("SELECT shop_name FROM shops")
+            if len(shop_names) > 0:
+                # Get the length of the largest number (EX: "100" = 3, "10" = 2)
+                max_number_length = len(str(len(shop_names)))
+                current_index = 0
+                embed_text = ""
+                for shop_name in shop_names:
+                    current_index += 1
+                    if len(shop_name) > 50 - max_number_length:
+                        embed_text += shop_name[0: 50 - max_number_length - 3] + "...\n"
+                    else:
+                        embed_text += shop_name + "\n"
+                embed = discord.Embed(title="[Shops]", color=discord.Color(int("0x751DDF", 16)))
+                embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
+                embed.add_field(name="Shop Name", value=embed_text, inline=True)
+                await Utils.client.send_message(channel, embed=embed)
+            else:
+                await Utils.simple_embed_reply(channel, "[Shops]", "There are no shops.")
 
     def delete_shop_by_channel_id(self, channel_id):
-        old_channel_drop = self.database.execute(
-            """SELECT "DROP TABLE IF EXISTS '" || shop_name || "'" FROM shops WHERE channel_id='%s'""" % channel_id)
-        if len(old_channel_drop) > 0:
-            self.database.execute(old_channel_drop[0])
+        # old_channel_drop = self.database.execute(
+        #     """SELECT "DROP TABLE IF EXISTS '" || shop_name || "'" FROM shops WHERE channel_id='%s'""" % channel_id)
+        old_channel = self.database.execute("SELECT shop_name FROM shops WHERE channel_id='%s' LIMIT 1" % channel_id)
+        if len(old_channel) > 0:
+            self.database.execute("DROP TABLE IF EXISTS '%s'" % old_channel[0])
 
     async def message_received(self, message):
         deletion_channels = self.database.execute("SELECT channel_id FROM shops")

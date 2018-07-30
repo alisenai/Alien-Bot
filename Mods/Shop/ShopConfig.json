@@ -5,10 +5,22 @@
       "Aliases": [
         "set-shop"
       ],
-      "Help": "Sets the current channel as a shop channel.",
+      "Help": "Sets the current channel as a shop with the provided name.",
       "Useage": [
         "set-shop {name}",
-        "set-shop Roles"
+        "set-shop RolesShop"
+      ],
+      "Enabled": true
+    },
+    "List Shops Command": {
+      "Aliases": [
+        "list-shop"
+      ],
+      "Help": "Lists all existing shops.",
+      "Useage": [
+        "list-shop {page/none}",
+        "list-shop",
+        "list-shop 2"
       ],
       "Enabled": true
     }

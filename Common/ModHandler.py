@@ -81,13 +81,14 @@ class ModHandler:
         split_message = message.content.split(" ")
         # If it's a help command
         if is_help:
+            help_input = split_message[1].lower()
             # If it's help for a mod or a mod command
             # Mod -> Given mod name -> Get help
             # Command -> Get mod name -> Get help
-            if self.is_mod_name(split_message[1]) or split_message[1] in self.mod_command_aliases:
-                mod = split_message[1]
+            if self.is_mod_name(help_input) or help_input in self.mod_command_aliases:
+                mod = help_input
                 for mod_name in self.mods:
-                    if split_message[1] in self.mods[mod_name].command_aliases:
+                    if help_input in self.mods[mod_name].command_aliases:
                         mod = mod_name
                 await self.get_mod_help(mod, message)
             # Not a known mod or mod command
@@ -97,7 +98,7 @@ class ModHandler:
                 # Get a printable version of the known help commands
                 help_command_text = self.get_help_command_text()
                 # Add a field to the reply embed
-                embed.add_field(name="Unknown mod - " + split_message[1] + "",
+                embed.add_field(name="Unknown mod or command - " + split_message[1] + "",
                                 value="Try: " + help_command_text + ".")
                 # Reply with the created embed
                 await client.send_message(channel, embed=embed)

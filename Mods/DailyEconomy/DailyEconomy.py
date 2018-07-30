@@ -8,6 +8,7 @@ import time
 import re
 
 
+# TODO: Deal with having no reply messages
 class DailyEconomy(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init
@@ -86,6 +87,7 @@ class DailyEconomy(Mod):
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
 
+    # TODO: Add pages
     # Lists all the success or failure reply messages for an income command
     async def list_reply_commands(self, message, is_success):
         server, channel, author = message.server, message.channel, message.author
@@ -96,8 +98,8 @@ class DailyEconomy(Mod):
             if income_command == "slut" or "work" or "crime":
                 income_command = get_income_command(income_command)
                 current_index = 0
-                embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
                 messages = self.config.get_data(key="Commands")[income_command][reply_type]["Messages"]
+                # Get the length of the largest number (EX: "100" = 3, "10" = 2)
                 max_number_length = len(str(len(messages)))
                 embed_text = ""
                 for reply_message in messages:
@@ -106,6 +108,7 @@ class DailyEconomy(Mod):
                         embed_text += reply_message[0: 50 - max_number_length - 3] + "...\n"
                     else:
                         embed_text += reply_message + "\n"
+                embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
                 embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
                 embed.add_field(name="Message", value=embed_text, inline=True)
                 await Utils.client.send_message(channel, embed=embed)

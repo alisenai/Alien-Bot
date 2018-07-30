@@ -3,7 +3,6 @@ from Common import Utils
 from Common.Mod import Mod
 from Mods.Economy import EconomyUtils
 import discord
-import time
 
 
 # TODO: Major commenting needed

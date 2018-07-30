@@ -243,6 +243,16 @@
   },
   "Shop": {
     "Command Perms": {
+      "Add Shop Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "List Shops Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Set Shop Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

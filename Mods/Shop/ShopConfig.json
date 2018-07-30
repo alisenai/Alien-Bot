@@ -19,8 +19,19 @@
       "Help": "Lists all existing shops.",
       "Useage": [
         "list-shop {page/none}",
-        "list-shop",
-        "list-shop 2"
+        "list-shop 2",
+        "list-shop"
+      ],
+      "Enabled": true
+    },
+        "Delete Shop Command": {
+      "Aliases": [
+        "delete-shop"
+      ],
+      "Help": "Deletes shop by name.",
+      "Useage": [
+        "delete-shop {name}",
+        "delete-shop RolesShop"
       ],
       "Enabled": true
     }

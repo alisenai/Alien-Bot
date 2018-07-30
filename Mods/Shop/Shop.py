@@ -64,6 +64,13 @@ class Shop(Mod):
                 await Utils.client.send_message(channel, embed=embed)
             else:
                 await Utils.simple_embed_reply(channel, "[Shops]", "There are no shops.")
+        elif command is self.commands["Delete Shop Command"]:
+            if len(split_message) > 1:
+                shop_name = split_message[1]
+                self.database.execute("DROP TABLE IF EXISTS '%s'" % shop_name)
+                self.database.execute("DELETE FROM shops WHERE shop_name='%s'" % shop_name)
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
     def delete_shop_by_channel_id(self, channel_id):
         # old_channel_drop = self.database.execute(

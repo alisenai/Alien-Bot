@@ -248,6 +248,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Delete Shop Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "List Shops Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

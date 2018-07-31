@@ -54,7 +54,7 @@ class Mod:
     # Replies with help (specific or broad)
     async def get_help(self, message):
         split_message = message.content.split(" ")
-        await Utils.get_help(message, self.name, self.commands, split_message[1] == self.name)
+        await Utils.get_help(message, self.name, self.commands, split_message[1].lower() == self.name.lower())
 
     # TODO: Update info returned by the mod
     # Returns the important info about this mod

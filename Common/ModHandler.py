@@ -85,10 +85,10 @@ class ModHandler:
             # If it's help for a mod or a mod command
             # Mod -> Given mod name -> Get help
             # Command -> Get mod name -> Get help
-            if self.is_mod_name(help_input) or help_input in self.mod_command_aliases:
+            if self.is_mod_name(help_input) or help_input in [alias.lower() for alias in self.mod_command_aliases]:
                 mod = help_input
                 for mod_name in self.mods:
-                    if help_input in self.mods[mod_name].command_aliases:
+                    if help_input in [_.lower() for _ in self.mods[mod_name].command_aliases]:
                         mod = mod_name
                 await self.get_mod_help(mod, message)
             # Not a known mod or mod command
@@ -151,13 +151,15 @@ class ModHandler:
     # Checks if the passed var is a known mod name
     def is_mod_name(self, name):
         for mod_name in self.mods:
-            if name == mod_name:
+            if name.lower() == mod_name.lower():
                 return True
         return False
 
     # Calls the help command on a specific mod, given mod command
     async def get_mod_help(self, mod, message):
-        await self.mods[mod].get_help(message)
+        for mod_name in self.mods:
+            if mod_name.lower() == mod.lower():
+                await self.mods[mod_name].get_help(message)
 
     # Returns if ModHandler is done loading mods
     def is_done_loading(self):

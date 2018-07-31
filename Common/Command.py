@@ -3,7 +3,6 @@ import time
 from Common import Permissions, Utils, DataManager
 
 
-# TODO: Add examples for each command
 class Command:
     def __init__(self, parent_mod, name, aliases, enabled=False, minimum_permissions="Owner", command_help="No help",
                  useage="No useage", cool_down_seconds=0):

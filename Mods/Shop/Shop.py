@@ -1,12 +1,13 @@
 import asyncio
 import re
-
-import discord
-
 from Common import Utils
 from Common.Mod import Mod
 from Common import DataManager
-from Mods.Economy import EconomyUtils
+
+try:
+    from Mods.Economy import EconomyUtils
+except ImportError:
+    raise Exception("Economy mod not installed")
 
 
 class Shop(Mod):
@@ -48,27 +49,26 @@ class Shop(Mod):
         elif command is self.commands["List Shops Command"]:
             shop_names = self.database.execute("SELECT shop_name FROM shops")
             if len(shop_names) > 0:
-                # Get the length of the largest number (EX: "100" = 3, "10" = 2)
-                max_number_length = len(str(len(shop_names)))
-                current_index = 0
-                embed_text = ""
-                for shop_name in shop_names:
-                    current_index += 1
-                    if len(shop_name) > 50 - max_number_length:
-                        embed_text += shop_name[0: 50 - max_number_length - 3] + "...\n"
-                    else:
-                        embed_text += shop_name + "\n"
-                embed = discord.Embed(title="[Shops]", color=discord.Color(int("0x751DDF", 16)))
-                embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
-                embed.add_field(name="Shop Name", value=embed_text, inline=True)
-                await Utils.client.send_message(channel, embed=embed)
+                shop_text = ''.join([shop_name + "\n" for shop_name in shop_names])[:-1]
+                await Utils.simple_embed_reply(channel, "[Shops]", shop_text)
             else:
                 await Utils.simple_embed_reply(channel, "[Shops]", "There are no shops.")
         elif command is self.commands["Delete Shop Command"]:
             if len(split_message) > 1:
                 shop_name = split_message[1]
-                self.database.execute("DROP TABLE IF EXISTS '%s'" % shop_name)
-                self.database.execute("DELETE FROM shops WHERE shop_name='%s'" % shop_name)
+                if re.fullmatch(r"[A-Za-z0-9]*", shop_name):
+                    shop_names = self.database.execute("SELECT shop_name FROM shops")
+                    if len(shop_names) > 0:
+                        if shop_name in shop_names:
+                            self.database.execute("DROP TABLE IF EXISTS '%s'" % shop_name)
+                            self.database.execute("DELETE FROM shops WHERE shop_name='%s'" % shop_name)
+                            await Utils.simple_embed_reply(channel, "[Shops]", "Shop `%s` was deleted." % shop_name)
+                        else:
+                            await Utils.simple_embed_reply(channel, "[Error]", "That shop doesn't exist.")
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Error]", "There are no shops.")
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Invalid shop name.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 

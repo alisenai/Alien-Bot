@@ -115,16 +115,6 @@
   },
   "Economy": {
     "Command Perms": {
-      "Add Failure Reply Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Add Success Reply Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
       "Award Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
@@ -133,24 +123,9 @@
       "Balance Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
-        "Minimum Permissions": "User"
+        "Minimum Permissions": ""
       },
       "Bank Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Crime Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Delete Failure Reply Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Delete Success Reply Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
@@ -170,47 +145,12 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
-      "List Failure Reply Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "List Success Reply Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Rob Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
       "Set Currency Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
-      "Set Deduction Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Set Payout Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
       "Set Starting Balance Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Set Success Rate Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Slut Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
@@ -221,11 +161,6 @@
         "Minimum Permissions": ""
       },
       "Withdraw Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Work Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
@@ -243,11 +178,6 @@
   },
   "Shop": {
     "Command Perms": {
-      "Add Shop Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
       "Delete Shop Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

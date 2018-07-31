@@ -2,7 +2,6 @@ from Common import Utils
 from Common.Command import Command
 
 
-# TODO: Maybe DB integration as well
 # Extendable class for mods
 class Mod:
     def __init__(self, mod_name, description="No description", commands=None, embed_color="0xab12ba"):

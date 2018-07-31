@@ -261,10 +261,9 @@ class Economy(Mod):
     # TODO: Compress by putting the re-used code into a func
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
-        user_id = member.id
         server_id = member.server.id
-        if len(EconomyUtils.database_execute("SELECT cash FROM '" + server_id + "' WHERE user=" + str(
-                user_id) + " LIMIT 1")) == 0:
+        user_id = member.id
+        if not EconomyUtils.user_exists(server_id, user_id):
             EconomyUtils.database_execute("INSERT INTO '" + server_id + "' VALUES('" + user_id + "', " +
                                           str(self.config.get_data("Starting Balance")) + ", 0)")
 
@@ -274,7 +273,6 @@ class Economy(Mod):
             EconomyUtils.database_execute("CREATE TABLE IF NOT EXISTS '" +
                                           server.id + "'(user TEXT, cash REAL, bank REAL)")
             for user in server.members:
-                if len(EconomyUtils.database_execute("SELECT cash FROM '" + server.id + "' WHERE user=" + str(
-                        user.id) + " LIMIT 1")) == 0:
+                if EconomyUtils.user_exists(server.id, user.id):
                     EconomyUtils.database_execute("INSERT INTO '" + server.id + "' VALUES('" + user.id + "', 0, " +
                                                   str(self.config.get_data("Starting Balance")) + ")")

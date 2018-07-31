@@ -33,7 +33,6 @@ def get_user_title(user_id):
 def has_permission(user_id, minimum_permission):
     user_title = get_user_title(user_id)
     user_permissions = permissions[user_title]
-    # TODO: Try to make this not "while true", but "while {condition}" (where condition is not "True")
     while True:
         # If the user is a bot owner, they can use any command (that is enabled) -> Return True
         if user_permissions.is_owner:

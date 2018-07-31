@@ -1,4 +1,3 @@
-from Mods.Economy import EconomyUtils
 from Common import DataManager
 from Common.Mod import Mod
 from Common import Utils
@@ -6,6 +5,11 @@ import discord
 import random
 import time
 import re
+
+try:
+    from Mods.Economy import EconomyUtils
+except ImportError:
+    raise Exception("Economy mod not installed")
 
 
 # TODO: Deal with having no reply messages

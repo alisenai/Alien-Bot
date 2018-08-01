@@ -45,4 +45,4 @@ def get_rank(server_id, user_id):
 
 # Returns true if a given user exists within the DB for the given server
 def user_exists(server_id, user_id):
-    return database.execute("SELECT EXISTS(SELECT * FROM '%s' WHERE user='%s' LIMIT 1)" % (server_id, user_id))[0] != 0
+    return database.execute("SELECT EXISTS(SELECT * FROM '%s' WHERE user='%s' LIMIT 1)" % (server_id, user_id))[0] == 0

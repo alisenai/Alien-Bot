@@ -8,7 +8,7 @@
       "Enabled": true,
       "Help": "Sets the deduction range for an income command.",
       "Useage": [
-        "set-deduction {crime/slut/work} {min} {max}",
+        "set-deduction {Income Command: 'crime'/'slut'/'work'} {Minimum: Number} {Maximum: Number}",
         "set-deduction work 100 500"
       ]
     },
@@ -19,7 +19,7 @@
       "Enabled": true,
       "Help": "Sets the payout range for an income command.",
       "Useage": [
-        "set-payout {crime/slut/work} {min} {max}",
+        "set-payout {Income Command: 'crime'/'slut'/'work'} {Minimum: Number} {Maximum: Number}",
         "set-payout work 100 500"
       ]
     },
@@ -30,7 +30,7 @@
       "Enabled": true,
       "Help": "Sets the success rate of an income command.",
       "Useage": [
-        "set-success-rate {crime/slut/work} {0-100}",
+        "set-success-rate {Income Command: 'crime'/'slut'/'work'} {Percent: Number}",
         "set-success-rate work 75"
       ]
     },
@@ -101,7 +101,7 @@
       "Enabled": true,
       "Help": "List all failure reply messages for an income command.",
       "Useage": [
-        "list-failure-reply {crime/slut/work}",
+        "list-failure-reply {Income Command: 'crime'/'slut'/'work'}",
         "list-failure-reply work"
       ]
     },
@@ -112,7 +112,7 @@
       "Enabled": true,
       "Help": "List all success reply messages for an income command.",
       "Useage": [
-        "list-success-reply {crime/slut/work}",
+        "list-success-reply {Income Command: 'crime'/'slut'/'work'}",
         "list-success-reply work"
       ]
     },
@@ -142,7 +142,9 @@
         }
       },
       "Useage": [
-        "rob {208845952251985920}"
+        "rob {User: Ping/Identifier}",
+        "rob @User",
+        "rob 208845952251985920"
       ]
     },
     "Delete Failure Reply Command": {
@@ -152,7 +154,7 @@
       "Enabled": true,
       "Help": "Deletes a failure reply message from an income command.",
       "Useage": [
-        "delete-failure-reply {crime/slut/work} {id}",
+        "delete-failure-reply {Income Command: 'crime'/'slut'/'work'} {Identifier: Number}",
         "delete-failure-reply work 1"
       ]
     },
@@ -163,7 +165,7 @@
       "Enabled": true,
       "Help": "Deletes a success reply message from an income command.",
       "Useage": [
-        "delete-success-reply {crime/slut/work} {id}",
+        "delete-success-reply {Income Command: 'crime'/'slut'/'work'} {Identifier: Number}",
         "delete-success-reply work 1"
       ]
     },
@@ -179,7 +181,7 @@
           "Min": 100
         },
         "Messages": [
-          "Failure! {208845952251985920} lost {amount}"
+          "Failure! {amount}"
         ]
       },
       "Help": "Do something illegal and get paid.",
@@ -204,7 +206,9 @@
       "Enabled": true,
       "Help": "Adds a failure reply message to an income command.",
       "Useage": [
-        "add-failure-reply {crime/slut/work} {message}",
+        "{User Identifier} is replaced with that user's ping.",
+        "{amount} is replaced with the amount deducted.",
+        "add-failure-reply {Income Command: 'crime'/'slut'/'work'} {Reply: Text}",
         "add-failure-reply work You failed! {208845952251985920} lost {amount}!"
       ]
     },
@@ -215,7 +219,9 @@
       "Enabled": true,
       "Help": "Adds a success reply message to an income command.",
       "Useage": [
-        "add-success-reply {crime/slut/work} {message}",
+        "{User Identifier} is replaced with that user's ping.",
+        "{amount} is replaced with the amount awarded.",
+        "add-success-reply {Income Command: 'crime'/'slut'/'work'} {Reply: Text}",
         "add-success-reply work You succeeded! {208845952251985920} gained {amount}!"
       ]
     }

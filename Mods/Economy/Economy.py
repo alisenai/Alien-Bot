@@ -58,36 +58,13 @@ class Economy(Mod):
             user_rank = EconomyUtils.get_rank(server.id, user.id)
             rank_text = Utils.add_number_abbreviation(user_rank)
             user_worth = user_cash + user_bank
-            embed = discord.Embed(title="[" + str(user) + "]", description="Server Rank: " + str(rank_text),
+            embed = discord.Embed(title=self.config.get_data("Bank Icon") + " [" + str(user) + "]",
+                                  description="Server Rank: " + str(rank_text),
                                   color=discord.Color(int("0x751DDF", 16)))
             embed.add_field(name="Cash", value=str(user_cash) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Bank", value=str(user_bank) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Net Worth", value=str(user_worth) + EconomyUtils.currency, inline=True)
             await Utils.client.send_message(channel, embed=embed)
-        elif command is self.commands["Set Success Rate Command"]:
-            if len(split_message) > 2:
-                income_command = split_message[1]
-                new_rate = split_message[2]
-                if income_command == "slut" or "work" or "crime":
-                    income_command = "Slut Command" if income_command == "slut" else "Work Command" if income_command == "work" else "Crime Command"
-                    if new_rate.isdigit():
-                        new_rate = int(new_rate)
-                        if 0 <= new_rate <= 100:
-                            economy_config = self.config.get_data()
-                            economy_config["Commands"][income_command]["Success Rate"] = new_rate
-                            self.config.write_data(economy_config)
-                            await Utils.simple_embed_reply(channel, "[Success]", "`" + income_command +
-                                                           "` success rate set to " + str(new_rate) + "%.")
-                        else:
-                            await Utils.simple_embed_reply(channel, "[Error]",
-                                                           "Success rate parameter not between 0 and 100.")
-                    else:
-                        await Utils.simple_embed_reply(channel, "[Error]",
-                                                       "Success rate parameter is incorrect.")
-                else:
-                    await Utils.simple_embed_reply(channel, "[Error]", "Income command parameter not supplied.")
-            else:
-                await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["Deposit Command"]:
             if len(split_message) > 1:
                 deposit_amount = split_message[1]
@@ -174,9 +151,6 @@ class Economy(Mod):
         # TODO: Optimize this
         elif command is self.commands["Leaderboard Command"]:
             page = 1
-            user_rank_order = EconomyUtils.database_execute(
-                "SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
-            max_page = int(len(user_rank_order) // 10)
             if len(split_message) > 1:
                 page = split_message[1]
                 if page.isdigit():
@@ -184,6 +158,9 @@ class Economy(Mod):
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
                     return
+            user_rank_order = EconomyUtils.database_execute(
+                "SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
+            max_page = int(len(user_rank_order) // 10)
             if page <= max_page:
                 if (len(user_rank_order) + 10) / 10 >= page:
                     embed = discord.Embed(title="[" + str(server) + " Leaderboard]",
@@ -207,7 +184,7 @@ class Economy(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]",
                                                "You can only view a page between 1 and " + str(max_page) + ".")
         elif command is self.commands["Bank Command"]:
-            embed = discord.Embed(title="[" + str(server) + " Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
+            embed = discord.Embed(title=self.config.get_data("Bank Icon") + " [" + str(server) + " Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
             total_balance = int(EconomyUtils.database_execute("SELECT SUM(bank + cash) FROM `" + server.id + "`")[0])
             embed.add_field(name="Total Balance",
                             value=str(total_balance) + EconomyUtils.currency, inline=True)
@@ -274,5 +251,6 @@ class Economy(Mod):
                                           server.id + "'(user TEXT, cash REAL, bank REAL)")
             for user in server.members:
                 if EconomyUtils.user_exists(server.id, user.id):
-                    EconomyUtils.database_execute("INSERT INTO '" + server.id + "' VALUES('" + user.id + "', 0, " +
-                                                  str(self.config.get_data("Starting Balance")) + ")")
+                    EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
+                        server.id, user.id, str(self.config.get_data("Starting Balance"))
+                    ))

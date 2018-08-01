@@ -178,6 +178,11 @@
   },
   "Shop": {
     "Command Perms": {
+      "Assign Role Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Delete Shop Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
@@ -189,6 +194,26 @@
         "Minimum Permissions": ""
       },
       "Set Shop Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Set Shop Role Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Shop Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Toggle Shop Autodelete": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Toggle Shop Autodelete Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""

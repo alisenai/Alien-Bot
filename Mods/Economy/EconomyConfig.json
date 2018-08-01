@@ -10,8 +10,9 @@
       "Enabled": true,
       "Help": "Check your balance, or another user's balance.",
       "Useage": [
-        "balance {empty/user}",
+        "balance {User: Empty/Ping/Identifier}",
         "balance",
+        "balance @Username",
         "balance 123456789012345678"
       ]
     },
@@ -23,7 +24,7 @@
       "Enabled": true,
       "Help": "Lists the richest users and their ranks.",
       "Useage": [
-        "leaderboard {empty/page}",
+        "leaderboard {Page: Empty/Number}",
         "leaderboard",
         "leaderboard 3"
       ]
@@ -35,8 +36,8 @@
       "Enabled": true,
       "Help": "Give your cash to another user.",
       "Useage": [
-        "give {user} {amount/all}",
-        "give 208845952251985920 200"
+        "give {User: Identifier/Ping} {Amount: Number/'all'}",
+        "give 123456789123456789 200"
       ]
     },
     "Award Command": {
@@ -46,8 +47,8 @@
       "Enabled": true,
       "Help": "Award specified user or role specified amount",
       "Useage": [
-        "award {amount} {user tag/user ID/role tag/role ID}",
-        "award 200 208845952251985920"
+        "award {Amount: Number/'all'} {Role/User: Identifier/Ping}",
+        "award 200 123456789123456789"
       ]
     },
     "Take Command": {
@@ -57,8 +58,8 @@
       "Enabled": true,
       "Help": "Deduct from specified user or role specified amount",
       "Useage": [
-        "take {amount} {user tag/user ID/role tag/role ID}",
-        "take 200 208845952251985920"
+        "take {Amount: Number/'all'} {Role/User: Identifier/Ping}",
+        "take 200 123456789123456789"
       ]
     },
     "Deposit Command": {
@@ -69,7 +70,7 @@
       "Enabled": true,
       "Help": "Deposit your cash into your bank account.",
       "Useage": [
-        "deposit {amount/all}",
+        "deposit {Amount: Number/'all'}",
         "deposit 100",
         "deposit all"
       ]
@@ -81,7 +82,7 @@
       "Enabled": true,
       "Help": "Sets the server's currency.",
       "Useage": [
-        "set-currency {Currency}",
+        "set-currency {Currency: Symbol/Text/Emote}",
         "set-currency $"
       ]
     },
@@ -92,7 +93,7 @@
       "Enabled": true,
       "Help": "Sets the starting balance for new users.",
       "Useage": [
-        "set-starting-balance {number}",
+        "set-starting-balance {Amount: Number/'all'}",
         "set-starting-balance 200"
       ]
     },
@@ -114,13 +115,14 @@
       "Enabled": true,
       "Help": "Withdraw from your bank account and turn it into cash.",
       "Useage": [
-        "withdraw {amount/all}",
+        "withdraw {Amount: Number/'all'}",
         "withdraw 100",
         "withdraw all"
       ]
     }
   },
   "Currency": "\ud83e\udd5d",
+  "Bank Icon": "🏦",
   "Interest Rate": 0.1,
   "Mod Description": "A mod that manages server economics.",
   "Starting Balance": 250

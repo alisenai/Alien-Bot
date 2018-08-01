@@ -45,12 +45,13 @@
     "Channel Command": {
       "Enabled": true,
       "Aliases": [
-        "channel",
-        "c"
+        "channel"
       ],
       "Help": "Changes the bot's presence in a channel",
       "Useage": [
-        "channel {enable/disable}"
+        "channel {Status: `enable`/`disable`}",
+        "channel enable",
+        "channel disable"
       ],
       "Minimum Permissions": "Owner"
     },
@@ -62,8 +63,10 @@
       ],
       "Help": "Lists mod info",
       "Useage": [
-        "help {Mod}",
-        "help {Command}"
+        "help {Mod: Text}",
+        "help {Command Alias: Text}",
+        "help Mod",
+        "help help"
       ],
       "Minimum Permissions": "Owner"
     }

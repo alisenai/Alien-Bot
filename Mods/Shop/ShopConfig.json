@@ -1,36 +1,72 @@
 {
   "Mod Description": "Adds a configurable shop.",
+  "Message Delete Delay": 3,
   "Commands": {
+    "Shop Command": {
+      "Aliases": [
+        "shop"
+      ],
+      "Help": "Displays a list of times up for sale for a given shop.",
+      "Useage": [
+        "shop {Shop: Name/Identifier | A-Z, a-z, 0-9} {Page: Empty/Number}",
+        "shop RolesShop",
+        "shop RolesShop 3"
+      ],
+      "Enabled": true
+    },
     "Set Shop Command": {
       "Aliases": [
         "set-shop"
       ],
       "Help": "Sets the current channel as a shop with the provided name.",
       "Useage": [
-        "set-shop {name}",
+        "set-shop {Shop: Name/Identifier | A-Z, a-z, 0-9} {Page: empty",
         "set-shop RolesShop"
       ],
       "Enabled": true
     },
     "List Shops Command": {
       "Aliases": [
-        "list-shop"
+        "list-shops"
       ],
       "Help": "Lists all existing shops.",
       "Useage": [
-        "list-shop {page/none}",
-        "list-shop 2",
-        "list-shop"
+        "list-shop {Page: Empty/Number}",
+        "list-shop",
+        "list-shop 2"
       ],
       "Enabled": true
     },
-        "Delete Shop Command": {
+    "Set Shop Role Command": {
+      "Aliases": [
+        "set-shop-role"
+      ],
+      "Help": "Updates or assigns an existing role to a shop with given duration in hours.",
+      "Useage": [
+        "set-shop-role {Shop: Name/Identifier | A-Z, a-z, 0-9}\n{Price: Number}\n{Duration: 0/Number/'permanent'}\n{Role: Ping/Identifier}",
+        "set-shop-role RoleShop 12 1000 123456789123456789",
+        "set-shop-role RoleShop permanent 1000 Custom Role Name"
+      ],
+      "Enabled": true
+    },
+    "Toggle Shop Autodelete Command": {
+      "Aliases": [
+        "toggle-shop-autodelete"
+      ],
+      "Help": "Toggles on/off whether messages will be auto-deleted for the channel of the shop passed.",
+      "Useage": [
+        "toggle-shop-autodelete {Shop: Name/Identifier | A-Z, a-z, 0-9}",
+        "toggle-shop-autodelete RolesShop"
+      ],
+      "Enabled": true
+    },
+    "Delete Shop Command": {
       "Aliases": [
         "delete-shop"
       ],
       "Help": "Deletes shop by name.",
       "Useage": [
-        "delete-shop {name}",
+        "delete-shop {Shop: Name/Identifier | A-Z, a-z, 0-9}",
         "delete-shop RolesShop"
       ],
       "Enabled": true

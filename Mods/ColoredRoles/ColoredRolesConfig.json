@@ -4,85 +4,73 @@
   "Commands": {
     "Add Color Command": {
       "Aliases": [
-        "addColor",
-        "aColor",
-        "ac"
+        "add-Color"
       ],
       "Help": "Adds color to user.",
       "Enabled": true,
       "Useage": [
-        "addColor {HEX}",
-        "addColor {0x751DDF}"
+        "add-Color {Color: Hexadecimal}",
+        "add-Color 0x751DDF"
       ]
     },
     "Remove Color Command": {
       "Aliases": [
-        "removeColor",
-        "remColor",
-        "rColor",
-        "rc"
+        "remove-color"
       ],
       "Help": "Removes color from user.",
       "Useage": [
+        "remove-color"
       ],
       "Enabled": true
     },
     "Delete Color Command": {
       "Aliases": [
-        "deleteColor",
-        "delColor",
-        "dColor",
-        "dc"
+        "delete-color"
       ],
       "Help": "Deletes a color from all users.",
       "Useage": [
+        "delete-color"
       ],
       "Enabled": true
     },
     "Equipped Users Command": {
       "Aliases": [
-        "equippedColor",
-        "equColor",
-        "eColor",
-        "ec"
+        "equipped-color"
       ],
       "Help": "Lists users equipped with a color.",
       "Useage": [
+        "equipped-color {Color: Hexadecimal}",
+        "equipped-color 0x751DDF"
       ],
       "Enabled": true
     },
     "List Colors Command": {
       "Aliases": [
-        "listColor",
-        "lColor",
-        "lc"
+        "list-color"
       ],
       "Help": "Lists all colors.",
       "Useage": [
+        "list-color"
       ],
       "Enabled": true
     },
     "Color Info Command": {
       "Aliases": [
-        "infoColor",
-        "iColor",
-        "ic"
+        "info-color"
       ],
       "Help": "Lists colors and equipped users.",
       "Useage": [
-        "infoColor"
+        "info-color"
       ],
       "Enabled": true
     },
     "Clear Colors Command": {
       "Aliases": [
-        "clearColor",
-        "cColor",
-        "cc"
+        "clear-colors"
       ],
       "Help": "Deletes all colors.",
       "Useage": [
-        ";cc"
+        "clear-colors"
       ],
       "Enabled": true
     }

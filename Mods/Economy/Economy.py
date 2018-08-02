@@ -1,3 +1,5 @@
+import time
+
 import Common.DataManager as DataManager
 from Common import Utils
 from Common.Mod import Mod
@@ -58,7 +60,7 @@ class Economy(Mod):
             user_rank = EconomyUtils.get_rank(server.id, user.id)
             rank_text = Utils.add_number_abbreviation(user_rank)
             user_worth = user_cash + user_bank
-            embed = discord.Embed(title=self.config.get_data("Bank Icon") + " [" + str(user) + "]",
+            embed = discord.Embed(title=" [" + str(user) + "]",
                                   description="Server Rank: " + str(rank_text),
                                   color=discord.Color(int("0x751DDF", 16)))
             embed.add_field(name="Cash", value=str(user_cash) + EconomyUtils.currency, inline=True)
@@ -184,11 +186,20 @@ class Economy(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]",
                                                "You can only view a page between 1 and " + str(max_page) + ".")
         elif command is self.commands["Bank Command"]:
-            embed = discord.Embed(title=self.config.get_data("Bank Icon") + " [" + str(server) + " Leaderboard]", color=discord.Color(int("0x751DDF", 16)))
+            embed = discord.Embed(description="**The bank never goes Bankrupt!**",
+                                  color=discord.Color(int("0x751DDF", 16)))
+            if server.icon is None:
+                embed.set_author(name="%s Bank" % str(server),
+                                 icon_url=author.default_avatar_url)
+            else:
+                embed.set_author(name="%s Bank" % str(server),
+                                 icon_url="https://media.discordapp.net/icons/%s/%s.jpg" % (server.id, server.icon))
+            embed.set_thumbnail(url=self.config.get_data("Bank Icon Url"))
             total_balance = int(EconomyUtils.database_execute("SELECT SUM(bank + cash) FROM `" + server.id + "`")[0])
-            embed.add_field(name="Total Balance",
+            embed.add_field(name="Balance:",
                             value=str(total_balance) + EconomyUtils.currency, inline=True)
-            embed.set_footer(text="Monthly interest rate: " + str(self.config.get_data("Interest Rate")))
+            embed.add_field(name="Interest:", value=str(self.config.get_data("Interest Rate")))
+            embed.set_footer(text="%s" % str(time.strftime("%m-%d-%Y")))
             await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Award Command"]:
             await self.award_take(message, True)

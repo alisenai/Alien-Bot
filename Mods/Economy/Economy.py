@@ -188,6 +188,7 @@ class Economy(Mod):
         elif command is self.commands["Bank Command"]:
             embed = discord.Embed(description="**The bank never goes Bankrupt!**",
                                   color=discord.Color(int("0x751DDF", 16)))
+            # Remove this if?
             if server.icon is None:
                 embed.set_author(name="%s Bank" % str(server),
                                  icon_url=author.default_avatar_url)

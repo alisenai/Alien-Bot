@@ -1,5 +1,9 @@
 import random
+import threading
+
 import discord
+import time
+
 from Common import Utils
 from Common import Permissions
 from Common import DataManager
@@ -73,6 +77,9 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name=status))
     # Load mods
     await mod_handler.load_mods()
+    # Start main loop
+    t = threading.Thread(target=tick)
+    t.start()
 
 
 # When a message is received by the bot
@@ -130,6 +137,11 @@ async def on_message(message):
 @client.event
 async def on_member_join(member):
     await mod_handler.on_member_join(member)
+
+
+def tick():
+    while True:
+        time.sleep(1)
 
 
 # Make sure there is a token in the config

@@ -23,6 +23,9 @@ class Shop(Mod):
         self.database.execute(
             "CREATE TABLE IF NOT EXISTS shops(channel_id TEXT UNIQUE, shop_name TEXT, is_purge BIT)"
         )
+        self.database.execute(
+            "CREATE TABLE IF NOT EXISTS messages(shop_name TEXT UNIQUE, message_id TEXT, channel_id TEXT)"
+        )
         # Verify DB - Check for deleted channels that shops exist in
         self.verify_db()
         # Build command objects
@@ -41,7 +44,7 @@ class Shop(Mod):
                     self.delete_shop_by_channel_id(channel.id)
                     # Create new tables and rows
                     self.database.execute(
-                        "CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, price REAL, duration REAL)" % shop_name
+                        "CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, price NUMERIC, duration REAL)" % shop_name
                     )
                     self.database.execute("REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name))
                     await Utils.simple_embed_reply(
@@ -67,6 +70,7 @@ class Shop(Mod):
                         if shop_name in shop_names:
                             self.database.execute("DROP TABLE IF EXISTS '%s'" % shop_name)
                             self.database.execute("DELETE FROM shops WHERE shop_name='%s'" % shop_name)
+                            self.database.execute("DELETE FROM messages WHERE shop_name='%s'" % shop_name)
                             await Utils.simple_embed_reply(channel, "[Shops]", "Shop `%s` was deleted." % shop_name)
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]", "That shop doesn't exist.")
@@ -84,14 +88,15 @@ class Shop(Mod):
                 role_text = split_message[4]
                 if is_valid_shop_name(shop_name):
                     if self.shop_exists(shop_name):
-                        if duration.isdigit() or duration == "permanent":
-                            duration = -1 if duration == "permanent" or 0 else int(duration)
+                        if Utils.isfloat(duration) or duration == "permanent":
+                            duration = -1 if duration == "permanent" or 0 else float(duration)
                             if price.isdigit():
                                 price = int(price)
                                 role = Utils.get_role(server, role_text)
                                 if role is not None:
                                     self.database.execute(
-                                        "REPLACE INTO '%s' VALUES(%s, %s, %s)" % (shop_name, role.id, price, duration))
+                                        "REPLACE INTO '%s' VALUES('%s', '%d', '%s')" % (shop_name, role.id, int(price),
+                                                                                        duration))
                                     await Utils.simple_embed_reply(
                                         channel, "[Shops]",
                                         "`%s` has been assigned to `%s` at the price of `%s` for `%s` hours." % (
@@ -100,6 +105,7 @@ class Shop(Mod):
                                             )
                                         )
                                     )
+                                    await self.update_messages()
                                 else:
                                     await Utils.simple_embed_reply(channel, "[Error]", "That role doesn't exist.")
                             else:
@@ -135,15 +141,14 @@ class Shop(Mod):
         elif command is self.commands["Shop Command"]:
             if len(split_message) > 1:
                 shop_name = split_message[1]
-                roles = self.database.execute("SELECT role_id, price FROM '%s' ORDER BY price DESC" % shop_name)
-                # Convert [id1, cost1, id2, cost2, id3, cost3, ...] to [[id1, cost1], [id2, cost2], [id3, cost3], ...]
-                roles = [[roles[i * 2], str(roles[i * 2 + 1])] for i in range(len(roles) // 2)]
-                embed = discord.Embed(title="[%s]" % shop_name,
-                                      color=discord.Color(int("0x751DDF", 16)))
-                for role_info in roles:
-                    role = Utils.get_role_by_id(server, role_info[0])
-                    embed.add_field(name=str(role), value=role_info[1] + EconomyUtils.currency, inline=True)
-                await Utils.client.send_message(channel, embed=embed)
+                if self.shop_exists(shop_name):
+                    embed = await self.get_shop_embed(shop_name, server)
+                    shop_message = await Utils.client.send_message(channel, embed=embed)
+                    self.database.execute(
+                        "REPLACE INTO messages VALUES('%s', '%s', '%s')" % (shop_name, shop_message.id, channel.id)
+                    )
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "That shop doesn't exist.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
@@ -170,6 +175,30 @@ class Shop(Mod):
                 return True
         return False
 
+    async def update_messages(self):
+        data = self.database.execute("SELECT * from messages")
+        # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
+        messages = [[str(data[i * 3]), str(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in range(len(data) // 3)]
+        for message_info in messages:
+            shop_name, message_id, channel_id = message_info[0], message_info[1], message_info[2]
+            channel = Utils.client.get_channel(channel_id)
+            message = await Utils.client.get_message(channel, message_id)
+            server = message.server
+            embed = await self.get_shop_embed(shop_name, server)
+            await Utils.client.edit_message(message, embed=embed)
+
+    async def get_shop_embed(self, shop_name, server):
+        roles = self.database.execute("SELECT role_id, price FROM '%s' ORDER BY price DESC" % shop_name)
+        # Convert [id1, cost1, id2, cost2, ...] to [[id1, cost1], [id2, cost2], ...]
+        roles = [[roles[i * 2], str(roles[i * 2 + 1])] for i in range(len(roles) // 2)]
+        embed = discord.Embed(title="[%s]" % shop_name,
+                              color=discord.Color(int("0x751DDF", 16)))
+        for role_info in roles:
+            role = Utils.get_role_by_id(server, role_info[0])
+            embed.add_field(name=str(role), value=role_info[1] + EconomyUtils.currency,
+                            inline=True)
+        return embed
+
     # Cleans up shops from deleted channels
     def verify_db(self):
         shop_channels = self.database.execute("SELECT channel_ID from shops")
@@ -182,5 +211,6 @@ class Shop(Mod):
             self.database.execute("DELETE FROM shops where channel_id='%s'" % channel)
 
 
+# Prevents SQL Injection
 def is_valid_shop_name(shop_name):
     return re.fullmatch(r"[A-Za-z0-9]*", shop_name)

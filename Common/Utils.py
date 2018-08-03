@@ -65,9 +65,9 @@ async def simple_embed_reply(channel, title, description, hex_color=None):
     # Pick which color to use (if the function was passed a color)
     color = "0x751DDF" if hex_color is None else hex_color
     # Reply with a built embed
-    await client.send_message(channel, embed=discord.Embed(title=title,
-                                                           description=description,
-                                                           color=discord.Color(int(color, 16))))
+    return await client.send_message(channel, embed=discord.Embed(title=title,
+                                                                  description=description,
+                                                                  color=discord.Color(int(color, 16))))
 
 
 # Gets help - All of it, or specifics
@@ -126,6 +126,14 @@ def generate_help(commands, specific_command_alias=None, get_command_useage=Fals
 # Deletes given message
 async def delete_message(message):
     await client.delete_message(message)
+
+
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 
 # Parses commands from standard config

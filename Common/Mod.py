@@ -33,19 +33,22 @@ class Mod:
 
     # Called when a user doesn't have permissions to call a command
     async def error_no_permissions(self, message, command):
-        return
+        pass
 
     # Called when a command is called in a channel it is disabled in
     async def error_disabled_channel(self, message, command):
-        return
+        pass
 
     # Called when a command is called in a server it is disabled in
     async def error_disabled_server(self, message, command):
-        return
+        pass
 
     # Called when a command is called during its cool down
     async def error_cool_down(self, message, command):
-        return
+        pass
+
+    def tick(self):
+        pass
 
     # Returns true if the passed command alias is known by the mod
     def is_command_alias(self, command_alias):

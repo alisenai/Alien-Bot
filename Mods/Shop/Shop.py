@@ -1,3 +1,5 @@
+import time
+
 from Common import DataManager
 from Common.Mod import Mod
 from Common import Utils
@@ -44,7 +46,7 @@ class Shop(Mod):
                     self.delete_shop_by_channel_id(channel.id)
                     # Create new tables and rows
                     self.database.execute(
-                        "CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, price NUMERIC, duration REAL)" % shop_name
+                        "CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, price NUMERIC, time_added REAL, duration REAL)" % shop_name
                     )
                     self.database.execute("REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name))
                     await Utils.simple_embed_reply(
@@ -95,8 +97,8 @@ class Shop(Mod):
                                 role = Utils.get_role(server, role_text)
                                 if role is not None:
                                     self.database.execute(
-                                        "REPLACE INTO '%s' VALUES('%s', '%d', '%s')" % (shop_name, role.id, int(price),
-                                                                                        duration))
+                                        "REPLACE INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
+                                            shop_name, role.id, int(price), time.time(), duration))
                                     await Utils.simple_embed_reply(
                                         channel, "[Shops]",
                                         "`%s` has been assigned to `%s` at the price of `%s` for `%s` hours." % (
@@ -193,11 +195,27 @@ class Shop(Mod):
         roles = [[roles[i * 2], str(roles[i * 2 + 1])] for i in range(len(roles) // 2)]
         embed = discord.Embed(title="[%s]" % shop_name,
                               color=discord.Color(int("0x751DDF", 16)))
-        for role_info in roles:
-            role = Utils.get_role_by_id(server, role_info[0])
-            embed.add_field(name=str(role), value=role_info[1] + EconomyUtils.currency,
-                            inline=True)
+        if len(roles) > 0:
+            for role_info in roles:
+                role = Utils.get_role_by_id(server, role_info[0])
+                embed.add_field(name=str(role), value=role_info[1] + EconomyUtils.currency,
+                                inline=True)
+        else:
+            embed.description = "No roles currently available."
         return embed
+
+    # Deletes messages if their duration is up
+    async def tick(self):
+        shops = self.database.execute("SELECT shop_name FROM shops")
+        current_time = time.time()
+        for shop_name in shops:
+            data = self.database.execute("SELECT time_added, duration, role_id FROM '%s'" % shop_name)
+            # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
+            messages = [[float(data[i * 3]), float(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in range(len(data) // 3)]
+            for message_info in messages:
+                if current_time - message_info[0] >= message_info[1] * 60 * 60:
+                    self.database.execute("DELETE FROM '%s' where role_id='%s'" % (shop_name, message_info[2]))
+                    await self.update_messages()
 
     # Cleans up shops from deleted channels
     def verify_db(self):

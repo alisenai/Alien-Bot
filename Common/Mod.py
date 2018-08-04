@@ -47,7 +47,7 @@ class Mod:
     async def error_cool_down(self, message, command):
         pass
 
-    def tick(self):
+    async def tick(self):
         pass
 
     # Returns true if the passed command alias is known by the mod

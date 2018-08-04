@@ -1,3 +1,4 @@
+import asyncio
 import random
 import threading
 
@@ -43,6 +44,8 @@ bot_command_aliases = [alias for command in bot_commands for alias in bot_comman
 mod_handler = ModHandler(bot_commands, bot_command_aliases, config['Embed Color'])
 # Boolean to keep track of when it's safe to start parsing commands
 mods_loaded = False
+# For ticks
+loop = asyncio.get_event_loop()
 
 
 # When the bot is ready to be worked with
@@ -142,6 +145,7 @@ async def on_member_join(member):
 def tick():
     while True:
         time.sleep(1)
+        loop.create_task(mod_handler.tick())
 
 
 # Make sure there is a token in the config

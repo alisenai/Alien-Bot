@@ -118,7 +118,7 @@ class Economy(Mod):
                         EconomyUtils.set_bank(server.id, author.id, 0)
                         EconomyUtils.set_cash(server.id, author.id, user_cash + user_bank)
                         await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Withdrew " +
-                                                       str(user_cash) + EconomyUtils.currency +
+                                                       str(user_bank) + EconomyUtils.currency +
                                                        " into cash.")
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")

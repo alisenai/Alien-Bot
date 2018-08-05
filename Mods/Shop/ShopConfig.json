@@ -49,6 +49,17 @@
       ],
       "Enabled": true
     },
+        "Buy Command": {
+      "Aliases": [
+        "buy"
+      ],
+      "Help": "Buys a given role",
+      "Useage": [
+        "buy {Role: Name}",
+        "buy Custom Role"
+      ],
+      "Enabled": true
+    },
     "Toggle Shop Autodelete Command": {
       "Aliases": [
         "toggle-shop-autodelete"

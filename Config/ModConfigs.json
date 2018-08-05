@@ -183,6 +183,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Buy Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Delete Shop Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

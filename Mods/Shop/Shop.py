@@ -44,9 +44,10 @@ class Shop(Mod):
                 if is_valid_shop_name(shop_name):
                     # Drop old shop table if needed
                     self.delete_shop_by_channel_id(channel.id)
+                    # TODO: Handle multiple roles with the same name
                     # Create new tables and rows
                     self.database.execute(
-                        """CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, role_name TEXT UNIQUE, 
+                        """CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, role_name TEXT, 
                         price NUMERIC, time_added REAL, duration REAL)""" % shop_name
                     )
                     self.database.execute("REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name))
@@ -99,7 +100,8 @@ class Shop(Mod):
                                 if role is not None:
                                     self.database.execute(
                                         "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
-                                            shop_name, role.id, str(role), int(price), time.time(), duration))
+                                            shop_name, role.id, str(role), int(price), time.time(), duration)
+                                    )
                                     await Utils.simple_embed_reply(
                                         channel, "[Shops]",
                                         "`%s` has been assigned to `%s` at the price of `%s` for `%s` hours." % (
@@ -156,9 +158,39 @@ class Shop(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["Buy Command"]:
             if len(split_message) > 1:
-                role_name = split_message[1]
-                role_info = self.database.get_data("SELECT role_id, price, time_added, duration")
-                # if EconomyUtils.get_cash(server.id, author.id) >
+                given_name = ' '.join(split_message[1:]).lower()
+                shop = self.database.execute("SELECT shop_name FROM shops where channel_id='%s'" % message.channel.id)
+                if len(shop) > 0:
+                    shop = shop[0]
+                    data = self.database.execute("SELECT role_id, role_name, price FROM '%s'" % shop)
+                    # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
+                    roles_info = [[data[i * 3], data[i * 3 + 1], int(data[i * 3 + 2])] for i in range(len(data) // 3)]
+                    if len(roles_info) > 0:
+                        for role_info in roles_info:
+                            role_id, role_name, role_cost = role_info[0], role_info[1], role_info[2]
+                            if role_name.lower() == given_name:
+                                user_cash = EconomyUtils.get_cash(server.id, author.id)
+                                if user_cash >= role_cost:
+                                    EconomyUtils.set_cash(server.id, author.id, user_cash - role_cost)
+                                    role = Utils.get_role_by_id(server, role_id)
+                                    if role not in author.roles:
+                                        await Utils.client.add_roles(author, role)
+                                        await Utils.simple_embed_reply(channel, "[%s]" % shop,
+                                                                       "You have purchased `%s`." % role_name)
+                                    else:
+                                        await Utils.simple_embed_reply(channel, "[Error]",
+                                                                       "You already have that role.")
+                                else:
+                                    await Utils.simple_embed_reply(channel, "[Error]",
+                                                                   "You don't have enough cash to do that.")
+                            else:
+                                await Utils.simple_embed_reply(channel, "[Error]", "Role not found.")
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Error]", "No roles found.")
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "No shop found.")
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
     def delete_shop_by_channel_id(self, channel_id):
         # old_channel_drop = self.database.execute(
@@ -217,7 +249,8 @@ class Shop(Mod):
         for shop_name in shops:
             data = self.database.execute("SELECT time_added, duration, role_id FROM '%s'" % shop_name)
             # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
-            messages = [[float(data[i * 3]), float(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in range(len(data) // 3)]
+            messages = [[float(data[i * 3]), float(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in
+                        range(len(data) // 3)]
             for message_info in messages:
                 if message_info[1] != -1:
                     if current_time - message_info[0] >= message_info[1] * 60 * 60:

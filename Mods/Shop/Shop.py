@@ -46,7 +46,8 @@ class Shop(Mod):
                     self.delete_shop_by_channel_id(channel.id)
                     # Create new tables and rows
                     self.database.execute(
-                        "CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, price NUMERIC, time_added REAL, duration REAL)" % shop_name
+                        """CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, role_name TEXT UNIQUE, 
+                        price NUMERIC, time_added REAL, duration REAL)""" % shop_name
                     )
                     self.database.execute("REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name))
                     await Utils.simple_embed_reply(
@@ -97,8 +98,8 @@ class Shop(Mod):
                                 role = Utils.get_role(server, role_text)
                                 if role is not None:
                                     self.database.execute(
-                                        "REPLACE INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
-                                            shop_name, role.id, int(price), time.time(), duration))
+                                        "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
+                                            shop_name, role.id, str(role), int(price), time.time(), duration))
                                     await Utils.simple_embed_reply(
                                         channel, "[Shops]",
                                         "`%s` has been assigned to `%s` at the price of `%s` for `%s` hours." % (
@@ -153,6 +154,11 @@ class Shop(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "That shop doesn't exist.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        elif command is self.commands["Buy Command"]:
+            if len(split_message) > 1:
+                role_name = split_message[1]
+                role_info = self.database.get_data("SELECT role_id, price, time_added, duration")
+                # if EconomyUtils.get_cash(server.id, author.id) >
 
     def delete_shop_by_channel_id(self, channel_id):
         # old_channel_drop = self.database.execute(
@@ -213,9 +219,10 @@ class Shop(Mod):
             # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
             messages = [[float(data[i * 3]), float(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in range(len(data) // 3)]
             for message_info in messages:
-                if current_time - message_info[0] >= message_info[1] * 60 * 60:
-                    self.database.execute("DELETE FROM '%s' where role_id='%s'" % (shop_name, message_info[2]))
-                    await self.update_messages()
+                if message_info[1] != -1:
+                    if current_time - message_info[0] >= message_info[1] * 60 * 60:
+                        self.database.execute("DELETE FROM '%s' where role_id='%s'" % (shop_name, message_info[2]))
+                        await self.update_messages()
 
     # Cleans up shops from deleted channels
     def verify_db(self):

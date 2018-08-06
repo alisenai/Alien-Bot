@@ -95,11 +95,14 @@ class Shop(Mod):
                             if price.isdigit():
                                 price = int(price)
                                 role = Utils.get_role(server, role_text)
-                                if str(role).lower() not in [name.lower() for name in self.database.execute(
-                                                "SELECT role_name FROM '%s'" % shop_name)]:
-                                    if role is not None:
+                                if role is not None:
+                                    role_names = [name.lower() for name in
+                                                  self.database.execute("SELECT role_name FROM '%s'" % shop_name)]
+                                    role_ids = [name.lower() for name in
+                                                self.database.execute("SELECT role_id FROM '%s'" % shop_name)]
+                                    if str(role).lower() not in role_names:
                                         self.database.execute(
-                                            "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
+                                            "INSERT INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
                                                 shop_name, role.id, str(role), int(price), time.time(), duration)
                                         )
                                         await Utils.simple_embed_reply(
@@ -112,10 +115,27 @@ class Shop(Mod):
                                         )
                                         await self.update_messages()
                                     else:
-                                        await Utils.simple_embed_reply(channel, "[Error]", "That role doesn't exist.")
+                                        if role.id in role_ids:
+                                            self.database.execute(
+                                                "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
+                                                    shop_name, role.id, str(role), int(price), time.time(), duration)
+                                            )
+                                            await Utils.simple_embed_reply(
+                                                channel, "[Shops]",
+                                                "The role `%s` within `%s` now has a price of `%s` for `%s` hours." % (
+                                                    str(role), shop_name, str(price), str(
+                                                        "infinite" if duration == -1 else duration
+                                                    )
+                                                )
+                                            )
+                                            await self.update_messages()
+                                        else:
+                                            await Utils.simple_embed_reply(
+                                                channel, "[Error]",
+                                                "Duplicate role names not allowed. (lowercase-checked)")
                                 else:
-                                    await Utils.simple_embed_reply(
-                                        channel, "[Error]", "Duplicate role names not allowed. (lowercase-checked)")
+                                    await Utils.simple_embed_reply(channel, "[Error]", "That role doesn't exist.")
+                            else:
                                 await Utils.simple_embed_reply(channel, "[Error]", "Price parameter incorrect.")
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]", "Duration parameter incorrect.")

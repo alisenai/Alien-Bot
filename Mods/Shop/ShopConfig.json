@@ -64,10 +64,21 @@
       "Aliases": [
         "delete-shop-role"
       ],
-      "Help": "Deletes a given shop role",
+      "Help": "Deletes a given shop role.",
       "Useage": [
         "delete-shop-role {Role: Name}",
         "delete-shop-role Custom Role"
+      ],
+      "Enabled": true
+    },
+    "Delete Shop Command": {
+      "Aliases": [
+        "shop-role"
+      ],
+      "Help": "Deletes a given shop by name.",
+      "Useage": [
+        "delete-shop {Shop: Name/Identifier | A-Z, a-z, 0-9}",
+        "delete-shop RolesShop"
       ],
       "Enabled": true
     },
@@ -79,17 +90,6 @@
       "Useage": [
         "toggle-shop-autodelete {Shop: Name/Identifier | A-Z, a-z, 0-9}",
         "toggle-shop-autodelete RolesShop"
-      ],
-      "Enabled": true
-    },
-    "Delete Shop Command": {
-      "Aliases": [
-        "delete-shop"
-      ],
-      "Help": "Deletes shop by name.",
-      "Useage": [
-        "delete-shop {Shop: Name/Identifier | A-Z, a-z, 0-9}",
-        "delete-shop RolesShop"
       ],
       "Enabled": true
     }

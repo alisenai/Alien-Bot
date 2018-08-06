@@ -86,10 +86,8 @@ class Shop(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["Set Shop Role Command"]:
             if len(split_message) > 4:
-                shop_name = split_message[1]
-                price = split_message[2].lower()
-                duration = split_message[3]
-                role_text = split_message[4]
+                shop_name, price, duration, role_text = split_message[1], split_message[2].lower(), split_message[3], \
+                                                        split_message[4]
                 if is_valid_shop_name(shop_name):
                     if self.shop_exists(shop_name):
                         if Utils.isfloat(duration) or duration == "permanent":
@@ -97,23 +95,27 @@ class Shop(Mod):
                             if price.isdigit():
                                 price = int(price)
                                 role = Utils.get_role(server, role_text)
-                                if role is not None:
-                                    self.database.execute(
-                                        "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
-                                            shop_name, role.id, str(role), int(price), time.time(), duration)
-                                    )
-                                    await Utils.simple_embed_reply(
-                                        channel, "[Shops]",
-                                        "`%s` has been assigned to `%s` at the price of `%s` for `%s` hours." % (
-                                            str(role), shop_name, str(price), str(
-                                                "infinite" if duration == -1 else duration
+                                if str(role).lower() not in [name.lower() for name in self.database.execute(
+                                                "SELECT role_name FROM '%s'" % shop_name)]:
+                                    if role is not None:
+                                        self.database.execute(
+                                            "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
+                                                shop_name, role.id, str(role), int(price), time.time(), duration)
+                                        )
+                                        await Utils.simple_embed_reply(
+                                            channel, "[Shops]",
+                                            "`%s` has been assigned to `%s` at the price of `%s` for `%s` hours." % (
+                                                str(role), shop_name, str(price), str(
+                                                    "infinite" if duration == -1 else duration
+                                                )
                                             )
                                         )
-                                    )
-                                    await self.update_messages()
+                                        await self.update_messages()
+                                    else:
+                                        await Utils.simple_embed_reply(channel, "[Error]", "That role doesn't exist.")
                                 else:
-                                    await Utils.simple_embed_reply(channel, "[Error]", "That role doesn't exist.")
-                            else:
+                                    await Utils.simple_embed_reply(
+                                        channel, "[Error]", "Duplicate role names not allowed. (lowercase-checked)")
                                 await Utils.simple_embed_reply(channel, "[Error]", "Price parameter incorrect.")
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]", "Duration parameter incorrect.")

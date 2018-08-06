@@ -49,14 +49,25 @@
       ],
       "Enabled": true
     },
-        "Buy Command": {
+    "Buy Command": {
       "Aliases": [
         "buy"
       ],
-      "Help": "Buys a given role",
+      "Help": "Buys a given shop role",
       "Useage": [
         "buy {Role: Name}",
         "buy Custom Role"
+      ],
+      "Enabled": true
+    },
+    "Delete Shop Role Command": {
+      "Aliases": [
+        "delete-shop-role"
+      ],
+      "Help": "Deletes a given shop role",
+      "Useage": [
+        "delete-shop-role {Role: Name}",
+        "delete-shop-role Custom Role"
       ],
       "Enabled": true
     },

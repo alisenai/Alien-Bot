@@ -193,6 +193,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Delete Shop Role Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "List Shops Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

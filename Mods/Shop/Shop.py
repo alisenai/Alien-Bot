@@ -188,7 +188,7 @@ class Shop(Mod):
                         role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
                         if given_name in [str(name).lower() for name in role_names]:
                             for i in range(len(role_ids)):
-                                role_id, role_name, role_cost = role_ids[i], role_names[i], role_costs[2]
+                                role_id, role_name, role_cost = role_ids[i], role_names[i], role_costs[i]
                                 if role_name.lower() == given_name:
                                     user_cash = EconomyUtils.get_cash(server.id, author.id)
                                     if user_cash >= role_cost:

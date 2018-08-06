@@ -43,8 +43,8 @@
       ],
       "Help": "Updates or assigns an existing role to a shop with given duration in hours.",
       "Useage": [
-        "set-shop-role {Shop: Name/Identifier | A-Z, a-z, 0-9}\n{Price: Number}\n{Duration: 0/Number/'permanent'}\n{Role: Ping/Identifier}",
-        "set-shop-role RoleShop 1000 12 123456789123456789",
+        "set-shop-role {Shop: Name/Identifier | A-Z, a-z, 0-9}\n{Price: Number}\n{Duration: 0/Number/Decimal/'permanent'}\n{Role: Ping/Identifier}",
+        "set-shop-role RoleShop 1000 12.5 123456789123456789",
         "set-shop-role RoleShop 1000 permanent @Role"
       ],
       "Enabled": true

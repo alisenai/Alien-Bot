@@ -44,10 +44,9 @@ class Shop(Mod):
                 if is_valid_shop_name(shop_name):
                     # Drop old shop table if needed
                     self.delete_shop_by_channel_id(channel.id)
-                    # TODO: Handle multiple roles with the same name
                     # Create new tables and rows
                     self.database.execute(
-                        """CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, role_name TEXT, 
+                        """CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, 
                         price NUMERIC, time_added REAL, duration REAL)""" % shop_name
                     )
                     self.database.execute("REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name))
@@ -96,14 +95,13 @@ class Shop(Mod):
                                 price = int(price)
                                 role = Utils.get_role(server, role_text)
                                 if role is not None:
-                                    role_names = [name.lower() for name in
-                                                  self.database.execute("SELECT role_name FROM '%s'" % shop_name)]
                                     role_ids = [name.lower() for name in
                                                 self.database.execute("SELECT role_id FROM '%s'" % shop_name)]
+                                    role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
                                     if str(role).lower() not in role_names:
                                         self.database.execute(
-                                            "INSERT INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
-                                                shop_name, role.id, str(role), int(price), time.time(), duration)
+                                            "INSERT INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
+                                                shop_name, role.id, int(price), time.time(), duration)
                                         )
                                         await Utils.simple_embed_reply(
                                             channel, "[Shops]",
@@ -117,8 +115,8 @@ class Shop(Mod):
                                     else:
                                         if role.id in role_ids:
                                             self.database.execute(
-                                                "REPLACE INTO '%s' VALUES('%s', '%s', '%d', '%s', '%s')" % (
-                                                    shop_name, role.id, str(role), int(price), time.time(), duration)
+                                                "REPLACE INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
+                                                    shop_name, role.id, int(price), time.time(), duration)
                                             )
                                             await Utils.simple_embed_reply(
                                                 channel, "[Shops]",
@@ -184,13 +182,13 @@ class Shop(Mod):
                 shop = self.database.execute("SELECT shop_name FROM shops where channel_id='%s'" % message.channel.id)
                 if len(shop) > 0:
                     shop = shop[0]
-                    data = self.database.execute("SELECT role_id, role_name, price FROM '%s'" % shop)
-                    # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
-                    roles_info = [[data[i * 3], data[i * 3 + 1], int(data[i * 3 + 2])] for i in range(len(data) // 3)]
-                    if len(roles_info) > 0:
-                        if given_name in [str(name).lower() for name in data]:
-                            for role_info in roles_info:
-                                role_id, role_name, role_cost = role_info[0], role_info[1], role_info[2]
+                    role_ids = self.database.execute("SELECT role_id FROM '%s'" % shop)
+                    role_costs = self.database.execute("SELECT price FROM '%s'" % shop)
+                    if len(role_ids) > 0:
+                        role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
+                        if given_name in [str(name).lower() for name in role_names]:
+                            for i in range(len(role_ids)):
+                                role_id, role_name, role_cost = role_ids[i], role_names[i], role_costs[2]
                                 if role_name.lower() == given_name:
                                     user_cash = EconomyUtils.get_cash(server.id, author.id)
                                     if user_cash >= role_cost:
@@ -220,17 +218,16 @@ class Shop(Mod):
                 shop = self.database.execute("SELECT shop_name FROM shops where channel_id='%s'" % channel.id)
                 if len(shop) > 0:
                     shop = shop[0]
-                    data = self.database.execute("SELECT role_name, role_id FROM '%s'" % shop)
-                    # Convert [id1, cost1, id2, cost2, ...] to [[id1, cost1], [id2, cost2], ...]
-                    roles_info = [[data[i * 2], str(data[i * 2 + 1])] for i in range(len(data) // 2)]
-                    if len(roles_info) > 0:
-                        if given_name in [str(name).lower() for name in data]:
-                            for role_info in roles_info:
+                    role_ids = self.database.execute("SELECT role_id FROM '%s'" % shop)
+                    if len(role_ids) > 0:
+                        role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
+                        if given_name in [str(name).lower() for name in role_names]:
+                            for i in range(len(role_ids)):
                                 self.database.execute(
-                                    "DELETE FROM '%s' WHERE role_name='%s'" % (shop, role_info[1])
+                                    "DELETE FROM '%s' WHERE role_name='%s'" % (shop, role_names[i])
                                 )
                                 await Utils.simple_embed_reply(channel, "[%s]" % shop,
-                                                               "Role `%s` has been deleted from `%s`." % (role_info[0],
+                                                               "Role `%s` has been deleted from `%s`." % (role_names[i],
                                                                                                           shop))
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]", "Role not found.")

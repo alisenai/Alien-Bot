@@ -1,0 +1,17 @@
+{
+  "Mod Description": "Waifu > Laifu.",
+  "Commands": {
+    "Claim Command": {
+      "Aliases": [
+        "claim"
+      ],
+      "Help": "Claims given user as your waifu.",
+      "Useage": [
+        "claim {User: Ping/Identifier}",
+        "claim @User",
+        "claim 123456789012345678"
+      ],
+      "Enabled": true
+    }
+  }
+}

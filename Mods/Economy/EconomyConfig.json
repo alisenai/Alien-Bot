@@ -12,7 +12,7 @@
       "Useage": [
         "balance {User: Empty/Ping/Identifier}",
         "balance",
-        "balance @Username",
+        "balance @User",
         "balance 123456789012345678"
       ]
     },

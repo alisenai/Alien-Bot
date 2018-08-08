@@ -232,5 +232,17 @@
     "Disabled Channels": [],
     "Disabled Servers": [],
     "Enabled": true
+  },
+  "Waifu": {
+    "Command Perms": {
+      "Claim Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
   }
 }

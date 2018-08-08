@@ -8,6 +8,7 @@ import discord
 
 
 # TODO: Major commenting needed
+# TODO: Interest Rate
 class Economy(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init

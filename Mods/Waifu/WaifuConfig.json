@@ -1,7 +1,9 @@
 {
   "Mod Description": "Waifu > Laifu.",
+  "Default Claim Amount": 500,
+  "Claim Addition Amount": 50,
   "Commands": {
-    "Claim Command": {
+    "Claim Waifu Command": {
       "Aliases": [
         "claim"
       ],

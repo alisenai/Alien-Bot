@@ -178,11 +178,6 @@
   },
   "Shop": {
     "Command Perms": {
-      "Assign Role Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
       "Buy Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
@@ -218,11 +213,6 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
-      "Toggle Shop Autodelete": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
       "Toggle Shop Autodelete Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
@@ -235,7 +225,7 @@
   },
   "Waifu": {
     "Command Perms": {
-      "Claim Command": {
+      "Claim Waifu Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""

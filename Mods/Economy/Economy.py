@@ -8,6 +8,7 @@ import discord
 
 
 # TODO: Major commenting needed
+# TODO: "" + x + "" -> %
 # TODO: Interest Rate
 class Economy(Mod):
     def __init__(self, mod_name, embed_color):
@@ -133,9 +134,7 @@ class Economy(Mod):
                 user = Utils.get_user(server, split_message[1])
                 author_cash = EconomyUtils.get_cash(server.id, author.id)
                 user_cash = EconomyUtils.get_cash(server.id, user.id)
-                if user is None:
-                    await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
-                else:
+                if user is not None:
                     if split_message[2].isdigit():
                         give_amount = int(split_message[2])
                         if author_cash < int(split_message[2]):
@@ -149,6 +148,8 @@ class Economy(Mod):
                     EconomyUtils.set_cash(server.id, user.id, user_cash + give_amount)
                     await Utils.simple_embed_reply(channel, "[Error]", "You gave " + str(user) + " " + str(give_amount)
                                                    + EconomyUtils.currency + ".")
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         # TODO: Optimize this
@@ -248,22 +249,23 @@ class Economy(Mod):
         else:
             await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
-    # TODO: Compress by putting the re-used code into a func
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
         server_id = member.server.id
         user_id = member.id
         if not EconomyUtils.user_exists(server_id, user_id):
-            EconomyUtils.database_execute("INSERT INTO '" + server_id + "' VALUES('" + user_id + "', " +
-                                          str(self.config.get_data("Starting Balance")) + ", 0)")
+            EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
+                server_id, user_id, str(self.config.get_data("Starting Balance"))
+            ))
 
     # Generates the bank DB
     def generate_db(self):
         for server in Utils.client.servers:
-            EconomyUtils.database_execute("CREATE TABLE IF NOT EXISTS '" +
-                                          server.id + "'(user TEXT, cash REAL, bank REAL)")
+            EconomyUtils.database_execute(
+                "CREATE TABLE IF NOT EXISTS '%s'(user TEXT, cash REAL, bank REAL)" % server.id
+            )
             for user in server.members:
-                if EconomyUtils.user_exists(server.id, user.id):
+                if not EconomyUtils.user_exists(server.id, user.id):
                     EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
                         server.id, user.id, str(self.config.get_data("Starting Balance"))
                     ))

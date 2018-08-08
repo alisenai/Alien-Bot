@@ -1,1 +1,2 @@
-Requirements: None
+Requirements: Economy Mod
+

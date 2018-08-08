@@ -152,7 +152,7 @@ class Economy(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
-        # TODO: Optimize this
+        # TODO: Optimize this?
         elif command is self.commands["Leaderboard Command"]:
             page = 1
             if len(split_message) > 1:

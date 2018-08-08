@@ -1,5 +1,5 @@
-import json
 import sqlite3
+import json
 
 dataManagers = {}
 
@@ -14,7 +14,7 @@ class JSON:
 
     # Initializes the dataManager with a local DB
     def __init__(self, save_file):
-        print("[Loading", save_file, "...]", end='')
+        print("[Loading %s...]" % save_file, end='')
         self.store_file = save_file
         self.database = self.get_data()
         print("[Done]")
@@ -41,7 +41,7 @@ class SQL:
     file_type = FileType.SQL
 
     def __init__(self, save_file):
-        print("[Loading", save_file, "...]", end='')
+        print("[Loading %s...]" % save_file, end='')
         self.store_file = save_file
         print("[Done]")
 
@@ -66,13 +66,3 @@ def add_manager(manager_name, save_file, file_type=FileType.JSON):
 # Returns a manager given a name
 def get_manager(manager_name):
     return dataManagers[manager_name]
-
-
-# # Returns data from a manager
-# def get_data(manager_name, key=None):
-#     return get_manager(manager_name).get_data(key=key)
-
-
-# Writes data to a specific manager
-# def write_data(manager_name, data, key=None):
-#     get_manager(manager_name).write_data(data, key=key)

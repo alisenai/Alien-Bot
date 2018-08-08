@@ -7,7 +7,7 @@ from Common import DataManager
 
 
 # TODO: Redo help so it only prints what the user's permissions allows
-# TODO: Add prefix when printing useage help?
+# TODO: Add command prefix when printing useage help?
 class ModHandler:
     mods = {}
     commands = []

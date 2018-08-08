@@ -86,7 +86,7 @@ class DailyEconomy(Mod):
             await self.roll_income(message, "Slut Command")
         elif command is self.commands["Crime Command"]:
             await self.roll_income(message, "Crime Command")
-        # TODO: Determine how to calculate success chance
+        # TODO: Determine how to calculate success chance for the Rob Command
         elif command is self.commands["Rob Command"]:
             await Utils.simple_embed_reply(channel, "[Error]", "Awaiting method of calculating success rate")
 

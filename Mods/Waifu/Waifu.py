@@ -71,7 +71,7 @@ class Waifu(Mod):
                     user = given_user
                 else:
                     return await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
-            embed = discord.Embed(title="[Waifu Info]", description="Waifu %s." % str(user),
+            embed = discord.Embed(title="[Waifu Info]", description="Waifu info for %s" % str(user),
                                   color=discord.Color(int("0x751DDF", 16)))
             waifus = ''.join([str(Utils.get_user(server, i)) + "\n" for i in self.database.execute(
                 "SELECT user_id FROM '%s' WHERE owner_id='%s'" % (server.id, user.id)

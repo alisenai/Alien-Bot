@@ -229,6 +229,11 @@
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
+      },
+      "Waifu Info Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],

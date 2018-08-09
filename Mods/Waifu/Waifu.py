@@ -1,6 +1,7 @@
 from Common import DataManager
 from Common.Mod import Mod
 from Common import Utils
+import discord
 
 try:
     from Mods.Economy import EconomyUtils
@@ -62,6 +63,28 @@ class Waifu(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        elif command is self.commands["Waifu Info Command"]:
+            user = author
+            if len(split_message) > 1:
+                given_user = Utils.get_user(server, split_message[1])
+                if given_user is not None:
+                    user = given_user
+                else:
+                    return await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
+            embed = discord.Embed(title="[Waifu Info]", description="Waifu %s." % str(user),
+                                  color=discord.Color(int("0x751DDF", 16)))
+            waifus = ''.join([i + "\n" for i in self.database.execute(
+                "SELECT user_id FROM '%s' WHERE owner_id='%s'" % (server.id, user.id)
+            )])[:-1]
+            waifus = "None" if waifus == '' else waifus
+            price, claimed_by = tuple(self.database.execute(
+                "SELECT price, owner_id FROM '%s' WHERE user_id='%s'" % (server.id, user.id)
+            ))
+            claimed_by_user = Utils.get_user(server, str(claimed_by))
+            embed.add_field(name="Price", value=price, inline=True)
+            embed.add_field(name="Claimed By", value=str(claimed_by_user), inline=True)
+            embed.add_field(name="Waifus", value=waifus, inline=True)
+            await Utils.client.send_message(channel, embed=embed)
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):

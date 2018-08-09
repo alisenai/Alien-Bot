@@ -14,6 +14,19 @@
         "claim 123456789012345678"
       ],
       "Enabled": true
+    },
+    "Waifu Info Command": {
+      "Aliases": [
+        "waifu-info"
+      ],
+      "Help": "Displays the waifu info of either the given user or the author.",
+      "Useage": [
+        "waifu-info {User: Empty/Ping/Identifier}",
+        "waifu-info",
+        "waifu-info @User",
+        "waifu-info 123456789012345678"
+      ],
+      "Enabled": true
     }
   }
 }

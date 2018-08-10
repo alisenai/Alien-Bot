@@ -52,3 +52,8 @@ fabric.properties
 config.json
 trash/
 __pycache__/
+Mods/Waifu/Waifus.db
+Mods/Shop/Shop.db
+Mods/Economy/Bank.db
+Common/Command.db
+Config/Database.db

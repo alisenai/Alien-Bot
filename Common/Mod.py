@@ -1,5 +1,5 @@
-from Common import Utils
 from Common.Command import Command
+from Common import Utils
 
 
 # Extendable class for mods

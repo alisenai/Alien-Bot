@@ -3,6 +3,18 @@
   "Default Claim Amount": 500,
   "Claim Addition Amount": 50,
   "Commands": {
+    "Divorce Waifu Command": {
+      "Aliases": [
+        "divorce"
+      ],
+      "Help": "Claims given user as your waifu.",
+      "Useage": [
+        "divorce {Waifu: Ping/Identifier}",
+        "divorce @User",
+        "divorce 123456789012345678"
+      ],
+      "Enabled": true
+    },
     "Claim Waifu Command": {
       "Aliases": [
         "claim"

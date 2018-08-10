@@ -1,7 +1,7 @@
-import re
-import discord
-from Common import DataManager
 from Common.Command import Command
+from Common import DataManager
+import discord
+import re
 
 client = None
 prefix = None

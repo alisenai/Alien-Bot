@@ -1,10 +1,8 @@
-import time
-
-import Common.DataManager as DataManager
-from Common import Utils
-from Common.Mod import Mod
+from Common import DataManager, Utils
 from Mods.Economy import EconomyUtils
+from Common.Mod import Mod
 import discord
+import time
 
 
 # TODO: Major commenting needed

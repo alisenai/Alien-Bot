@@ -1,6 +1,5 @@
-from Common import DataManager
+from Common import DataManager, Utils
 from Common.Mod import Mod
-from Common import Utils
 import discord
 import random
 import time
@@ -38,7 +37,7 @@ class DailyEconomy(Mod):
                                        self.embed_color)
 
     async def command_called(self, message, command):
-        split_message = message.split(" ")
+        split_message = message.content.split(" ")
         server, channel, author = message.server, message.channel, message.author
         if command is self.commands["Set Success Rate Command"]:
             if len(split_message) > 2:

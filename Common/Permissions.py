@@ -1,4 +1,3 @@
-# Returns the title of the user by their ID
 from Common import DataManager
 
 permissions = {}

@@ -1,6 +1,5 @@
-import time
-
 from Common import Permissions, Utils, DataManager
+import time
 
 
 class Command:
@@ -21,7 +20,7 @@ class Command:
         self.cool_down_seconds = cool_down_seconds
         # Get cool down manager
         self.command_database = DataManager.get_manager("commands")
-        self.command_database.execute("CREATE TABLE IF NOT EXISTS '" + name + "'(user TEXT, last_called REAL)")
+        self.command_database.execute("CREATE TABLE IF NOT EXISTS '" + name + "'(user_id TEXT, last_called REAL)")
 
     def __eq__(self, other):
         return self.name == other.name
@@ -49,12 +48,22 @@ class Command:
     async def call_command_skip_checks(self, message):
         # Send "is typing", for  a e s t h e t i c s
         await Utils.client.send_typing(message.channel)
+        # Keep a record of the last call time
+        author = message.author
+        if self.last_called(author.id) == -1:
+            self.command_database.execute(
+                "INSERT INTO '%s' VALUES('%s', '%s')" % (self.name, author.id, str(time.time()))
+            )
+        else:
+            self.command_database.execute(
+                "UPDATE '%s' SET last_called='%s' WHERE user_id='%s'" % (self.name, str(time.time()), author.id)
+            )
         # Call the command on the parent mod
         await self.parent_mod.command_called(message, self)
 
     # Returns when the user last called the command
     def last_called(self, user_id):
-        last_called = self.command_database.execute("SELECT last_called FROM '" + self.name + "' WHERE user=" +
+        last_called = self.command_database.execute("SELECT last_called FROM '" + self.name + "' WHERE user_id=" +
                                                     str(user_id) + " LIMIT 1")
         if len(last_called) != 0:
             return int(last_called[0])
@@ -85,17 +94,13 @@ class Command:
                             last_called = self.last_called(author.id)
                             # If the user has never called the command before (or there is no record of it)
                             if last_called == -1:
-                                self.command_database.execute(
-                                    "INSERT INTO '" + self.name + "' VALUES('" + author.id + "', " + str(
-                                        time.time()) + ")")
                                 await self.call_command_skip_checks(message)
                             else:
                                 current_tick = time.time()
                                 # If the cool down has expired, update DB and call command
                                 if current_tick - last_called > self.cool_down_seconds:
-                                    self.command_database.execute("UPDATE '" + self.name + "' SET last_called=" + str(
-                                        current_tick) + " WHERE user='" + author.id + "'")
                                     await self.call_command_skip_checks(message)
+                                # Command is on cool down for this user
                                 else:
                                     await self.parent_mod.error_cool_down(message, self)
                     else:

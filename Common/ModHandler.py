@@ -1,9 +1,8 @@
-import os
-import sys
-import discord
+from Common import DataManager, Utils
 import difflib
-from Common import Utils
-from Common import DataManager
+import discord
+import sys
+import os
 
 
 # TODO: Redo help so it only prints what the user's permissions allows

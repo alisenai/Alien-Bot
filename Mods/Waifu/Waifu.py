@@ -1,6 +1,5 @@
-from Common import DataManager
+from Common import DataManager, Utils
 from Common.Mod import Mod
-from Common import Utils
 import discord
 
 try:
@@ -41,7 +40,7 @@ class Waifu(Mod):
                             if user_cash >= amount:
                                 if amount >= waifu_price:
                                     self.database.execute(
-                                        "UPDATE '%s' SET owner_id='%s', price='%d' WHERE user_id='%s' " %
+                                        "UPDATE '%s' SET owner_id='%s', price='%d' WHERE user_id='%s'" %
                                         (server.id, author.id, amount, user.id)
                                     )
                                     EconomyUtils.set_cash(server.id, user.id, user_cash - amount)
@@ -85,6 +84,34 @@ class Waifu(Mod):
             embed.add_field(name="Claimed By", value=str(claimed_by_user), inline=True)
             embed.add_field(name="Waifus", value=waifus, inline=True)
             await Utils.client.send_message(channel, embed=embed)
+        elif command is self.commands["Divorce Waifu Command"]:
+            if len(split_message) > 1:
+                user = Utils.get_user(server, split_message[1])
+                if user is not None:
+                    waifus = self.database.execute(
+                        "SELECT user_id FROM '%s' WHERE owner_id='%s'" % (server.id, author.id)
+                    )
+                    if user.id in waifus:
+                        waifu_cost_split = round(self.database.execute(
+                            "SELECT price FROM '%s' WHERE user_id='%s' LIMIT 1" % (server.id, user.id)
+                        )[0] / 2)
+                        author_cash = EconomyUtils.get_cash(server.id, author.id)
+                        user_cash = EconomyUtils.get_cash(server.id, user.id)
+                        EconomyUtils.set_cash(server.id, user.id, user_cash + waifu_cost_split)
+                        EconomyUtils.set_cash(server.id, author.id, author_cash + waifu_cost_split)
+                        self.database.execute(
+                            "UPDATE '%s' SET owner_id=NULL WHERE user_id='%s'" % (server.id, user.id)
+                        )
+                        await Utils.simple_embed_reply(channel, "[Divorce]",
+                                                       "You divorced %s and received %d back!" %
+                                                       (str(user), waifu_cost_split))
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Error]", "That is not one of your waifus.")
+                    return
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):

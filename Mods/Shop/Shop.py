@@ -1,6 +1,5 @@
-from Common import DataManager
+from Common import DataManager, Utils
 from Common.Mod import Mod
-from Common import Utils
 import discord
 import asyncio
 import time

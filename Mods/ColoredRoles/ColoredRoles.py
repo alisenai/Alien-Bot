@@ -5,7 +5,7 @@ import logging
 import json
 
 
-# TODO: Change from in-memory DB to on-disk DB SQL
+# TODO: Change from in-memory DB to on-disk SQL DB
 class ColoredRoles(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init

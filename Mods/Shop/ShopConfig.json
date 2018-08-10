@@ -73,7 +73,7 @@
     },
     "Delete Shop Command": {
       "Aliases": [
-        "shop-role"
+        "delete-role"
       ],
       "Help": "Deletes a given shop by name.",
       "Useage": [

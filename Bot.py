@@ -7,7 +7,6 @@ import discord
 import random
 import time
 
-
 MOD_CONFIG = "Config\ModConfigs.json"
 # Create a client object
 client = discord.Client()

@@ -57,3 +57,5 @@ Mods/Shop/Shop.db
 Mods/Economy/Bank.db
 Common/Command.db
 Config/Database.db
+venv/
+.idea/misc.xml

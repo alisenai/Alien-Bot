@@ -138,6 +138,7 @@ async def on_member_join(member):
     await mod_handler.on_member_join(member)
 
 
+# Calls ticks throughout the bot once a second
 def tick():
     while True:
         time.sleep(1)

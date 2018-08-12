@@ -184,12 +184,15 @@ class Waifu(Mod):
                     # Build the given gift name (since it caN CONTAIN spaces)
                     # ["A", "goOD", "gIfT"] -> "a good gift"
                     gift_name = (' '.join(split_message[2:])).lower()
-                    gifts = self.config.get_data("Gifts")
-                    gift_names = [gift_name for gift_name in gifts]
-                    lower_gift_names = [gift_name.lower() for gift_name in gift_names]
-                    if gift_name in lower_gift_names:
-                        # Grab gift by: Lower name index > True gift name > Gift
-                        gift = gifts[gift_names[lower_gift_names.index(gift_name)]]
+                    raw_gifts = self.config.get_data("Gifts")
+                    # Build a dict {lowercase name : gift}
+                    gifts = {}
+                    for gift_name in raw_gifts:
+                        gifts[gift_name.lower()] = raw_gifts[gift_name]
+                    # Check if the gift name is one that exists
+                    if gift_name in gifts:
+                        # Grab gift by the lowercase name from the built dict
+                        gift = gifts[gift_name]
                         user_cash = EconomyUtils.get_cash(server.id, author.id)
                         if user_cash >= gift["Cost"]:
                             # TODO: Update DB

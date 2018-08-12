@@ -157,9 +157,10 @@ class Economy(Mod):
                 page = split_message[1]
                 if page.isdigit():
                     page = int(page)
+                    if page == 0:
+                        return await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
                 else:
-                    await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
-                    return
+                    return await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
             user_rank_order = EconomyUtils.database_execute(
                 "SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
             max_page = int(len(user_rank_order) // 10)

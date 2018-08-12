@@ -2,6 +2,48 @@
   "Mod Description": "Waifu > Laifu.",
   "Default Claim Amount": 500,
   "Claim Addition Amount": 50,
+  "Gifts": {
+    "Blue Diamond": {
+      "Cost": 1000,
+      "Symbol": ":large_blue_diamond:"
+    },
+    "Red Diamond": {
+      "Cost": 1000,
+      "Symbol": ":diamonds:"
+    },
+    "Beer": {
+      "Cost": 50,
+      "Symbol": ":beer:"
+    },
+    "Kiwi": {
+      "Cost": 50,
+      "Symbol": ":kiwi:"
+    },
+    "Red Car": {
+      "Cost": 1000,
+      "Symbol": ":red_car:"
+    },
+    "Blue Car": {
+      "Cost": 1000,
+      "Symbol": ":blue_car:"
+    },
+    "Race Car": {
+      "Cost": 2000,
+      "Symbol": ":race_car:"
+    },
+    "House": {
+      "Cost": 2000,
+      "Symbol": ":house:"
+    },
+    "Dress": {
+      "Cost": 200,
+      "Symbol": ":dress:"
+    },
+    "Ramen": {
+      "Cost": 2000,
+      "Symbol": ":ramen:"
+    }
+  },
   "Commands": {
     "Divorce Waifu Command": {
       "Aliases": [
@@ -13,6 +55,7 @@
         "divorce @User",
         "divorce 123456789012345678"
       ],
+      "Cool Down": 21600,
       "Enabled": true
     },
     "Claim Waifu Command": {
@@ -37,6 +80,30 @@
         "waifu-info",
         "waifu-info @User",
         "waifu-info 123456789012345678"
+      ],
+      "Enabled": true
+    },
+    "Gifts Command": {
+      "Aliases": [
+        "gifts"
+      ],
+      "Help": "Displays all the gifts you can give to users.",
+      "Useage": [
+        "gifts {Page: Empty/Number}",
+        "gifts",
+        "gifts 2"
+      ],
+      "Enabled": true
+    },
+    "Gift Command": {
+      "Aliases": [
+        "gift"
+      ],
+      "Help": "Gives a gift to a user.",
+      "Useage": [
+        "gift {User: Ping/Identifier} {Gift: Text}",
+        "gift @User beer",
+        "gift 123456789012345678 beer"
       ],
       "Enabled": true
     }

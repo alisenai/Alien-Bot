@@ -235,6 +235,16 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Gift Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Gifts Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Waifu Info Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

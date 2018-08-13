@@ -1,3 +1,5 @@
+import re
+
 from Common import DataManager, Utils
 from Common.Mod import Mod
 import discord
@@ -12,6 +14,10 @@ class Waifu(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init
         self.config = DataManager.JSON("Mods/Waifu/WaifuConfig.json")
+        # Make sure all gifts follow a proper naming convention
+        for gift_name in self.config.get_data("Gifts"):
+            if not re.fullmatch(r"[A-Za-z0-9 ]*", gift_name):
+                raise Exception("Waifu gift name \"%s\" can only contain spaces, A-Z, a-z, 0-9" % gift_name)
         # Build command objects
         self.commands = Utils.parse_command_config(self, mod_name, self.config.get_data('Commands'))
         # Init DBs
@@ -24,6 +30,7 @@ class Waifu(Mod):
         # Super...
         super().__init__(mod_name, self.config.get_data("Mod Description"), self.commands, embed_color)
 
+    # Called when a waifu command is called
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
         server, channel, author = message.server, message.channel, message.author
@@ -97,10 +104,26 @@ class Waifu(Mod):
             ))
             # Grab their "owner" - it will be "None" if they don't have one
             claimed_by_user = Utils.get_user(server, str(claimed_by))
+            gifts = self.config.get_data("Gifts")
+            # Get gift names from gifts DB (Table names)
+            db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            # Generate the user's gift text
+            gift_text = ""
+            for gift_name in db_gift_names:
+                # Get the number of gifts of that type the user has
+                gift_count = self.gifts_db.execute(
+                    "SELECT amount FROM '%s' WHERE server_id='%s' AND user_id='%s'" % (gift_name, server.id, user.id)
+                )[0]
+                # If they have at least one of that gift, add it to the gift text
+                if gift_count > 0:
+                    gift_text += "%s x%d" % (gifts[gift_name]["Symbol"], gift_count)
+            # If the user doesn't have any gifts, set the text to "None"
+            gift_text = "None" if gift_text == "" else gift_text
             # Generate the rest of the embed
             # TODO: Finish generation with the rest of the info
-            embed.add_field(name="Price", value=price, inline=True)
             embed.add_field(name="Claimed By", value=str(claimed_by_user), inline=True)
+            embed.add_field(name="Price", value=price, inline=True)
+            embed.add_field(name="Gifts", value=gift_text, inline=True)
             embed.add_field(name="Waifus", value=waifus, inline=True)
             # Send the embed as the reply
             await Utils.client.send_message(channel, embed=embed)
@@ -183,23 +206,28 @@ class Waifu(Mod):
                 if user is not None:
                     # Build the given gift name (since it caN CONTAIN spaces)
                     # ["A", "goOD", "gIfT"] -> "a good gift"
-                    gift_name = (' '.join(split_message[2:])).lower()
+                    given_gift_name = (' '.join(split_message[2:])).lower()
                     raw_gifts = self.config.get_data("Gifts")
-                    # Build a dict {lowercase name : gift}
-                    gifts = {}
                     for gift_name in raw_gifts:
-                        gifts[gift_name.lower()] = raw_gifts[gift_name]
-                    # Check if the gift name is one that exists
-                    if gift_name in gifts:
-                        # Grab gift by the lowercase name from the built dict
-                        gift = gifts[gift_name]
-                        user_cash = EconomyUtils.get_cash(server.id, author.id)
-                        if user_cash >= gift["Cost"]:
-                            # TODO: Update DB
-                            EconomyUtils.set_cash(server.id, author.id, user_cash - gift["Cost"])
-                            await Utils.simple_embed_reply(channel, "[Error]", "Command not finished.")
-                        else:
-                            await Utils.simple_embed_reply(channel, "[Error]", "You don't have enough cash to do that.")
+                        # Check if the lowercase gift name is the same as the lowercase given gift name
+                        if gift_name.lower() == given_gift_name:
+                            gift = raw_gifts[gift_name]
+                            author_cash = EconomyUtils.get_cash(server.id, author.id)
+                            if author_cash >= gift["Cost"]:
+                                # Add one to gift counter in DB
+                                self.gifts_db.execute(
+                                    "UPDATE '%s' SET amount=amount + 1 WHERE server_id='%s' AND user_id='%s'" %
+                                    (gift_name, server.id, user.id)
+                                )
+                                # Update author cash
+                                EconomyUtils.set_cash(server.id, author.id, author_cash - gift["Cost"])
+                                # Let the author know the user got the gift
+                                await Utils.simple_embed_reply(channel, "[Gift]", "%s was gifted **%s**." %
+                                                               (str(user), "%s %s" % (gift_name, gift["Symbol"])))
+                                break
+                            else:
+                                await Utils.simple_embed_reply(channel, "[Error]",
+                                                               "You don't have enough cash to do that.")
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Gift not found.")
                 else:
@@ -211,21 +239,51 @@ class Waifu(Mod):
     async def on_member_join(self, member):
         server_id = member.server.id
         user_id = member.id
+        # Get known users from the waifus DB
         known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server_id)
         if user_id not in known_users:
+            # Add user to waifus DB
             self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL)" % (
                 server_id, user_id, str(self.config.get_data("Default Claim Amount"))
             ))
+            # Get known gift names
+            db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            # Populate gifts DB tables with new user
+            for gift_name in db_gift_names:
+                self.gifts_db.execute("INSERT INTO '%s' VALUES('%s', 0, 0)" % (gift_name, user_id))
 
     # Generates the waifu DB
     def generate_db(self):
+        # Create waifu server tables if they don't exist
         for server in Utils.client.servers:
             self.waifus_db.execute(
                 "CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, owner_id TEXT)" % server.id
             )
+            # Populate waifu server tables with any unknown users
             known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server.id)
             for user in server.members:
                 if user.id not in known_users:
                     self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL)" % (
                         server.id, user.id, str(self.config.get_data("Default Claim Amount"))
                     ))
+        # Grab known gift names from the DB and Config
+        db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        config_gift_names = [gift_name for gift_name in self.config.get_data("Gifts")]
+        # Find which gifts need to be added or removed from the DB (if any)
+        gifts_to_remove = [gift_name for gift_name in db_gift_names if gift_name not in config_gift_names]
+        gifts_to_add = [gift_name for gift_name in config_gift_names if gift_name not in db_gift_names]
+        # Remove any gifts that are no longer in the config
+        for gift_name in gifts_to_remove:
+            self.gifts_db.execute("DROP TABLE '%s'" % gift_name)
+        # Add any new gifts to the DB
+        for gift_name in gifts_to_add:
+            # Create a table
+            self.gifts_db.execute(
+                "CREATE TABLE IF NOT EXISTS '%s'(server_id TEXT, user_id TEXT, amount DIGIT, pocket_amount DIGIT)" %
+                gift_name
+            )
+            # Populate the new table
+            for server in Utils.client.servers:
+                for user in server.members:
+                    self.gifts_db.execute(
+                        "INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))

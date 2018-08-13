@@ -157,13 +157,11 @@ class Economy(Mod):
                 page = split_message[1]
                 if page.isdigit():
                     page = int(page)
-                    if page == 0:
-                        return await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
                 else:
                     return await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
             user_rank_order = EconomyUtils.database_execute(
                 "SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
-            max_page = int(len(user_rank_order) // 10)
+            max_page = int((len(user_rank_order) + 9) // 10)
             if page <= max_page:
                 if (len(user_rank_order) + 10) / 10 >= page:
                     embed = discord.Embed(title="[" + str(server) + " Leaderboard]",
@@ -178,7 +176,7 @@ class Economy(Mod):
                         user_worth = EconomyUtils.get_bank(server.id, user_id) + EconomyUtils.get_cash(server.id,
                                                                                                        user_id)
                         embed.add_field(name=str(user) + " : " + rank_text,
-                                        value=str(user_worth) + EconomyUtils.currency, inline=True)
+                                        value=str(user_worth) + EconomyUtils.currency, inline=False)
                     embed.set_footer(text="Page " + str(page) + "/" + str(max_page))
                     await Utils.client.send_message(channel, embed=embed)
                 else:

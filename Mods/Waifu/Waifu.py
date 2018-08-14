@@ -99,11 +99,6 @@ class Waifu(Mod):
             )])[:-1]
             waifus = "None" if waifus == '' else waifus
             # Grab the price and owner of the user from the Db
-            price, claimed_by = tuple(self.waifus_db.execute(
-                "SELECT price, owner_id FROM '%s' WHERE user_id='%s'" % (server.id, user.id)
-            ))
-            # Grab their "owner" - it will be "None" if they don't have one
-            claimed_by_user = Utils.get_user(server, str(claimed_by))
             gifts = self.config.get_data("Gifts")
             # Get gift names from gifts DB (Table names)
             db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table';")
@@ -119,11 +114,20 @@ class Waifu(Mod):
                     gift_text += "%s x%d" % (gifts[gift_name]["Symbol"], gift_count)
             # If the user doesn't have any gifts, set the text to "None"
             gift_text = "None" if gift_text == "" else gift_text
-            # Generate the rest of the embed
+            # Grab more info for the embed from the DB
+            price, claimed_by, affinity, changes_of_heart = tuple(self.waifus_db.execute(
+                "SELECT price, owner_id, affinity, changes_of_heart FROM '%s' WHERE user_id='%s'" % (server.id, user.id)
+            ))
+            # Grab user info - it will be "None" if it doesn't apply
+            claimed_by_user = Utils.get_user(server, str(claimed_by))
+            affinity_user = Utils.get_user(server, str(affinity))
             # TODO: Finish generation with the rest of the info
+            # Generate the rest of the embed
             embed.add_field(name="Claimed By", value=str(claimed_by_user), inline=True)
             embed.add_field(name="Price", value=price, inline=True)
-            embed.add_field(name="Gifts", value=gift_text, inline=True)
+            embed.add_field(name="Gifts", value=gift_text, inline=False)
+            embed.add_field(name="Affinity", value=str(affinity_user), inline=True)
+            embed.add_field(name="Changes of Heart", value=changes_of_heart, inline=True)
             embed.add_field(name="Waifus", value=waifus, inline=True)
             # Send the embed as the reply
             await Utils.client.send_message(channel, embed=embed)
@@ -216,7 +220,7 @@ class Waifu(Mod):
                             if author_cash >= gift["Cost"]:
                                 # Add one to gift counter in DB
                                 self.gifts_db.execute(
-                                    "UPDATE '%s' SET amount=amount + 1 WHERE server_id='%s' AND user_id='%s'" %
+                                    "UPDATE '%s' SET amount=amount+1 WHERE server_id='%s' AND user_id='%s'" %
                                     (gift_name, server.id, user.id)
                                 )
                                 # Update author cash
@@ -240,13 +244,25 @@ class Waifu(Mod):
                 user = Utils.get_user(server, split_message[1])
                 # Check if a valid user was given
                 if user is not None:
-                    # Set the affinity in the DB
-                    self.waifus_db.execute(
-                        "UPDATE '%s' SET affinity='%s' WHERE user_id='%s'" % (server.id, user.id, author.id)
-                    )
-                    # Let the user know the affinity was set
-                    await Utils.simple_embed_reply(channel, "[Affinity]", "Your affinity is now set towards %s." %
-                                                   str(user))
+                    if user is not author:
+                        current_affinity = self.waifus_db.execute(
+                            "SELECT affinity FROM '%s' WHERE user_id='%s'" % (server.id, author.id)
+                        )[0]
+                        # If the current author affinity is not Null, then increase the changes of heart
+                        if current_affinity is not None:
+                            self.waifus_db.execute(
+                                "UPDATE '%s' SET changes_of_heart=changes_of_heart+1 WHERE user_id='%s'" %
+                                (server.id, author.id)
+                            )
+                        # Set the affinity in the DB
+                        self.waifus_db.execute(
+                            "UPDATE '%s' SET affinity='%s' WHERE user_id='%s'" % (server.id, user.id, author.id)
+                        )
+                        # Let the user know the affinity was set
+                        await Utils.simple_embed_reply(channel, "[Affinity]", "Your affinity is now set towards %s." %
+                                                       str(user))
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Error]", "You cannot set your affinity to yourself.")
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
 
@@ -258,7 +274,7 @@ class Waifu(Mod):
         known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server_id)
         if user_id not in known_users:
             # Add user to waifus DB
-            self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL, NULL)" % (
+            self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
                 server_id, user_id, str(self.config.get_data("Default Claim Amount"))
             ))
             # Get known gift names
@@ -272,14 +288,14 @@ class Waifu(Mod):
         # Create waifu server tables if they don't exist
         for server in Utils.client.servers:
             self.waifus_db.execute(
-                "CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, owner_id TEXT, affinity TEXT)" %
-                server.id
+                """CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, changes_of_heart DIGIT, 
+                divorces DIGIT, owner_id TEXT, affinity TEXT)""" % server.id
             )
             # Populate waifu server tables with any unknown users
             known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server.id)
             for user in server.members:
                 if user.id not in known_users:
-                    self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL, NULL)" % (
+                    self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
                         server.id, user.id, str(self.config.get_data("Default Claim Amount"))
                     ))
         # Grab known gift names from the DB and Config

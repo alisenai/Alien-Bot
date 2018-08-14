@@ -140,9 +140,14 @@ async def on_member_join(member):
 
 # Calls ticks throughout the bot once a second
 def tick():
+    minute_timer = 0
     while True:
         time.sleep(1)
-        loop.create_task(mod_handler.tick())
+        loop.create_task(mod_handler.second_tick())
+        minute_timer += 1
+        if minute_timer == 60:
+            minute_timer = 0
+            loop.create_task(mod_handler.minute_tick())
 
 
 # Make sure there is a token in the config

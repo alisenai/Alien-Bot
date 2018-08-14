@@ -1,18 +1,20 @@
 from Common import DataManager, Utils
 from Mods.Economy import EconomyUtils
+from datetime import date, timedelta
 from Common.Mod import Mod
+import calendar
 import discord
 import time
 
 
 # TODO: Major commenting needed
 # TODO: "" + x + "" -> %
-# TODO: Interest Rate
 class Economy(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init
         self.name = mod_name
         self.embed_color = embed_color
+        self.applied_interest = False
         # Config var init
         self.config = DataManager.JSON("Mods/Economy/EconomyConfig.json")
         # Init the bank DB for mods to use
@@ -245,6 +247,23 @@ class Economy(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
         else:
             await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+
+    # Check if interest needs to be applied every minute
+    async def minute_tick(self):
+        yesterday = (date.today() - timedelta(1))
+        # If yesterday was the end of the previous month, today is the first day of this month
+        if calendar.monthrange(yesterday.year, yesterday.month)[1] == yesterday.day:
+            # Check if interest has already been applied
+            if not self.applied_interest:
+                self.applied_interest = True
+                # If not, apply interest
+                for server in Utils.client.servers:
+                    EconomyUtils.database_execute(
+                        "UPDATE '%s' SET bank=bank*%f" % (server.id, 1 + self.config.get_data("Interest Rate"))
+                    )
+        else:
+            # Allow interest to be applied since at least 1 day has passed since it should of been applied previously
+            self.applied_interest = False
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):

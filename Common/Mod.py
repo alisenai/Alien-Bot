@@ -62,8 +62,12 @@ class Mod:
                                        "You can call " + command.name + " again in " + time_left_text + ".",
                                        self.embed_color)
 
+    # Called once a second
+    async def second_tick(self):
+        pass
 
-    async def tick(self):
+    # Called once a minute
+    async def minute_tick(self):
         pass
 
     # Returns true if the passed command alias is known by the mod

@@ -287,7 +287,7 @@ class Shop(Mod):
         return embed
 
     # Deletes messages if their duration is up
-    async def tick(self):
+    async def second_tick(self):
         shops = self.database.execute("SELECT shop_name FROM shops")
         current_time = time.time()
         for shop_name in shops:

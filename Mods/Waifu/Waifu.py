@@ -372,6 +372,7 @@ class Waifu(Mod):
             # Pocket all gifts
             for gift_name in self.config.get_data("Gifts"):
                 self.gifts_db.execute("UPDATE '%s' SET pocket_amount=pocket_amount+amount, amount=0" % gift_name)
+            # Reply
             await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "The leaderboard has been deleted.")
 
     # Called when a member joins a server the bot is in

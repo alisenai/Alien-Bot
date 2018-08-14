@@ -140,9 +140,15 @@ class ModHandler:
         for mod_name in self.mods:
             await self.mods[mod_name].message_received(message)
 
-    async def tick(self):
+    # Called once a second
+    async def second_tick(self):
         for mod_name in self.mods:
-            await self.mods[mod_name].tick()
+            await self.mods[mod_name].second_tick()
+
+    # Called once a minute
+    async def minute_tick(self):
+        for mod_name in self.mods:
+            await self.mods[mod_name].minute_tick()
 
     # Returns a dictionary - {mod name : mod description}
     def get_mod_descriptions(self):

@@ -80,6 +80,17 @@
       ],
       "Enabled": true
     },
+    "Delete Waifu Leaderboard Command": {
+      "Aliases": [
+        "delete-waifu-leaderboard",
+        "delete-waifu-ldb"
+      ],
+      "Help": "Pockets gifts and does a full reset on waifus.",
+      "Useage": [
+        "delete-waifu-leaderboard"
+      ],
+      "Enabled": true
+    },
     "Waifu Info Command": {
       "Aliases": [
         "waifu-info"

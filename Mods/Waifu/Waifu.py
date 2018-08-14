@@ -363,6 +363,16 @@ class Waifu(Mod):
                 await Utils.client.send_message(channel, embed=embed)
             else:
                 await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "No waifus are currently claimed!")
+        elif command is self.commands["Delete Waifu Leaderboard Command"]:
+            # Reset all waifu info
+            self.waifus_db.execute(
+                "UPDATE '%s' SET owner_id=NULL, affinity=NULL, divorces=0, changes_of_heart=0, price='%d'" %
+                (server.id, self.config.get_data("Default Claim Amount"))
+            )
+            # Pocket all gifts
+            for gift_name in self.config.get_data("Gifts"):
+                self.gifts_db.execute("UPDATE '%s' SET pocket_amount=pocket_amount+amount, amount=0" % gift_name)
+            await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "The leaderboard has been deleted.")
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):

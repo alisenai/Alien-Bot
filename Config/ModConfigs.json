@@ -235,6 +235,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Delete Waifu Leaderboard Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Divorce Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

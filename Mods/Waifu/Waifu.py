@@ -34,7 +34,7 @@ class Waifu(Mod):
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
         server, channel, author = message.server, message.channel, message.author
-        if command is self.commands["Claim Waifu Command"]:
+        if command is self.commands["Claim Command"]:
             if len(split_message) > 2:
                 # Try and get a user from the passed arguments
                 user = Utils.get_user(server, split_message[1])
@@ -141,7 +141,7 @@ class Waifu(Mod):
             embed.add_field(name="Waifus", value=waifus, inline=True)
             # Send the embed as the reply
             await Utils.client.send_message(channel, embed=embed)
-        elif command is self.commands["Divorce Waifu Command"]:
+        elif command is self.commands["Divorce Command"]:
             if len(split_message) > 1:
                 # Try and get a user from the passed arguments
                 user = Utils.get_user(server, split_message[1])
@@ -166,17 +166,23 @@ class Waifu(Mod):
                         self.waifus_db.execute(
                             "UPDATE '%s' SET owner_id=NULL WHERE user_id='%s'" % (server.id, user.id)
                         )
+                        # Increase author divorce count
+                        self.waifus_db.execute(
+                            "UPDATE '%s' SET divorces=divorces+1 WHERE user_id='%s'" % (server.id, author.id)
+                        )
                         # Let the user know it was a successful divorce and how much they got back
                         await Utils.simple_embed_reply(channel, "[Divorce]",
                                                        "You divorced %s and received %d back!" %
                                                        (str(user), waifu_cost_split))
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "That is not one of your waifus.")
-                    return
+                        command.reset_cool_down(author.id)
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
+                    command.reset_cool_down(author.id)
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+                command.reset_cool_down(author.id)
         elif command is self.commands["Gifts Command"]:
             # Config
             gifts_per_page = 6
@@ -258,19 +264,23 @@ class Waifu(Mod):
                         current_affinity = self.waifus_db.execute(
                             "SELECT affinity FROM '%s' WHERE user_id='%s'" % (server.id, author.id)
                         )[0]
-                        # If the current author affinity is not Null, then increase the changes of heart
-                        if current_affinity is not None:
+                        if current_affinity != user.id:
+                            # If the current author affinity is not Null, then increase the changes of heart
+                            if current_affinity is not None:
+                                self.waifus_db.execute(
+                                    "UPDATE '%s' SET changes_of_heart=changes_of_heart+1 WHERE user_id='%s'" %
+                                    (server.id, author.id)
+                                )
+                            # Set the affinity in the DB
                             self.waifus_db.execute(
-                                "UPDATE '%s' SET changes_of_heart=changes_of_heart+1 WHERE user_id='%s'" %
-                                (server.id, author.id)
+                                "UPDATE '%s' SET affinity='%s' WHERE user_id='%s'" % (server.id, user.id, author.id)
                             )
-                        # Set the affinity in the DB
-                        self.waifus_db.execute(
-                            "UPDATE '%s' SET affinity='%s' WHERE user_id='%s'" % (server.id, user.id, author.id)
-                        )
-                        # Let the user know the affinity was set
-                        await Utils.simple_embed_reply(channel, "[Affinity]", "Your affinity is now set towards %s." %
-                                                       str(user))
+                            # Let the user know the affinity was set
+                            await Utils.simple_embed_reply(channel, "[Affinity]",
+                                                           "Your affinity is now set towards %s." % str(user))
+                        else:
+                            await Utils.simple_embed_reply(channel, "[Error]",
+                                                           "You already have your affinity set towards %s." % str(user))
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "You cannot set your affinity to yourself.")
                 else:

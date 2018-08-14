@@ -45,7 +45,7 @@
     }
   },
   "Commands": {
-    "Divorce Waifu Command": {
+    "Divorce Command": {
       "Aliases": [
         "divorce"
       ],
@@ -58,7 +58,7 @@
       "Cool Down": 21600,
       "Enabled": true
     },
-    "Claim Waifu Command": {
+    "Claim Command": {
       "Aliases": [
         "claim"
       ],

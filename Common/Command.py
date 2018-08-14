@@ -37,6 +37,10 @@ class Command:
             self.alias_index += 1
             return alias
 
+    # Reset user's cool down (If a command wasn't called correctly / cool down doesn't apply to it / etc)
+    def reset_cool_down(self, user_id):
+        self.command_database.execute("DELETE FROM '%s' WHERE user_id='%s'" % (self.name, user_id))
+
     # Returns if the given string is a known command alias
     def is_alias(self, string):
         return string in self.aliases

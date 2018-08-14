@@ -1,3 +1,5 @@
+import time
+
 from Common.Command import Command
 from Common import Utils
 
@@ -44,8 +46,22 @@ class Mod:
         pass
 
     # Called when a command is called during its cool down
+    # Default message - can be over-written
     async def error_cool_down(self, message, command):
-        pass
+        last_called = command.last_called(message.author.id)
+        minutes, seconds = divmod(command.cool_down_seconds - (time.time() - last_called), 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        days, hours, minutes, seconds = int(days), int(hours), int(minutes), int(seconds)
+        # Turn x hours y minutes and z seconds into text format
+        time_left_text = ((str(days) + "d ") if days != 0 else "") + \
+                         ((str(hours) + "h ") if hours != 0 else "") + \
+                         ((str(minutes) + "m ") if minutes != 0 else "") + \
+                         ((str(seconds) + "s") if seconds != 0 else "1s")
+        await Utils.simple_embed_reply(message.channel, str(message.author),
+                                       "You can call " + command.name + " again in " + time_left_text + ".",
+                                       self.embed_color)
+
 
     async def tick(self):
         pass

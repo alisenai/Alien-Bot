@@ -100,23 +100,31 @@ class Waifu(Mod):
             waifus = "None" if waifus == '' else waifus
             # Grab the price and owner of the user from the Db
             gifts = self.config.get_data("Gifts")
-            # Get gift names from gifts DB (Table names)
-            db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            # Generate the user's gift text
-            gift_text = ""
+            # Get gift names from gifts DB (Table names) for gift and pocket gifts text
+            db_gift_names = [gift_name for gift_name in gifts]
+            # db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            # ---------- GIFT TEXT ----------
+            gifts_text = ""
+            pocket_text = ""
             for gift_name in db_gift_names:
                 # Get the number of gifts of that type the user has
-                gift_count = self.gifts_db.execute(
-                    "SELECT amount FROM '%s' WHERE server_id='%s' AND user_id='%s'" % (gift_name, server.id, user.id)
-                )[0]
+                gift_amount, pocket_amount = tuple(self.gifts_db.execute(
+                    "SELECT amount, pocket_amount FROM '%s' WHERE server_id='%s' AND user_id='%s'" %
+                    (gift_name, server.id, user.id)
+                ))
                 # If they have at least one of that gift, add it to the gift text
-                if gift_count > 0:
-                    gift_text += "%s x%d" % (gifts[gift_name]["Symbol"], gift_count)
+                if gift_amount > 0:
+                    gifts_text += "%s x%d" % (gifts[gift_name]["Symbol"], gift_amount)
+                if pocket_amount > 0:
+                    pocket_text += "%s x%d" % (gifts[gift_name]["Symbol"], pocket_amount)
             # If the user doesn't have any gifts, set the text to "None"
-            gift_text = "None" if gift_text == "" else gift_text
+            gifts_text = "None" if gifts_text == "" else gifts_text
+            # If the user doesn't have any pocket gifts, set the text to "None"
+            pocket_text = "None" if pocket_text == "" else pocket_text
             # Grab more info for the embed from the DB
-            price, claimed_by, affinity, changes_of_heart = tuple(self.waifus_db.execute(
-                "SELECT price, owner_id, affinity, changes_of_heart FROM '%s' WHERE user_id='%s'" % (server.id, user.id)
+            price, claimed_by, affinity, changes_of_heart, divorces = tuple(self.waifus_db.execute(
+                "SELECT price, owner_id, affinity, changes_of_heart, divorces FROM '%s' WHERE user_id='%s'" %
+                (server.id, user.id)
             ))
             # Grab user info - it will be "None" if it doesn't apply
             claimed_by_user = Utils.get_user(server, str(claimed_by))
@@ -125,7 +133,9 @@ class Waifu(Mod):
             # Generate the rest of the embed
             embed.add_field(name="Claimed By", value=str(claimed_by_user), inline=True)
             embed.add_field(name="Price", value=price, inline=True)
-            embed.add_field(name="Gifts", value=gift_text, inline=False)
+            embed.add_field(name="Divorces", value=divorces, inline=True)
+            embed.add_field(name="Gifts", value=gifts_text, inline=False)
+            embed.add_field(name="Pocket", value=pocket_text, inline=False)
             embed.add_field(name="Affinity", value=str(affinity_user), inline=True)
             embed.add_field(name="Changes of Heart", value=changes_of_heart, inline=True)
             embed.add_field(name="Waifus", value=waifus, inline=True)
@@ -278,7 +288,7 @@ class Waifu(Mod):
                 server_id, user_id, str(self.config.get_data("Default Claim Amount"))
             ))
             # Get known gift names
-            db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            db_gift_names = [gift_name for gift_name in self.config.get_data("Gifts")]
             # Populate gifts DB tables with new user
             for gift_name in db_gift_names:
                 self.gifts_db.execute("INSERT INTO '%s' VALUES('%s', 0, 0)" % (gift_name, user_id))

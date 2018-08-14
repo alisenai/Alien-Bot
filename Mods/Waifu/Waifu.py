@@ -234,6 +234,21 @@ class Waifu(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        elif command is self.commands["Affinity Command"]:
+            if len(split_message) > 1:
+                # Try and get a user from what was passed
+                user = Utils.get_user(server, split_message[1])
+                # Check if a valid user was given
+                if user is not None:
+                    # Set the affinity in the DB
+                    self.waifus_db.execute(
+                        "UPDATE '%s' SET affinity='%s' WHERE user_id='%s'" % (server.id, user.id, author.id)
+                    )
+                    # Let the user know the affinity was set
+                    await Utils.simple_embed_reply(channel, "[Affinity]", "Your affinity is now set towards %s." %
+                                                   str(user))
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
@@ -243,7 +258,7 @@ class Waifu(Mod):
         known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server_id)
         if user_id not in known_users:
             # Add user to waifus DB
-            self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL)" % (
+            self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL, NULL)" % (
                 server_id, user_id, str(self.config.get_data("Default Claim Amount"))
             ))
             # Get known gift names
@@ -257,13 +272,14 @@ class Waifu(Mod):
         # Create waifu server tables if they don't exist
         for server in Utils.client.servers:
             self.waifus_db.execute(
-                "CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, owner_id TEXT)" % server.id
+                "CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, owner_id TEXT, affinity TEXT)" %
+                server.id
             )
             # Populate waifu server tables with any unknown users
             known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server.id)
             for user in server.members:
                 if user.id not in known_users:
-                    self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL)" % (
+                    self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', NULL, NULL)" % (
                         server.id, user.id, str(self.config.get_data("Default Claim Amount"))
                     ))
         # Grab known gift names from the DB and Config

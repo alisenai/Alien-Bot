@@ -95,6 +95,18 @@
       ],
       "Enabled": true
     },
+    "Affinity Command": {
+      "Aliases": [
+        "affinity"
+      ],
+      "Help": "Sets your affinity towards a certain user.",
+      "Useage": [
+        "affinity {User: Ping/Identifier}",
+        "affinity @User",
+        "affinity 123456789012345678"
+      ],
+      "Enabled": true
+    },
     "Gift Command": {
       "Aliases": [
         "gift"

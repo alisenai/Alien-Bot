@@ -225,6 +225,11 @@
   },
   "Waifu": {
     "Command Perms": {
+      "Affinity Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Claim Waifu Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

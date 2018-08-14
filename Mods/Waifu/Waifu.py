@@ -129,7 +129,6 @@ class Waifu(Mod):
             # Grab user info - it will be "None" if it doesn't apply
             claimed_by_user = Utils.get_user(server, str(claimed_by))
             affinity_user = Utils.get_user(server, str(affinity))
-            # TODO: Finish generation with the rest of the info
             # Generate the rest of the embed
             embed.add_field(name="Claimed By", value=str(claimed_by_user), inline=True)
             embed.add_field(name="Price", value=price, inline=True)
@@ -141,6 +140,7 @@ class Waifu(Mod):
             embed.add_field(name="Waifus", value=waifus, inline=True)
             # Send the embed as the reply
             await Utils.client.send_message(channel, embed=embed)
+        # TODO: Delete marriage role
         elif command is self.commands["Divorce Command"]:
             if len(split_message) > 1:
                 # Try and get a user from the passed arguments
@@ -224,32 +224,37 @@ class Waifu(Mod):
             if len(split_message) > 2:
                 user = Utils.get_user(server, split_message[1])
                 if user is not None:
-                    # Build the given gift name (since it caN CONTAIN spaces)
-                    # ["A", "goOD", "gIfT"] -> "a good gift"
-                    given_gift_name = (' '.join(split_message[2:])).lower()
-                    raw_gifts = self.config.get_data("Gifts")
-                    for gift_name in raw_gifts:
-                        # Check if the lowercase gift name is the same as the lowercase given gift name
-                        if gift_name.lower() == given_gift_name:
-                            gift = raw_gifts[gift_name]
-                            author_cash = EconomyUtils.get_cash(server.id, author.id)
-                            if author_cash >= gift["Cost"]:
-                                # Add one to gift counter in DB
-                                self.gifts_db.execute(
-                                    "UPDATE '%s' SET amount=amount+1 WHERE server_id='%s' AND user_id='%s'" %
-                                    (gift_name, server.id, user.id)
-                                )
-                                # Update author cash
-                                EconomyUtils.set_cash(server.id, author.id, author_cash - gift["Cost"])
-                                # Let the author know the user got the gift
-                                await Utils.simple_embed_reply(channel, "[Gift]", "%s was gifted **%s**." %
-                                                               (str(user), "%s %s" % (gift_name, gift["Symbol"])))
-                                break
-                            else:
-                                await Utils.simple_embed_reply(channel, "[Error]",
-                                                               "You don't have enough cash to do that.")
+                    if user is not author:
+                        # Build the given gift name (since it caN CONTAIN spaces)
+                        # ["A", "goOD", "gIfT"] -> "a good gift"
+                        given_gift_name = (' '.join(split_message[2:])).lower()
+                        raw_gifts = self.config.get_data("Gifts")
+                        if given_gift_name in [gift_name.lower() for gift_name in raw_gifts]:
+                            for gift_name in raw_gifts:
+                                # Check if the lowercase gift name is the same as the lowercase given gift name
+                                if gift_name.lower() == given_gift_name:
+                                    gift = raw_gifts[gift_name]
+                                    author_cash = EconomyUtils.get_cash(server.id, author.id)
+                                    if author_cash >= gift["Cost"]:
+                                        # Add one to gift counter in DB
+                                        self.gifts_db.execute(
+                                            "UPDATE '%s' SET amount=amount+1 WHERE server_id='%s' AND user_id='%s'" %
+                                            (gift_name, server.id, user.id)
+                                        )
+                                        # Update author cash
+                                        EconomyUtils.set_cash(server.id, author.id, author_cash - gift["Cost"])
+                                        # Let the author know the user got the gift
+                                        await Utils.simple_embed_reply(channel, "[Gift]", "%s was gifted **%s**." %
+                                                                       (str(user),
+                                                                        "%s %s" % (gift_name, gift["Symbol"])))
+                                        break
+                                    else:
+                                        await Utils.simple_embed_reply(channel, "[Error]",
+                                                                       "You don't have enough cash to do that.")
+                        else:
+                            await Utils.simple_embed_reply(channel, "[Error]", "Gift not found.")
                     else:
-                        await Utils.simple_embed_reply(channel, "[Error]", "Gift not found.")
+                        await Utils.simple_embed_reply(channel, "[Error]", "You cannot give yourself a gift.")
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             else:
@@ -285,6 +290,79 @@ class Waifu(Mod):
                         await Utils.simple_embed_reply(channel, "[Error]", "You cannot set your affinity to yourself.")
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
+        elif command is self.commands["Waifu Leaderboard Command"]:
+            # Grab ALL user IDs
+            user_ids = self.waifus_db.execute("SELECT user_id FROM '%s'" % server.id)
+            # Get Owner IDs (basically 1 person from each couple)
+            owner_ids = self.waifus_db.execute(
+                "SELECT owner_id FROM '%s' WHERE owner_id IS NOT NULL" % server.id)
+            # If there's at least one couple
+            if len(owner_ids) > 0:
+                gifts = self.config.get_data("Gifts")
+                # User ID : Gift Value
+                gift_values = {}
+                # Populate the dict with user IDs
+                for user_id in user_ids:
+                    gift_values[user_id] = 0
+                # Calculate gift values for each owner
+                for gift_name in gifts:
+                    db_data = self.gifts_db.execute(
+                        "SELECT user_id, amount FROM '%s' WHERE server_id='%s' AND amount IS NOT 0" % (
+                            gift_name, server.id)
+                    )
+                    # If there was data found
+                    if db_data:
+                        db_data = [[db_data[i], db_data[i + 1]] for i in range(0, len(db_data), 2)]
+                        # Add up each gift price for each user
+                        for user_info in db_data:
+                            gift_values[user_info[0]] += gifts[gift_name]["Cost"] * user_info[1]
+                # Owner ID : Total Value
+                owner_total_values = {}
+                # Add up all the parameters to calculate total value
+                for owner_id in owner_ids:
+                    owner_affinity = tuple(self.waifus_db.execute(
+                        "SELECT affinity FROM '%s' WHERE user_id='%s'" % (server.id, owner_id)
+                    ))
+                    # Get the other ID of the person in the couple, their value and affinity
+                    waifu_id, waifu_value, waifu_affinity = tuple(self.waifus_db.execute(
+                        "SELECT user_id, price, affinity FROM '%s' WHERE owner_id='%s'" % (server.id, owner_id)
+                    ))
+                    total_value = waifu_value + gift_values[waifu_id]
+                    # Add 10% to the value if both users have their affinities set to each other
+                    if waifu_affinity == owner_id and owner_affinity == waifu_id:
+                        owner_total_values[owner_id] = int(total_value * 1.1)
+                    else:
+                        owner_total_values[owner_id] = total_value
+                # Get the top ten values by sorting the keys in the dictionary, reversing it and grabbing 10 or the max
+                top_ten = sorted(owner_total_values.items(), key=lambda x: x[1])[::-1][
+                          :min(len(owner_total_values), 11)]
+                embed = discord.Embed(title=" [Waifu Leaderboard]",
+                                      color=discord.Color(int("0x751DDF", 16)))
+                for i in range(len(top_ten)):
+                    # Get the info from the current spot in the top 10
+                    owner_id, value = top_ten[i]
+                    # Grab the owner's affinity
+                    owner_affinity = self.waifus_db.execute(
+                        "SELECT affinity FROM '%s' WHERE user_id='%s'" % (server.id, owner_id)
+                    )[0]
+                    # Get the other ID of the person in the couple and their affinity
+                    waifu_id, waifu_affinity = tuple(self.waifus_db.execute(
+                        "SELECT user_id, affinity FROM '%s' WHERE owner_id='%s'" % (server.id, owner_id)
+                    ))
+                    owner_user = Utils.get_user_by_id(server, owner_id)
+                    waifu_user = Utils.get_user_by_id(server, waifu_id)
+                    desc = "**%s** - Claimed by **%s**\n" % (str(waifu_user), str(owner_user))
+                    if waifu_affinity == owner_id and owner_affinity == waifu_id:
+                        desc += "... and %s likes %s too!" % (str(waifu_user), str(owner_user))
+                    else:
+                        other_user = Utils.get_user_by_id(server, waifu_affinity)
+                        desc += "... but %s likes %s!" % (str(waifu_user), str(other_user))
+                    embed.add_field(name="%s - %s%s" %
+                                         (Utils.add_number_abbreviation(i + 1), value, EconomyUtils.currency),
+                                    value=desc)
+                await Utils.client.send_message(channel, embed=embed)
+            else:
+                await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "No waifus are currently claimed!")
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):

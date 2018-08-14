@@ -254,6 +254,11 @@
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
+      },
+      "Waifu Leaderboard Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],

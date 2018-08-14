@@ -58,7 +58,17 @@
       "Cool Down": 21600,
       "Enabled": true
     },
-    "Claim Command": {
+    "Waifu Leaderboard Command": {
+      "Aliases": [
+        "waifu-leaderboard",
+        "waifu-ldb"
+      ],
+      "Help": "Lists the top 10 in the waifus.",
+      "Useage": [
+        "waifu-leaderboard"
+      ],
+      "Enabled": true
+    },"Claim Command": {
       "Aliases": [
         "claim"
       ],

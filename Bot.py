@@ -30,7 +30,7 @@ command_prefix = config['Command Prefix']
 command_config = config['Commands']
 # Build a list of bot commands
 bot_commands = {command_name: (Command(None, command_name, command_config[command_name]['Aliases'], True,
-                                       command_config[command_name]["Minimum Permissions"],
+                                       "Owner",
                                        command_config[command_name]['Help'],
                                        ''.join(use + "\n" for use in command_config[command_name]['Useage'])[0:-1]))
                 for command_name in command_config}

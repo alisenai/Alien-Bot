@@ -1,0 +1,30 @@
+{
+  "Commands": {
+    "Channel Command": {
+      "Enabled": true,
+      "Aliases": [
+        "channel"
+      ],
+      "Help": "Changes the bot's presence in a channel",
+      "Useage": [
+        "channel {Status: `enable`/`disable`}",
+        "channel enable",
+        "channel disable"
+      ]
+    },
+    "Help Command": {
+      "Enabled": true,
+      "Aliases": [
+        "help",
+        "h"
+      ],
+      "Help": "Lists mod info",
+      "Useage": [
+        "help {Mod: Text}",
+        "help {Command Alias: Text}",
+        "help Mod",
+        "help help"
+      ]
+    }
+  }
+}

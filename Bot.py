@@ -6,7 +6,6 @@ import discord
 import random
 import time
 
-MOD_CONFIG = "Config\ModConfigs.json"
 # Create a client object
 client = discord.Client()
 # Set global client object
@@ -18,7 +17,7 @@ database_manager = DataManager.add_manager("database", config['Database'], file_
 # Initialize cool down data manager
 cool_down_manager = DataManager.add_manager("commands", "Common\Command.db", file_type=DataManager.FileType.SQL)
 # Initialize mod config manager
-mod_config_manager = DataManager.add_manager("mod_config", MOD_CONFIG)
+mod_config_manager = DataManager.add_manager("mod_config", "Config\ModConfigs.json")
 # Load permissions
 Permissions.load_permissions()
 # Grab the bot's nickname

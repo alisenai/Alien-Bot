@@ -113,6 +113,23 @@
     "Disabled Servers": [],
     "Enabled": true
   },
+  "Defaults": {
+    "Command Perms": {
+      "Channel Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "Help Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
   "Economy": {
     "Command Perms": {
       "Award Command": {

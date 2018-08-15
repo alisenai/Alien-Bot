@@ -1,4 +1,5 @@
 {
+  "Mod Description": "Default bot commands.",
   "Commands": {
     "Channel Command": {
       "Enabled": true,

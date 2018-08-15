@@ -5,6 +5,8 @@ import re
 
 client = None
 prefix = None
+bot_nick = None
+mod_handler = None
 
 
 # Used to check if a string is a hex value

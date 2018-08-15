@@ -11,13 +11,13 @@ except ImportError:
     raise Exception("Economy mod not installed")
 
 
-class Shop(Mod):
+class Shops(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init
-        self.config = DataManager.JSON("Mods/Shop/ShopConfig.json")
+        self.config = DataManager.JSON("Mods/Shops/ShopsConfig.json")
         self.delete_delay = self.config.get_data("Message Delete Delay")
         # Init shop DB
-        self.database = DataManager.add_manager("shop_database", "Mods/Shop/Shop.db",
+        self.database = DataManager.add_manager("shop_database", "Mods/Shops/Shops.db",
                                                 file_type=DataManager.FileType.SQL)
         # Create a shop table withing the DB if there isn't one
         self.database.execute(

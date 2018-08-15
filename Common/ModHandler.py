@@ -51,6 +51,7 @@ class ModHandler:
                 for command_name in mod.commands:
                     command_alias = mod.commands[command_name]
                     for alias in command_alias:
+                        # TODO Check for same mod and command names (getting help doesn't work otherwise)
                         # Check for conflicting commands
                         assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command_alias
                         # Add as known alias for further conflict checks
@@ -68,55 +69,37 @@ class ModHandler:
         print("[Done loading Mods]")
 
     # Called when a user message looks like a command, and it attempts to work with that command
-    async def command_called(self, message, command_alias, is_help=False):
+    async def command_called(self, message, command_alias):
         server = message.server
         channel = message.channel
         split_message = message.content.split(" ")
-        # If it's a help command
-        if is_help:
-            help_input = split_message[1].lower()
-            # If it's help for a mod or a mod command
-            # Mod -> Given mod name -> Get help
-            # Command -> Get mod name -> Get help
-            if self.is_mod_name(help_input) or help_input in [alias.lower() for alias in self.mod_command_aliases]:
-                mod = help_input
-                for mod_name in self.mods:
-                    if help_input in [_.lower() for _ in self.mods[mod_name].command_aliases]:
-                        mod = mod_name
-                await self.get_mod_help(mod, message)
-            # Not a known mod or mod command
-            else:
+        # Make sure everything initialized
+        if self.done_loading:
+            # If it's a known command -> call it if it's enabled / allowed
+            for command in self.commands:
+                if command_alias in command:
+                    mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
+                    # Check if command's parent mod is disabled in the current server
+                    if server.id not in mod_config["Disabled Servers"]:
+                        # Check if command's parent mod is disabled in the current channel
+                        if channel.id not in mod_config["Disabled Channels"]:
+                            await command.call_command(message)
+                    return
+            # No command called -> Not a known command
+            most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
+            # No similar commands -> Reply with an error
+            if most_similar_command is None:
                 # Reply that neither that mod nor command exists
                 await Utils.simple_embed_reply(channel, "[Help]", "Unknown mod or command - %s" % split_message[1])
-        # Not a help command
-        else:
-            # Make sure everything initialized
-            if self.done_loading:
-                # If it's a known command -> call it if it's enabled / allowed
-                for command in self.commands:
-                    if command_alias in command:
-                        mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
-                        # Check if command's parent mod is disabled in the current server
-                        if server.id not in mod_config["Disabled Servers"]:
-                            # Check if command's parent mod is disabled in the current channel
-                            if channel.id not in mod_config["Disabled Channels"]:
-                                await command.call_command(message)
-                        return
-                # No command called -> Not a known command
-                most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
-                # No similar commands -> Reply with an error
-                if most_similar_command is None:
-                    # Reply that neither that mod nor command exists
-                    await Utils.simple_embed_reply(channel, "[Help]", "Unknown mod or command - %s" % split_message[1])
-                # Similar-looking command exists -> Reply with it
-                else:
-                    # Reply with a similar command
-                    await Utils.simple_embed_reply(channel, "[Unknown command]",
-                                                   "Did you mean `" + most_similar_command + "`?")
-            # Mods are still loading -> Let the author know
+            # Similar-looking command exists -> Reply with it
             else:
-                await Utils.simple_embed_reply(channel, "[Error]",
-                                               "The bot is still loading, please wait.")
+                # Reply with a similar command
+                await Utils.simple_embed_reply(channel, "[Unknown command]",
+                                               "Did you mean `" + most_similar_command + "`?")
+        # Mods are still loading -> Let the author know
+        else:
+            await Utils.simple_embed_reply(channel, "[Error]",
+                                           "The bot is still loading, please wait.")
 
     # Called when ANY message is received by the bot
     async def message_received(self, message):
@@ -140,18 +123,27 @@ class ModHandler:
             mod_descriptions[mod_name] = self.mods[mod_name].description
         return mod_descriptions
 
+    async def get_help(self, message):
+        split_message = message.content.split(" ")
+        help_input = split_message[1].lower()
+        # If it's help for a mod or a mod command
+        # Mod -> Given mod name -> Get help
+        # Command -> Get mod name -> Get help
+        if self.is_mod_name(help_input) or help_input in [alias.lower() for alias in self.mod_command_aliases]:
+            for mod_name in self.mods:
+                if help_input in [_.lower() for _ in self.mods[mod_name].command_aliases] or help_input == mod_name.lower():
+                    return await self.mods[mod_name].get_help(message)
+        # Not a known mod or mod command
+        else:
+            # Reply that neither that mod nor command exists
+            await Utils.simple_embed_reply(message.channel, "[Help]", "Unknown mod or command - %s" % split_message[1])
+
     # Checks if the passed var is a known mod name
     def is_mod_name(self, name):
         for mod_name in self.mods:
             if name.lower() == mod_name.lower():
                 return True
         return False
-
-    # Calls the help command on a specific mod, given mod command
-    async def get_mod_help(self, mod, message):
-        for mod_name in self.mods:
-            if mod_name.lower() == mod.lower():
-                await self.mods[mod_name].get_help(message)
 
     # Returns if ModHandler is done loading mods
     def is_done_loading(self):

@@ -193,7 +193,7 @@
     "Disabled Servers": [],
     "Enabled": true
   },
-  "Shop": {
+  "Shops": {
     "Command Perms": {
       "Buy Command": {
         "Disabled Channels": [],

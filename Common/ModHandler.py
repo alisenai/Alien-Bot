@@ -75,19 +75,27 @@ class ModHandler:
         # split_message = message.content.split(" ")
         # Make sure everything initialized
         if self.done_loading:
-            bot_config = DataManager.get_manager("bot_config")
-            if int(server.id) not in bot_config.get_data("Disabled Servers"):
-                if int(channel.id) not in bot_config.get_data("Disabled Channels"):
-                    # If it's a known command -> call it if it's enabled / allowed
-                    for command in self.commands:
-                        if command_alias in command:
-                            mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
-                            # Check if command's parent mod is disabled in the current server
-                            if server.id not in mod_config["Disabled Servers"]:
-                                # Check if command's parent mod is disabled in the current channel
-                                if channel.id not in mod_config["Disabled Channels"]:
+            # If it's a known command -> call it if it's enabled / allowed
+            for command in self.commands:
+                if command_alias in command:
+                    mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
+                    # Check if command's parent mod is disabled in the current server
+                    if server.id not in mod_config["Disabled Servers"]:
+                        # Check if command's parent mod is disabled in the current channel
+                        if channel.id not in mod_config["Disabled Channels"]:
+                            bot_config = DataManager.get_manager("bot_config")
+                            # Check if the command bypasses server restrictions
+                            if command.bypass_server_restrictions:
+                                await command.call_command(message)
+                            # Check if the bot is disabled in the current server
+                            elif int(server.id) not in bot_config.get_data("Disabled Servers"):
+                                # Check if the command bypasses channel restrictions
+                                if command.bypass_channel_restrictions:
                                     await command.call_command(message)
-                            return
+                                # Check if the bot is disabled in the current channel
+                                elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                                    await command.call_command(message)
+                    return
                     # # No command called -> Not a known command
                     # most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
                     # # No similar commands -> Reply with an error

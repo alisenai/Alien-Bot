@@ -3,6 +3,7 @@
   "Commands": {
     "Channel Command": {
       "Enabled": true,
+      "Bypass Channel Restrictions": true,
       "Aliases": [
         "channel"
       ],

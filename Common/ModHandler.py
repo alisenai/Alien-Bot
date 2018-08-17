@@ -26,7 +26,7 @@ class ModHandler:
         for mod_name in os.listdir("Mods/"):
             if mod_name not in mod_configs.keys():
                 new_mod_config[mod_name] = {
-                    "Command Perms": {},
+                    "Commands": {},
                     "Enabled": True,
                     "Disabled Servers": [],
                     "Disabled Channels": []
@@ -80,6 +80,7 @@ class ModHandler:
             command = self.get_command_by_alias(command_alias)
             # If it's a known command -> call it if it's enabled / allowed to be called
             if command is not None:
+                # Grab mod config to check for enabled servers / channels
                 mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
                 # Check if command's parent mod is disabled in the current server
                 if int(server.id) not in mod_config["Disabled Servers"]:
@@ -97,18 +98,22 @@ class ModHandler:
                             elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
                                 await command.call_command(message)
             else:
-                # No command called -> Not a known command
-                most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
-                # No similar commands -> Reply with an error
-                if most_similar_command is None:
-                    # Reply that neither that mod nor command exists
-                    await Utils.simple_embed_reply(channel, "[Help]",
-                                                   "Unknown mod or command - %s" % split_message[1])
-                    # Similar-looking command exists -> Reply with it
-                else:
-                    # Reply with a similar command
-                    await Utils.simple_embed_reply(channel, "[Unknown command]",
-                                                   "Did you mean `" + most_similar_command + "`?")
+                # Check if command's parent mod is disabled in the current server
+                if int(server.id) not in bot_config.get_data("Disabled Servers"):
+                    # Check if command's parent mod is disabled in the current channel
+                    if int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                        # No command called -> Not a known command
+                        most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
+                        # No similar commands -> Reply with an error
+                        if most_similar_command is None:
+                            # Reply that neither that mod nor command exists
+                            await Utils.simple_embed_reply(channel, "[Help]",
+                                                           "Unknown mod or command - %s" % split_message[1])
+                            # Similar-looking command exists -> Reply with it
+                        else:
+                            # Reply with a similar command
+                            await Utils.simple_embed_reply(channel, "[Unknown command]",
+                                                           "Did you mean `" + most_similar_command + "`?")
         # Mods are still loading -> Let the author know
         else:
             await Utils.simple_embed_reply(channel, "[Error]",
@@ -159,11 +164,18 @@ class ModHandler:
                 return True
         return False
 
-    # Returns a bot Command obj given an alias
+    # Returns a bot Command obj given an alias OR None
     def get_command_by_alias(self, alias):
         for command in self.commands:
-            if alias in command:
+            if alias.lower() in command:
                 return command
+        return None
+
+    # Returns a Mod obj given its name OR none
+    def get_mod_by_name(self, name):
+        for mod_name in self.mods:
+            if mod_name.lower() == name.lower():
+                return self.mods[mod_name]
         return None
 
     # Returns if ModHandler is done loading mods

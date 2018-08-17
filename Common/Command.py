@@ -13,7 +13,7 @@ class Command:
         # Var Init
         self.parent_mod = parent_mod
         self.name = name
-        self.aliases = aliases
+        self.aliases = [alias.lower() for alias in aliases]
         self.enabled = enabled
         self.minimum_permissions = minimum_permissions
         self.help = command_help
@@ -87,9 +87,9 @@ class Command:
             author = message.author
             mod_config = DataManager.get_manager("mod_config").get_data()
             # Check if the command is enabled in the server
-            if server.id not in mod_config[self.parent_mod.name]["Command Perms"][self.name]["Disabled Servers"]:
+            if int(server.id) not in mod_config[self.parent_mod.name]["Commands"][self.name]["Disabled Servers"]:
                 # Check if the command is enabled in the channel
-                if channel.id not in mod_config[self.parent_mod.name]["Command Perms"][self.name]["Disabled Channels"]:
+                if int(channel.id) not in mod_config[self.parent_mod.name]["Commands"][self.name]["Disabled Channels"]:
                     # Check if the user has the permissions to call the command
                     if self.has_permissions(author.id):
                         # If there is no cool down for this command, all checks were passed so call the command

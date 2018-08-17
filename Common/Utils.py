@@ -144,8 +144,8 @@ def parse_command_config(parent, parent_name, config):
     # TODO: Implement command cleaning
     # Generate config if it doesn't exist
     for command_name in config:
-        if command_name not in mod_config[parent_name]["Command Perms"]:
-            mod_config[parent_name]["Command Perms"][command_name] = {
+        if command_name not in mod_config[parent_name]["Commands"]:
+            mod_config[parent_name]["Commands"][command_name] = {
                 "Disabled Channels": [],
                 "Disabled Servers": [],
                 "Minimum Permissions": ""
@@ -155,7 +155,7 @@ def parse_command_config(parent, parent_name, config):
     # Spawn command objects based on config and return a dictionary with them
     return {command_name: (Command(parent, command_name, config[command_name]['Aliases'],
                                    config[command_name]["Enabled"],
-                                   mod_config[parent_name]["Command Perms"][command_name]["Minimum Permissions"],
+                                   mod_config[parent_name]["Commands"][command_name]["Minimum Permissions"],
                                    config[command_name]['Help'],
                                    ''.join(use + "\n" for use in config[command_name]['Useage'])[0:-1],
                                    int(config[command_name]["Cool Down"]) if "Cool Down" in config[

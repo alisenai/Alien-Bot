@@ -1,3 +1,5 @@
+import sys
+
 import discord
 from Common import DataManager, Utils
 from Common.Mod import Mod
@@ -33,60 +35,92 @@ class Defaults(Mod):
                     description = mod_descriptions[mod]
                     embed.add_field(name=mod, value=description, inline=False)
                 # Reply with the created embed
-                await Utils.client.send_message(message.channel, embed=embed)
-        # TODO: Add an optional mod/command parameter
+                await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Server Command"]:
-            config = DataManager.get_manager("bot_config")
-            disabled_servers = config.get_data("Disabled Servers")
-            server_id = int(server.id)
-            if len(split_message) > 1:
-                if split_message[1] == "enable":
-                    if server_id in disabled_servers:
-                        disabled_servers.remove(server_id)
-                        config.write_data(disabled_servers, key="Disabled Servers")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
-                                                   (Utils.bot_nick, str(server)))
-                elif split_message[1] == "disable":
-                    if server_id not in disabled_servers:
-                        config.write_data(disabled_servers + [server_id], key="Disabled Servers")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
-                                                   (Utils.bot_nick, str(server)))
-            else:
-                if server_id in disabled_servers:
-                    disabled_servers.remove(server_id)
-                    config.write_data(disabled_servers, key="Disabled Servers")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
-                                                   (Utils.bot_nick, str(server)))
-                else:
-                    config.write_data(disabled_servers + [server_id], key="Disabled Servers")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
-                                                   (Utils.bot_nick, str(server)))
-        # TODO: Add an optional mod/command parameter
+            await self.change_presence(message, False)
         elif command is self.commands["Channel Command"]:
-            config = DataManager.get_manager("bot_config")
-            disabled_channels = config.get_data("Disabled Channels")
-            channel_id = int(channel.id)
-            if len(split_message) > 1:
-                if split_message[1] == "enable":
-                    if channel_id in disabled_channels:
-                        disabled_channels.remove(channel_id)
-                        config.write_data(disabled_channels, key="Disabled Channels")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
-                                                   (Utils.bot_nick, str(channel)))
-                elif split_message[1] == "disable":
-                    if channel_id not in disabled_channels:
-                        config.write_data(disabled_channels + [channel_id], key="Disabled Channels")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
-                                                   (Utils.bot_nick, str(channel)))
-            else:
-                if channel_id in disabled_channels:
-                    disabled_channels.remove(channel_id)
-                    config.write_data(disabled_channels, key="Disabled Channels")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
-                                                   (Utils.bot_nick, str(channel)))
-                else:
-                    config.write_data(disabled_channels + [channel_id], key="Disabled Channels")
-                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
-                                                   (Utils.bot_nick, str(channel)))
+            await self.change_presence(message, True)
+        elif command is self.commands["Stop Command"]:
+            await Utils.simple_embed_reply(channel, "[Stopping...]", "Goodbye cruel world.")
+            print("[Stop command called]")
+            sys.exit()
         elif command is self.commands["Permissions Command"]:
             raise Exception("Not implemented yet!")
+
+    async def change_presence(self, message, channel_mode=False):
+        split_message = message.content.split(" ")
+        server = message.server
+        channel = message.channel
+        key_word = "Channels" if channel_mode else "Servers"
+        mode_obj = channel if channel_mode else server
+        mode_id = int(channel.id) if channel_mode else int(server.id)
+        enable_mode = None
+        config = DataManager.get_manager("bot_config")
+        disabled_ids = config.get_data("Disabled " + key_word)
+        if len(split_message) > 2:
+            passed_change_mode = split_message[2].lower()
+            if passed_change_mode == "enable" or passed_change_mode == "disable":
+                enable_mode = True if passed_change_mode == "enable" else False
+        if len(split_message) > 1:
+            lowered_parameter = split_message[1].lower()
+            # Enable / Disable a Server / Channel
+            if lowered_parameter == "enable" or lowered_parameter == "disable":
+                if lowered_parameter == "enable":
+                    if mode_id in disabled_ids:
+                        disabled_ids.remove(mode_id)
+                        config.write_data(disabled_ids, key="Disabled " + key_word)
+                    await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
+                                                   (Utils.bot_nick, str(mode_obj)))
+                elif lowered_parameter == "disable":
+                    if mode_id not in disabled_ids:
+                        disabled_ids.append(mode_id)
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                   (Utils.bot_nick, str(mode_obj)))
+                config.write_data(disabled_ids, key="Disabled " + key_word)
+            # Enable / Disable a Mod / Command
+            else:
+                given_mod = Utils.mod_handler.get_mod_by_name(lowered_parameter)
+                if given_mod is not None:
+                    mod_config = DataManager.get_manager("mod_config")
+                    mod_data = mod_config.get_data(given_mod.name)
+                    if enable_mode or (mode_id in mod_data["Disabled " + key_word] and enable_mode is None):
+                        if mode_id in mod_data["Disabled " + key_word]:
+                            mod_data["Disabled " + key_word].remove(mode_id)
+                        await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
+                                                       (given_mod.name, str(mode_obj)))
+                    else:
+                        if mode_id not in mod_data["Disabled " + key_word]:
+                            mod_data["Disabled " + key_word].append(mode_id)
+                        await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                       (given_mod.name, str(mode_obj)))
+                    mod_config.write_data(mod_data, key=given_mod.name)
+                else:
+                    given_command = Utils.mod_handler.get_command_by_alias(lowered_parameter)
+                    if given_command is not None:
+                        mod_config = DataManager.get_manager("mod_config")
+                        mod_data = mod_config.get_data(given_command.parent_mod.name)
+                        command_data = mod_data["Commands"][given_command.name]
+                        if enable_mode or (mode_id in command_data["Disabled " + key_word] and enable_mode is None):
+                            if mode_id in command_data["Disabled " + key_word]:
+                                command_data["Disabled " + key_word].remove(mode_id)
+                            await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
+                                                           (given_command.name, str(mode_obj)))
+                        else:
+                            if mode_id not in command_data["Disabled " + key_word]:
+                                command_data["Disabled " + key_word].append(mode_id)
+                            await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                           (given_command.name, str(mode_obj)))
+                        mod_data["Commands"][given_command.name] = command_data
+                        mod_config.write_data(mod_data, key=given_command.parent_mod.name)
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Presence]", "Neither that command nor mod exists.")
+        else:
+            if mode_id in disabled_ids:
+                disabled_ids.remove(mode_id)
+                await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
+                                               (Utils.bot_nick, str(mode_obj)))
+            else:
+                disabled_ids.append(mode_id)
+                await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                               (Utils.bot_nick, str(mode_obj)))
+            config.write_data(disabled_ids, key="Disabled " + key_word)

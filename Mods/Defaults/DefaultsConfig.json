@@ -36,9 +36,20 @@
       ],
       "Help": "Changes the bot's presence in a server.",
       "Useage": [
-        "server {Status: `enable`/`disable`}",
+        "server {Mod OR Command: Empty/Name} {Status: Empty/`enable`/`disable`}",
         "server enable",
         "server disable"
+      ]
+    },
+    "Stop Command": {
+      "Enabled": true,
+      "Bypass Server Restrictions": true,
+      "Aliases": [
+        "stop"
+      ],
+      "Help": "Shuts the bot down.",
+      "Useage": [
+        "stop"
       ]
     }
   }

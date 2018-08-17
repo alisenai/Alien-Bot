@@ -129,6 +129,11 @@
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
+      },
+      "Server Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],

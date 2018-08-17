@@ -4,7 +4,8 @@ import time
 
 class Command:
     def __init__(self, parent_mod, name, aliases, enabled=False, minimum_permissions="Owner", command_help="No help",
-                 useage="No useage", cool_down_seconds=0, bypass_server_restrictions=False, bypass_channel_restrictions=False):
+                 useage="No useage", cool_down_seconds=0, bypass_server_restrictions=False,
+                 bypass_channel_restrictions=False):
         # Check if parameters are valid
         assert name is not None or "", "Command not given a valid name"
         assert aliases is not None and len(aliases) > 0, "Command not given aliases"

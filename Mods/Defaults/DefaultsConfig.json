@@ -7,7 +7,7 @@
       "Aliases": [
         "channel"
       ],
-      "Help": "Changes the bot's presence in a channel",
+      "Help": "Changes the bot's presence in a channel.",
       "Useage": [
         "channel {Status: `enable`/`disable`}",
         "channel enable",
@@ -28,15 +28,17 @@
         "help help"
       ]
     },
-    "Disable Command": {
+    "Server Command": {
       "Enabled": true,
       "Bypass Server Restrictions": true,
       "Aliases": [
-        "disable"
+        "server"
       ],
-      "Help": "Disables the bot.",
+      "Help": "Changes the bot's presence in a server.",
       "Useage": [
-        "disable"
+        "server {Status: `enable`/`disable`}",
+        "server enable",
+        "server disable"
       ]
     }
   }

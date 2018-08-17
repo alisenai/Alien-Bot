@@ -72,42 +72,43 @@ class ModHandler:
     async def command_called(self, message, command_alias):
         server = message.server
         channel = message.channel
-        # split_message = message.content.split(" ")
+        split_message = message.content.split(" ")
         # Make sure everything initialized
         if self.done_loading:
-            # If it's a known command -> call it if it's enabled / allowed
-            for command in self.commands:
-                if command_alias in command:
-                    mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
-                    # Check if command's parent mod is disabled in the current server
-                    if server.id not in mod_config["Disabled Servers"]:
-                        # Check if command's parent mod is disabled in the current channel
-                        if channel.id not in mod_config["Disabled Channels"]:
-                            bot_config = DataManager.get_manager("bot_config")
-                            # Check if the command bypasses server restrictions
-                            if command.bypass_server_restrictions:
+            bot_config = DataManager.get_manager("bot_config")
+            # Try to get the command by its alias
+            command = self.get_command_by_alias(command_alias)
+            # If it's a known command -> call it if it's enabled / allowed to be called
+            if command is not None:
+                mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
+                # Check if command's parent mod is disabled in the current server
+                if int(server.id) not in mod_config["Disabled Servers"]:
+                    # Check if command's parent mod is disabled in the current channel
+                    if int(channel.id) not in mod_config["Disabled Channels"]:
+                        # Check if the command bypasses server restrictions
+                        if command.bypass_server_restrictions:
+                            await command.call_command(message)
+                        # Check if the bot is disabled in the current server
+                        elif int(server.id) not in bot_config.get_data("Disabled Servers"):
+                            # Check if the command bypasses channel restrictions
+                            if command.bypass_channel_restrictions:
                                 await command.call_command(message)
-                            # Check if the bot is disabled in the current server
-                            elif int(server.id) not in bot_config.get_data("Disabled Servers"):
-                                # Check if the command bypasses channel restrictions
-                                if command.bypass_channel_restrictions:
-                                    await command.call_command(message)
-                                # Check if the bot is disabled in the current channel
-                                elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
-                                    await command.call_command(message)
-                    return
-                    # # No command called -> Not a known command
-                    # most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
-                    # # No similar commands -> Reply with an error
-                    # if most_similar_command is None:
-                    #     # Reply that neither that mod nor command exists
-                    #     await Utils.simple_embed_reply(channel, "[Help]",
-                    #                                    "Unknown mod or command - %s" % split_message[1])
-                    # # Similar-looking command exists -> Reply with it
-                    # else:
-                    #     # Reply with a similar command
-                    #     await Utils.simple_embed_reply(channel, "[Unknown command]",
-                    #                                    "Did you mean `" + most_similar_command + "`?")
+                            # Check if the bot is disabled in the current channel
+                            elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                                await command.call_command(message)
+            else:
+                # No command called -> Not a known command
+                most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
+                # No similar commands -> Reply with an error
+                if most_similar_command is None:
+                    # Reply that neither that mod nor command exists
+                    await Utils.simple_embed_reply(channel, "[Help]",
+                                                   "Unknown mod or command - %s" % split_message[1])
+                    # Similar-looking command exists -> Reply with it
+                else:
+                    # Reply with a similar command
+                    await Utils.simple_embed_reply(channel, "[Unknown command]",
+                                                   "Did you mean `" + most_similar_command + "`?")
         # Mods are still loading -> Let the author know
         else:
             await Utils.simple_embed_reply(channel, "[Error]",
@@ -157,6 +158,13 @@ class ModHandler:
             if name.lower() == mod_name.lower():
                 return True
         return False
+
+    # Returns a bot Command obj given an alias
+    def get_command_by_alias(self, alias):
+        for command in self.commands:
+            if alias in command:
+                return command
+        return None
 
     # Returns if ModHandler is done loading mods
     def is_done_loading(self):

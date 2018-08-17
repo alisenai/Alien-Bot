@@ -3,11 +3,9 @@ from Common import DataManager, Utils
 from Common.Mod import Mod
 
 
-# TODO: Command restriction bypass (channels / server)
-# "Server Bypass" : True
-# "Channel Bypass" : True
 # TODO: Redo help so it only prints what the user's permissions allows
 # TODO: Add command prefix when printing useage help?
+# TODO: Improve help printing
 class Defaults(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init
@@ -37,34 +35,57 @@ class Defaults(Mod):
                 # Reply with the created embed
                 await Utils.client.send_message(message.channel, embed=embed)
         # TODO: Add an optional mod/command parameter
-        elif command is self.commands["Disable Command"]:
+        elif command is self.commands["Server Command"]:
             config = DataManager.get_manager("bot_config")
-            config.write_data(config.get_data("Disabled Servers") + [int(server.id)], key="Disabled Servers")
-            await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled." % Utils.bot_nick)
+            disabled_servers = config.get_data("Disabled Servers")
+            server_id = int(server.id)
+            if len(split_message) > 1:
+                if split_message[1] == "enable":
+                    if server_id in disabled_servers:
+                        disabled_servers.remove(server_id)
+                        config.write_data(disabled_servers, key="Disabled Servers")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
+                                                   (Utils.bot_nick, str(server)))
+                elif split_message[1] == "disable":
+                    if server_id not in disabled_servers:
+                        config.write_data(disabled_servers + [server_id], key="Disabled Servers")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                   (Utils.bot_nick, str(server)))
+            else:
+                if server_id in disabled_servers:
+                    disabled_servers.remove(server_id)
+                    config.write_data(disabled_servers, key="Disabled Servers")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
+                                                   (Utils.bot_nick, str(server)))
+                else:
+                    config.write_data(disabled_servers + [server_id], key="Disabled Servers")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                   (Utils.bot_nick, str(server)))
         # TODO: Add an optional mod/command parameter
         elif command is self.commands["Channel Command"]:
             config = DataManager.get_manager("bot_config")
             disabled_channels = config.get_data("Disabled Channels")
+            channel_id = int(channel.id)
             if len(split_message) > 1:
                 if split_message[1] == "enable":
-                    if int(channel.id) in disabled_channels:
-                        disabled_channels.remove(int(channel.id))
+                    if channel_id in disabled_channels:
+                        disabled_channels.remove(channel_id)
                         config.write_data(disabled_channels, key="Disabled Channels")
                     await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
                                                    (Utils.bot_nick, str(channel)))
                 elif split_message[1] == "disable":
-                    if int(channel.id) not in disabled_channels:
-                        config.write_data(disabled_channels + [int(channel.id)], key="Disabled Channels")
+                    if channel_id not in disabled_channels:
+                        config.write_data(disabled_channels + [channel_id], key="Disabled Channels")
                     await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                    (Utils.bot_nick, str(channel)))
             else:
-                if int(channel.id) in disabled_channels:
-                    disabled_channels.remove(int(channel.id))
+                if channel_id in disabled_channels:
+                    disabled_channels.remove(channel_id)
                     config.write_data(disabled_channels, key="Disabled Channels")
                     await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
                                                    (Utils.bot_nick, str(channel)))
                 else:
-                    config.write_data(disabled_channels + [int(channel.id)], key="Disabled Channels")
+                    config.write_data(disabled_channels + [channel_id], key="Disabled Channels")
                     await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                    (Utils.bot_nick, str(channel)))
         elif command is self.commands["Permissions Command"]:

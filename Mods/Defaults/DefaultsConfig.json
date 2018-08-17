@@ -26,6 +26,17 @@
         "help Mod",
         "help help"
       ]
+    },
+    "Disable Command": {
+      "Enabled": true,
+      "Bypass Server Restrictions": true,
+      "Aliases": [
+        "disable"
+      ],
+      "Help": "Disables the bot.",
+      "Useage": [
+        "disable"
+      ]
     }
   }
 }

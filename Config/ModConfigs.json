@@ -120,6 +120,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Disable Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Help Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

@@ -4,7 +4,7 @@ import time
 
 class Command:
     def __init__(self, parent_mod, name, aliases, enabled=False, minimum_permissions="Owner", command_help="No help",
-                 useage="No useage", cool_down_seconds=0):
+                 useage="No useage", cool_down_seconds=0, bypass_channel=False, bypass_server=False):
         # Check if parameters are valid
         assert name is not None or "", "Command not given a valid name"
         assert aliases is not None and len(aliases) > 0, "Command not given aliases"
@@ -18,6 +18,8 @@ class Command:
         self.help = command_help
         self.useage = useage
         self.cool_down_seconds = cool_down_seconds
+        self.bypass_channel = bypass_channel
+        self.bypass_server = bypass_server
         # Get cool down manager
         self.command_database = DataManager.get_manager("commands")
         self.command_database.execute("CREATE TABLE IF NOT EXISTS '" + name + "'(user_id TEXT, last_called REAL)")

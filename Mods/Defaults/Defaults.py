@@ -3,6 +3,9 @@ from Common import DataManager, Utils
 from Common.Mod import Mod
 
 
+# TODO: Command restriction bypass (channels / server)
+# "Server Bypass" : True
+# "Channel Bypass" : True
 # TODO: Redo help so it only prints what the user's permissions allows
 # TODO: Add command prefix when printing useage help?
 class Defaults(Mod):
@@ -16,6 +19,7 @@ class Defaults(Mod):
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
+        server, channel, author = message.server, message.channel, message.author
         if command is self.commands["Help Command"]:
             # If it's help for something specific, parse as so
             if len(split_message) > 1:
@@ -32,7 +36,36 @@ class Defaults(Mod):
                     embed.add_field(name=mod, value=description, inline=False)
                 # Reply with the created embed
                 await Utils.client.send_message(message.channel, embed=embed)
+        # TODO: Add an optional mod/command parameter
+        elif command is self.commands["Disable Command"]:
+            config = DataManager.get_manager("bot_config")
+            config.write_data(config.get_data("Disabled Servers") + [int(server.id)], key="Disabled Servers")
+            await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled." % Utils.bot_nick)
+        # TODO: Add an optional mod/command parameter
         elif command is self.commands["Channel Command"]:
-            raise Exception("Not implemented yet!")
+            config = DataManager.get_manager("bot_config")
+            disabled_channels = config.get_data("Disabled Channels")
+            if len(split_message) > 1:
+                if split_message[1] == "enable":
+                    if int(channel.id) in disabled_channels:
+                        disabled_channels.remove(int(channel.id))
+                        config.write_data(disabled_channels, key="Disabled Channels")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
+                                                   (Utils.bot_nick, str(channel)))
+                elif split_message[1] == "disable":
+                    if int(channel.id) not in disabled_channels:
+                        config.write_data(disabled_channels + [int(channel.id)], key="Disabled Channels")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                   (Utils.bot_nick, str(channel)))
+            else:
+                if int(channel.id) in disabled_channels:
+                    disabled_channels.remove(int(channel.id))
+                    config.write_data(disabled_channels, key="Disabled Channels")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been enabled in %s." %
+                                                   (Utils.bot_nick, str(channel)))
+                else:
+                    config.write_data(disabled_channels + [int(channel.id)], key="Disabled Channels")
+                    await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
+                                                   (Utils.bot_nick, str(channel)))
         elif command is self.commands["Permissions Command"]:
             raise Exception("Not implemented yet!")

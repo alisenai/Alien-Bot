@@ -72,7 +72,7 @@ class ModHandler:
     async def command_called(self, message, command_alias):
         server = message.server
         channel = message.channel
-        split_message = message.content.split(" ")
+        # split_message = message.content.split(" ")
         # Make sure everything initialized
         if self.done_loading:
             bot_config = DataManager.get_manager("bot_config")
@@ -88,18 +88,18 @@ class ModHandler:
                                 if channel.id not in mod_config["Disabled Channels"]:
                                     await command.call_command(message)
                             return
-                    # No command called -> Not a known command
-                    most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
-                    # No similar commands -> Reply with an error
-                    if most_similar_command is None:
-                        # Reply that neither that mod nor command exists
-                        await Utils.simple_embed_reply(channel, "[Help]",
-                                                       "Unknown mod or command - %s" % split_message[1])
-                    # Similar-looking command exists -> Reply with it
-                    else:
-                        # Reply with a similar command
-                        await Utils.simple_embed_reply(channel, "[Unknown command]",
-                                                       "Did you mean `" + most_similar_command + "`?")
+                    # # No command called -> Not a known command
+                    # most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
+                    # # No similar commands -> Reply with an error
+                    # if most_similar_command is None:
+                    #     # Reply that neither that mod nor command exists
+                    #     await Utils.simple_embed_reply(channel, "[Help]",
+                    #                                    "Unknown mod or command - %s" % split_message[1])
+                    # # Similar-looking command exists -> Reply with it
+                    # else:
+                    #     # Reply with a similar command
+                    #     await Utils.simple_embed_reply(channel, "[Unknown command]",
+                    #                                    "Did you mean `" + most_similar_command + "`?")
         # Mods are still loading -> Let the author know
         else:
             await Utils.simple_embed_reply(channel, "[Error]",

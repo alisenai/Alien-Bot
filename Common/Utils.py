@@ -158,6 +158,9 @@ def parse_command_config(parent, parent_name, config):
                                    mod_config[parent_name]["Command Perms"][command_name]["Minimum Permissions"],
                                    config[command_name]['Help'],
                                    ''.join(use + "\n" for use in config[command_name]['Useage'])[0:-1],
-                                   int(config[command_name]["Cool Down"]) if "Cool Down" in config[
-                                       command_name] else 0))
-            for command_name in config}
+                                   int(config[command_name]["Cool Down"]) if "Cool Down" in config[command_name] else 0,
+                                   config[command_name]["Bypass Server Restrictions"] if
+                                   "Bypass Server Restrictions" in config[command_name] else False,
+                                   config[command_name]["Bypass Channel Restrictions"] if
+                                   "Bypass Channel Restrictions" in config[command_name] else False)
+                           for command_name in config)}

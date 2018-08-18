@@ -141,7 +141,10 @@ def isfloat(value):
 # Parses commands from standard config
 def parse_command_config(parent, parent_name, config):
     mod_config = DataManager.get_manager("mod_config").get_data()
-    # TODO: Implement command cleaning
+    # Remove commands that don't exist anymore
+    to_remove = [command_name for command_name in mod_config[parent_name]["Commands"] if command_name not in config]
+    for command_name in to_remove:
+        mod_config[parent_name]["Commands"].pop(command_name)
     # Generate config if it doesn't exist
     for command_name in config:
         if command_name not in mod_config[parent_name]["Commands"]:

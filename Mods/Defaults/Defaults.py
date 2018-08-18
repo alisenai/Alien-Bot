@@ -24,7 +24,6 @@ class Defaults(Mod):
             # If it's help for something specific, parse as so
             if len(split_message) > 1:
                 await Utils.mod_handler.get_help(message)
-                # await Utils.mod_handler.command_called(message, split_message[0], is_help=True)
             # Otherwise, it's a full general list and parse as so
             else:
                 # Start building an embed

@@ -48,9 +48,9 @@ class Command:
     def is_alias(self, string):
         return string in self.aliases
 
-    # Returns true if the passed user ID has the permissions to call this command
-    def has_permissions(self, user_id):
-        return Permissions.has_permission(user_id, self.minimum_permissions)
+    # Returns true if the passed user has the permissions to call this command
+    def has_permissions(self, user):
+        return Permissions.has_permission(user, self.minimum_permissions)
 
     async def call_command_skip_checks(self, message):
         # Send "is typing", for  a e s t h e t i c s
@@ -91,7 +91,7 @@ class Command:
                 # Check if the command is enabled in the channel
                 if int(channel.id) not in mod_config[self.parent_mod.name]["Commands"][self.name]["Disabled Channels"]:
                     # Check if the user has the permissions to call the command
-                    if self.has_permissions(author.id):
+                    if self.has_permissions(author):
                         # If there is no cool down for this command, all checks were passed so call the command
                         if self.cool_down_seconds == 0:
                             await self.call_command_skip_checks(message)

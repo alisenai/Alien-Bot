@@ -52,8 +52,9 @@ class ModHandler:
                     command_alias = mod.commands[command_name]
                     for alias in command_alias:
                         # TODO Check for same mod and command names (getting help doesn't work otherwise)
+                        assert alias != mod.name.lower(), "Mod name and command alias conflict - " + mod.name
                         # Check for conflicting commands
-                        assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + command_alias
+                        assert alias not in self.mod_command_aliases, "Duplicate mod commands - " + alias
                         # Add as known alias for further conflict checks
                         self.mod_command_aliases.append(alias)
                     # Register command

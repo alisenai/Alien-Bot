@@ -1,13 +1,13 @@
 from Common import DataManager
 
 permissions = {}
-default_role = None
-owner_role = None
+default_perm = None
+owner_perm = None
 
 
 def load_permissions():
-    global default_role
-    global owner_role
+    global default_perm
+    global owner_perm
     print("[Loading permissions]", end='')
     permissions_config = DataManager.get_manager("bot_config").get_data(key="Permissions")
     DataManager.get_manager("database").execute("CREATE TABLE IF NOT EXISTS permissions(user TEXT, title TEXT)")
@@ -18,11 +18,11 @@ def load_permissions():
                                 permission_config["Associated Roles"])
         permissions[permission_name] = permission
         if permission_config["Is Default"]:
-            assert default_role is None, "Bot config contains more than one default role."
-            default_role = permission
+            assert default_perm is None, "Bot config contains more than one default role."
+            default_perm = permission
         if permission_config["Is Owner"]:
-            assert owner_role is None, "Bot config contains more than one owner role."
-            owner_role = permission
+            assert owner_perm is None, "Bot config contains more than one owner role."
+            owner_perm = permission
 
     print("[Done]")
 
@@ -32,8 +32,8 @@ def get_user_title(user_id):
     database_manager = DataManager.get_manager("database")
     user_title = database_manager.execute("SELECT title FROM permissions WHERE user='" + str(user_id) + "' LIMIT 1")
     if len(user_title) == 0:
-        database_manager.execute("INSERT INTO permissions VALUES('" + str(user_id) + "', '" + default_role.title + "')")
-        return default_role.title
+        database_manager.execute("INSERT INTO permissions VALUES('" + str(user_id) + "', '" + default_perm.title + "')")
+        return default_perm.title
     return user_title[0]
 
 
@@ -49,7 +49,7 @@ def has_permission(user, minimum_permission):
             if len([role for role in user.roles if int(role.id) in permissions[minimum_permission].associated_roles]) > 0:
                 return True
         else:
-            if len([role for role in user.roles if int(role.id) in owner_role.associated_roles]) > 0:
+            if len([role for role in user.roles if int(role.id) in owner_perm.associated_roles]) > 0:
                 return True
         # If user title has no permissions -> Return false
         if user_permissions.has_permissions is False:

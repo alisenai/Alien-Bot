@@ -1,36 +1,10 @@
 {
-  "Nickname": "Alien-Bot",
-  "Profile Picture": "Config\\pfp_default.jpg",
-  "Token": "TOKEN",
-  "Permissions": {
-    "Admin": {
-      "Is Owner": true,
-      "Has Permissions": true,
-      "Default": false,
-      "Inherits": "Guardian"
-    },
-    "Guardian": {
-      "Is Owner": false,
-      "Has Permissions": true,
-      "Default": false,
-      "Inherits": "User"
-    },
-    "User": {
-      "Is Owner": false,
-      "Has Permissions": true,
-      "Default": true,
-      "Inherits": "Restricted"
-    },
-    "Restricted": {
-      "Is Owner": false,
-      "Has Permissions": false,
-      "Default": false,
-      "Inherits": null
-    }
-  },
-  "Disabled Channels": [],
-  "Embed Color": "0x751DDF",
   "Bot Emoji": "\ud83e\udd5d",
+  "Command Prefix": ";",
+  "Database": "Config\\Database.db",
+  "Disabled Channels": [],
+  "Disabled Servers": [],
+  "Embed Color": "0x751DDF",
   "Game Status": [
     "With Alien Sensei",
     "With Mods",
@@ -40,36 +14,37 @@
     "With Your Data",
     "#751DDF"
   ],
-  "Command Prefix": ";",
-  "Commands": {
-    "Channel Command": {
-      "Enabled": true,
-      "Aliases": [
-        "channel"
-      ],
-      "Help": "Changes the bot's presence in a channel",
-      "Useage": [
-        "channel {Status: `enable`/`disable`}",
-        "channel enable",
-        "channel disable"
-      ],
-      "Minimum Permissions": "Owner"
+  "Nickname": "Alien-Bot",
+  "Permissions": {
+    "Admin": {
+      "Is Default": false,
+      "Has Permissions": true,
+      "Inherits": "Guardian",
+      "Is Owner": true,
+      "Associated Roles": [474120914888556554]
     },
-    "Help Command": {
-      "Enabled": true,
-      "Aliases": [
-        "help",
-        "h"
-      ],
-      "Help": "Lists mod info",
-      "Useage": [
-        "help {Mod: Text}",
-        "help {Command Alias: Text}",
-        "help Mod",
-        "help help"
-      ],
-      "Minimum Permissions": "Owner"
+    "Guardian": {
+      "Is Default": false,
+      "Has Permissions": true,
+      "Inherits": "User",
+      "Is Owner": false,
+      "Associated Roles": []
+    },
+    "Restricted": {
+      "Is Default": false,
+      "Has Permissions": false,
+      "Inherits": null,
+      "Is Owner": false,
+      "Associated Roles": []
+    },
+    "User": {
+      "Is Default": true,
+      "Has Permissions": true,
+      "Inherits": "Restricted",
+      "Is Owner": false,
+      "Associated Roles": []
     }
   },
-  "Database": "Config\\Database.db"
+  "Profile Picture": "Config\\pfp_default.jpg",
+  "Token": "TOKEN"
 }

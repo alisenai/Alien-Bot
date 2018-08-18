@@ -21,7 +21,7 @@
       "Has Permissions": true,
       "Inherits": "Guardian",
       "Is Owner": true,
-      "Associated Roles": [474120914888556554]
+      "Associated Roles": []
     },
     "Guardian": {
       "Is Default": false,

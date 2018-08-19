@@ -6,8 +6,8 @@ from Common.Mod import Mod
 
 
 # TODO: Redo help so it only prints what the user's permissions allows
-# TODO: Add command prefix when printing useage help?
-# TODO: Improve help printing
+# TODO: Add command prefix when printing useage help??
+# TODO: Improve help printing?
 class Defaults(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init

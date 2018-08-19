@@ -72,7 +72,7 @@ async def simple_embed_reply(channel, title, description, hex_color=None):
                                                                   color=discord.Color(int(color, 16))))
 
 
-# Gets help - All of it, or specifics
+# Gets help for a mod or command
 async def get_help(message, name, commands, is_full_help):
     # Sets up an embed to return
     embed = discord.Embed(title="[" + name + " Help]", color=0x751DDF)

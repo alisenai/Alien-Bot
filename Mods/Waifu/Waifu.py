@@ -375,6 +375,28 @@ class Waifu(Mod):
             # Reply
             await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "The leaderboard has been deleted.")
 
+    # Called when the bot joins a server
+    async def on_server_join(self, server):
+        # Create waifu server table if it doesn't exist
+        self.waifus_db.execute(
+            """CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, changes_of_heart DIGIT, 
+            divorces DIGIT, owner_id TEXT, affinity TEXT)""" % server.id
+        )
+        # Populate waifu server tables with any unknown users
+        known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server.id)
+        for user in server.members:
+            if user.id not in known_users:
+                self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
+                    server.id, user.id, str(self.config.get_data("Default Claim Amount"))
+                ))
+        # Grab known gift names from the DB and Config
+        db_gift_names = self.gifts_db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        # Add any new gifts to the DB
+        for gift_name in db_gift_names:
+            # Populate the new table
+            for user in server.members:
+                self.gifts_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))
+
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
         server_id = member.server.id

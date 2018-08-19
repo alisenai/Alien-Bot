@@ -29,7 +29,11 @@ class Mod:
     async def message_received(self, message):
         pass
 
-    # Called when a member joins a server the bot is in
+    # Called when the bot joins a server
+    async def on_server_join(self, server):
+        pass
+
+    # Calls when a member joins a server
     async def on_member_join(self, member):
         pass
 

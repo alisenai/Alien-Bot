@@ -25,7 +25,7 @@ Utils.bot_nick = config['Nickname']
 # Grab command prefix
 command_prefix = config['Command Prefix']
 # Initialize the mod handler
-mod_handler = ModHandler(config['Embed Color'])
+mod_handler = ModHandler(config["Minimum Suggestion Permission"], config['Embed Color'])
 # Add to Utils
 Utils.mod_handler = mod_handler
 # Boolean to keep track of when it's safe to start parsing commands
@@ -87,6 +87,11 @@ async def on_message(message):
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "The bot is still loading, please wait.")
     await mod_handler.message_received(message)
+
+
+@client.event
+async def on_server_join(server):
+    await mod_handler.on_server_join(server)
 
 
 @client.event

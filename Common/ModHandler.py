@@ -1,4 +1,4 @@
-from Common import DataManager, Utils
+from Common import DataManager, Utils, Permissions
 import difflib
 import sys
 import os
@@ -11,8 +11,9 @@ class ModHandler:
     mod_command_aliases = []
 
     # Builds a mod handler with passed parameters
-    def __init__(self, embed_color):
+    def __init__(self, minimum_suggestion_permission, embed_color):
         # Var Init
+        self.minimum_suggestion_permission = minimum_suggestion_permission
         self.embed_color = embed_color
 
     async def load_mods(self):
@@ -68,56 +69,59 @@ class ModHandler:
         self.done_loading = True
         print("[Done loading Mods]")
 
+    # Todo: Handle PMs / DMs
     # Called when a user message looks like a command, and it attempts to work with that command
     async def command_called(self, message, command_alias):
         server = message.server
-        channel = message.channel
-        split_message = message.content.split(" ")
-        # Make sure everything initialized
-        if self.done_loading:
-            bot_config = DataManager.get_manager("bot_config")
-            # Try to get the command by its alias
-            command = self.get_command_by_alias(command_alias)
-            # If it's a known command -> call it if it's enabled / allowed to be called
-            if command is not None:
-                # Grab mod config to check for enabled servers / channels
-                mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
-                # Check if command's parent mod is disabled in the current server
-                if int(server.id) not in mod_config["Disabled Servers"]:
-                    # Check if command's parent mod is disabled in the current channel
-                    if int(channel.id) not in mod_config["Disabled Channels"]:
-                        # Check if the command bypasses server restrictions
-                        if command.bypass_server_restrictions:
-                            await command.call_command(message)
-                        # Check if the bot is disabled in the current server
-                        elif int(server.id) not in bot_config.get_data("Disabled Servers"):
-                            # Check if the command bypasses channel restrictions
-                            if command.bypass_channel_restrictions:
+        if server is not None:
+            channel = message.channel
+            split_message = message.content.split(" ")
+            # Make sure everything initialized
+            if self.done_loading:
+                bot_config = DataManager.get_manager("bot_config")
+                # Try to get the command by its alias
+                command = self.get_command_by_alias(command_alias)
+                # If it's a known command -> call it if it's enabled / allowed to be called
+                if command is not None:
+                    # Grab mod config to check for enabled servers / channels
+                    mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
+                    # Check if command's parent mod is disabled in the current server
+                    if int(server.id) not in mod_config["Disabled Servers"]:
+                        # Check if command's parent mod is disabled in the current channel
+                        if int(channel.id) not in mod_config["Disabled Channels"]:
+                            # Check if the command bypasses server restrictions
+                            if command.bypass_server_restrictions:
                                 await command.call_command(message)
-                            # Check if the bot is disabled in the current channel
-                            elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
-                                await command.call_command(message)
+                            # Check if the bot is disabled in the current server
+                            elif int(server.id) not in bot_config.get_data("Disabled Servers"):
+                                # Check if the command bypasses channel restrictions
+                                if command.bypass_channel_restrictions:
+                                    await command.call_command(message)
+                                # Check if the bot is disabled in the current channel
+                                elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                                    await command.call_command(message)
+                else:
+                    # Check if command's parent mod is disabled in the current server
+                    if int(server.id) not in bot_config.get_data("Disabled Servers"):
+                        # Check if command's parent mod is disabled in the current channel
+                        if int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                            if Permissions.has_permission(message.author, self.minimum_suggestion_permission):
+                                # No command called -> Not a known command
+                                most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
+                                # No similar commands -> Reply with an error
+                                if most_similar_command is None:
+                                    # Reply that neither that mod nor command exists
+                                    await Utils.simple_embed_reply(channel, "[Help]",
+                                                                   "Unknown mod or command - %s" % split_message[1])
+                                    # Similar-looking command exists -> Reply with it
+                                else:
+                                    # Reply with a similar command
+                                    await Utils.simple_embed_reply(channel, "[Unknown command]",
+                                                                   "Did you mean `" + most_similar_command + "`?")
+            # Mods are still loading -> Let the author know
             else:
-                # Check if command's parent mod is disabled in the current server
-                if int(server.id) not in bot_config.get_data("Disabled Servers"):
-                    # Check if command's parent mod is disabled in the current channel
-                    if int(channel.id) not in bot_config.get_data("Disabled Channels"):
-                        # No command called -> Not a known command
-                        most_similar_command = most_similar_string(command_alias, self.mod_command_aliases)
-                        # No similar commands -> Reply with an error
-                        if most_similar_command is None:
-                            # Reply that neither that mod nor command exists
-                            await Utils.simple_embed_reply(channel, "[Help]",
-                                                           "Unknown mod or command - %s" % split_message[1])
-                            # Similar-looking command exists -> Reply with it
-                        else:
-                            # Reply with a similar command
-                            await Utils.simple_embed_reply(channel, "[Unknown command]",
-                                                           "Did you mean `" + most_similar_command + "`?")
-        # Mods are still loading -> Let the author know
-        else:
-            await Utils.simple_embed_reply(channel, "[Error]",
-                                           "The bot is still loading, please wait.")
+                await Utils.simple_embed_reply(channel, "[Error]",
+                                               "The bot is still loading, please wait.")
 
     # Called when ANY message is received by the bot
     async def message_received(self, message):
@@ -182,6 +186,12 @@ class ModHandler:
     def is_done_loading(self):
         return self.done_loading
 
+    # Called when the bot joins a server
+    async def on_server_join(self, server):
+        for mod_name in self.mods:
+            await self.mods[mod_name].on_server_join(server)
+
+    # Calls when a member joins a server
     async def on_member_join(self, member):
         for mod_name in self.mods:
             await self.mods[mod_name].on_member_join(member)

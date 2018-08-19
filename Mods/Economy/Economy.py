@@ -265,6 +265,17 @@ class Economy(Mod):
             # Allow interest to be applied since at least 1 day has passed since it should of been applied previously
             self.applied_interest = False
 
+    # Called when the bot joins a server
+    async def on_server_join(self, server):
+        EconomyUtils.database_execute(
+            "CREATE TABLE IF NOT EXISTS '%s'(user TEXT, cash REAL, bank REAL)" % server.id
+        )
+        for user in server.members:
+            if not EconomyUtils.user_exists(server.id, user.id):
+                EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
+                    server.id, user.id, str(self.config.get_data("Starting Balance"))
+                ))
+
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
         server_id = member.server.id

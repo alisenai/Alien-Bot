@@ -6,6 +6,7 @@ import json
 
 
 # TODO: Change from in-memory DB to on-disk SQL DB
+# TODO: on_member_join and on_server_join
 class ColoredRoles(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init
@@ -234,9 +235,12 @@ class ColoredRoles(Mod):
     def get_role_by_hex(self, server, role_hex):
         return discord.utils.get(server.roles, name=role_hex)
 
-    # TODO: When a member joins mid-running-time, add them to the internal DB
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
+        pass
+
+    # Called when a member joins a server the bot is in
+    async def on_server_join(self, member):
         pass
 
     # Generates a fresh database on users and their color roles for every server the bot is in

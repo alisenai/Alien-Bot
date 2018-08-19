@@ -1,46 +1,4 @@
 {
-  "ColoredRoles": {
-    "Commands": {
-      "Add Color Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Clear Colors Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Color Info Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Delete Color Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Equipped Users Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "List Colors Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      },
-      "Remove Color Command": {
-        "Disabled Channels": [],
-        "Disabled Servers": [],
-        "Minimum Permissions": ""
-      }
-    },
-    "Disabled Channels": [],
-    "Disabled Servers": [],
-    "Enabled": true
-  },
   "DailyEconomy": {
     "Commands": {
       "Add Failure Reply Command": {
@@ -193,12 +151,6 @@
         "Minimum Permissions": ""
       }
     },
-    "Disabled Channels": [],
-    "Disabled Servers": [],
-    "Enabled": true
-  },
-  "ExampleMod": {
-    "Commands": {},
     "Disabled Channels": [],
     "Disabled Servers": [],
     "Enabled": true

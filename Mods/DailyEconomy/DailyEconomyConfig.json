@@ -1,6 +1,136 @@
 {
-  "Mod Description": "Adds day-to-day and income commands for users.",
   "Commands": {
+    "Add Failure Reply Command": {
+      "Aliases": [
+        "add-failure-reply"
+      ],
+      "Enabled": true,
+      "Help": "Adds a failure reply message to an income command.",
+      "Useage": [
+        "{User Identifier} is replaced with that user's ping.",
+        "{amount} is replaced with the amount deducted.",
+        "add-failure-reply {Income Command: 'crime'/'slut'/'work'} {Reply: Text}",
+        "add-failure-reply work You failed! {208845952251985920} lost {amount}!"
+      ]
+    },
+    "Add Success Reply Command": {
+      "Aliases": [
+        "add-success-reply"
+      ],
+      "Enabled": true,
+      "Help": "Adds a success reply message to an income command.",
+      "Useage": [
+        "{User Identifier} is replaced with that user's ping.",
+        "{amount} is replaced with the amount awarded.",
+        "add-success-reply {Income Command: 'crime'/'slut'/'work'} {Reply: Text}",
+        "add-success-reply work You succeeded! {208845952251985920} gained {amount}!"
+      ]
+    },
+    "Crime Command": {
+      "Aliases": [
+        "crime"
+      ],
+      "Cool Down": 60,
+      "Enabled": true,
+      "Failure": {
+        "Deduction": {
+          "Max": 500,
+          "Min": 100
+        },
+        "Messages": [
+          "Failure! {amount}"
+        ]
+      },
+      "Help": "Do something illegal and get paid.",
+      "Success": {
+        "Messages": [
+          "Well done Neal Caffrey. You made {amount}."
+        ],
+        "Payout": {
+          "Max": 500,
+          "Min": 100
+        }
+      },
+      "Success Rate": 0,
+      "Useage": [
+        "crime"
+      ]
+    },
+    "Delete Failure Reply Command": {
+      "Aliases": [
+        "delete-failure-reply"
+      ],
+      "Enabled": true,
+      "Help": "Deletes a failure reply message from an income command.",
+      "Useage": [
+        "delete-failure-reply {Income Command: 'crime'/'slut'/'work'} {Identifier: Number}",
+        "delete-failure-reply work 1"
+      ]
+    },
+    "Delete Success Reply Command": {
+      "Aliases": [
+        "delete-success-reply"
+      ],
+      "Enabled": true,
+      "Help": "Deletes a success reply message from an income command.",
+      "Useage": [
+        "delete-success-reply {Income Command: 'crime'/'slut'/'work'} {Identifier: Number}",
+        "delete-success-reply work 1"
+      ]
+    },
+    "List Failure Reply Command": {
+      "Aliases": [
+        "list-failure-reply"
+      ],
+      "Enabled": true,
+      "Help": "List all failure reply messages for an income command.",
+      "Useage": [
+        "list-failure-reply {Income Command: 'crime'/'slut'/'work'}",
+        "list-failure-reply work"
+      ]
+    },
+    "List Success Reply Command": {
+      "Aliases": [
+        "list-success-reply"
+      ],
+      "Enabled": true,
+      "Help": "List all success reply messages for an income command.",
+      "Useage": [
+        "list-success-reply {Income Command: 'crime'/'slut'/'work'}",
+        "list-success-reply work"
+      ]
+    },
+    "Rob Command": {
+      "Aliases": [
+        "rob"
+      ],
+      "Cool Down": 10,
+      "Enabled": true,
+      "Failure": {
+        "Deduction": {
+          "Max": 500,
+          "Min": 100
+        },
+        "Messages": [
+          "Failure! {amount}"
+        ]
+      },
+      "Help": "Rob another user's balance.",
+      "Success": {
+        "Messages": [
+          "Success! {amount}"
+        ],
+        "Payout": {
+          "Max": 500,
+          "Min": 100
+        }
+      },
+      "Useage": [
+        "rob {User: Ping/Identifier}",
+        "rob @User",
+        "rob 208845952251985920"
+      ]
+    },
     "Set Deduction Command": {
       "Aliases": [
         "set-deduction"
@@ -93,137 +223,7 @@
       "Useage": [
         "work"
       ]
-    },
-    "List Failure Reply Command": {
-      "Aliases": [
-        "list-failure-reply"
-      ],
-      "Enabled": true,
-      "Help": "List all failure reply messages for an income command.",
-      "Useage": [
-        "list-failure-reply {Income Command: 'crime'/'slut'/'work'}",
-        "list-failure-reply work"
-      ]
-    },
-    "List Success Reply Command": {
-      "Aliases": [
-        "list-success-reply"
-      ],
-      "Enabled": true,
-      "Help": "List all success reply messages for an income command.",
-      "Useage": [
-        "list-success-reply {Income Command: 'crime'/'slut'/'work'}",
-        "list-success-reply work"
-      ]
-    },
-    "Rob Command": {
-      "Aliases": [
-        "rob"
-      ],
-      "Cool Down": 10,
-      "Enabled": true,
-      "Failure": {
-        "Deduction": {
-          "Max": 500,
-          "Min": 100
-        },
-        "Messages": [
-          "Failure! {amount}"
-        ]
-      },
-      "Help": "Rob another user's balance.",
-      "Success": {
-        "Messages": [
-          "Success! {amount}"
-        ],
-        "Payout": {
-          "Max": 500,
-          "Min": 100
-        }
-      },
-      "Useage": [
-        "rob {User: Ping/Identifier}",
-        "rob @User",
-        "rob 208845952251985920"
-      ]
-    },
-    "Delete Failure Reply Command": {
-      "Aliases": [
-        "delete-failure-reply"
-      ],
-      "Enabled": true,
-      "Help": "Deletes a failure reply message from an income command.",
-      "Useage": [
-        "delete-failure-reply {Income Command: 'crime'/'slut'/'work'} {Identifier: Number}",
-        "delete-failure-reply work 1"
-      ]
-    },
-    "Delete Success Reply Command": {
-      "Aliases": [
-        "delete-success-reply"
-      ],
-      "Enabled": true,
-      "Help": "Deletes a success reply message from an income command.",
-      "Useage": [
-        "delete-success-reply {Income Command: 'crime'/'slut'/'work'} {Identifier: Number}",
-        "delete-success-reply work 1"
-      ]
-    },
-    "Crime Command": {
-      "Aliases": [
-        "crime"
-      ],
-      "Cool Down": 60,
-      "Enabled": true,
-      "Failure": {
-        "Deduction": {
-          "Max": 500,
-          "Min": 100
-        },
-        "Messages": [
-          "Failure! {amount}"
-        ]
-      },
-      "Help": "Do something illegal and get paid.",
-      "Success": {
-        "Messages": [
-          "Well done Neal Caffrey. You made {amount}."
-        ],
-        "Payout": {
-          "Max": 500,
-          "Min": 100
-        }
-      },
-      "Success Rate": 100,
-      "Useage": [
-        "crime"
-      ]
-    },
-    "Add Failure Reply Command": {
-      "Aliases": [
-        "add-failure-reply"
-      ],
-      "Enabled": true,
-      "Help": "Adds a failure reply message to an income command.",
-      "Useage": [
-        "{User Identifier} is replaced with that user's ping.",
-        "{amount} is replaced with the amount deducted.",
-        "add-failure-reply {Income Command: 'crime'/'slut'/'work'} {Reply: Text}",
-        "add-failure-reply work You failed! {208845952251985920} lost {amount}!"
-      ]
-    },
-    "Add Success Reply Command": {
-      "Aliases": [
-        "add-success-reply"
-      ],
-      "Enabled": true,
-      "Help": "Adds a success reply message to an income command.",
-      "Useage": [
-        "{User Identifier} is replaced with that user's ping.",
-        "{amount} is replaced with the amount awarded.",
-        "add-success-reply {Income Command: 'crime'/'slut'/'work'} {Reply: Text}",
-        "add-success-reply work You succeeded! {208845952251985920} gained {amount}!"
-      ]
     }
-  }
+  },
+  "Mod Description": "Adds day-to-day and income commands for users."
 }

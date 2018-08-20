@@ -10,7 +10,6 @@ except ImportError:
     raise Exception("Economy mod not installed")
 
 
-# TODO: Deal with having no reply messages
 class DailyEconomy(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init
@@ -111,19 +110,22 @@ class DailyEconomy(Mod):
                 income_command = get_income_command(income_command)
                 current_index = 0
                 messages = self.config.get_data(key="Commands")[income_command][reply_type]["Messages"]
-                # Get the length of the largest number (EX: "100" = 3, "10" = 2)
-                max_number_length = len(str(len(messages)))
-                embed_text = ""
-                for reply_message in messages:
-                    current_index += 1
-                    if len(reply_message) > 50 - max_number_length:
-                        embed_text += reply_message[0: 50 - max_number_length - 3] + "...\n"
-                    else:
-                        embed_text += reply_message + "\n"
-                embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
-                embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
-                embed.add_field(name="Message", value=embed_text, inline=True)
-                await Utils.client.send_message(channel, embed=embed)
+                if len(messages) > 0:
+                    # Get the length of the largest number (EX: "100" = 3, "10" = 2)
+                    max_number_length = len(str(len(messages)))
+                    embed_text = ""
+                    for reply_message in messages:
+                        current_index += 1
+                        if len(reply_message) > 50 - max_number_length:
+                            embed_text += reply_message[0: 50 - max_number_length - 3] + "...\n"
+                        else:
+                            embed_text += reply_message + "\n"
+                    embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
+                    embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
+                    embed.add_field(name="Message", value=embed_text, inline=True)
+                    await Utils.client.send_message(channel, embed=embed)
+                else:
+                    await Utils.simple_embed_reply(message.channel, "[Reply Messages]", "There are no replies.")
             else:
                 await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
         else:
@@ -199,14 +201,17 @@ class DailyEconomy(Mod):
         balance_change_range = command_config[win_mode][change_mode]
         cash_change = random.randint(balance_change_range["Min"], balance_change_range["Max"]) * balance_change
         messages = command_config[win_mode]["Messages"]
-        reply = messages[rng(len(messages) - 1)]
-        EconomyUtils.set_cash(server.id, author.id, user_cash + cash_change)
-        for section in reply.split(" "):
-            if re.fullmatch(r"{[0-9]{18}}", section) is not None:
-                reply = reply.replace(section, Utils.get_user_by_id(server, section[1:-1]).mention)
-        await Utils.simple_embed_reply(channel, "[" + str(author) + "]", reply.replace("{amount}",
-                                                                                       str(abs(cash_change)) +
-                                                                                       EconomyUtils.currency))
+        if len(messages) > 0:
+            reply = messages[rng(len(messages) - 1)]
+            EconomyUtils.set_cash(server.id, author.id, user_cash + cash_change)
+            for section in reply.split(" "):
+                if re.fullmatch(r"{[0-9]{18}}", section) is not None:
+                    reply = reply.replace(section, Utils.get_user_by_id(server, section[1:-1]).mention)
+            await Utils.simple_embed_reply(channel, "[" + str(author) + "]", reply.replace("{amount}",
+                                                                                           str(abs(cash_change)) +
+                                                                                           EconomyUtils.currency))
+        else:
+            await Utils.simple_embed_reply(channel, "[" + str(author) + "]", str(cash_change) + EconomyUtils.currency)
 
 
 def get_income_command(text):

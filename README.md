@@ -26,10 +26,7 @@ The primary config is found under `Config\config.json`
 * `Save File` Sets the database file save location
 * `Embed Color` Sets the bot's default embed color
 * `Bot Emoji` ***WIP***
-* `Owner ID` ***WIP***
-* `Enabled Mods` Sets whether every mod is enabled or disabled bot-wide
 * `Profile Picture` Sets the bot's profile picture (must be jpg)
-* `Logging Level` Sets how verbose the logs will be for the bot host
 * `Game Status` Contains a list of statuses that will be randomly chosen on start
 * Each command under `Commands` has the following parameters: 
     * `Aliases` Sets a list of aliases for the command

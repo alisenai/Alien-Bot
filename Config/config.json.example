@@ -5,6 +5,7 @@
   "Disabled Channels": [],
   "Disabled Servers": [],
   "Embed Color": "0x751DDF",
+  "Minimum Suggestion Permission": "Guardian",
   "Game Status": [
     "With Alien Sensei",
     "With Mods",

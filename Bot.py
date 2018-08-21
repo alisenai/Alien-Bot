@@ -32,11 +32,15 @@ Utils.mod_handler = mod_handler
 mods_loaded = False
 # For ticks
 loop = asyncio.get_event_loop()
+tick_thread = None
+# Shutdown variable
+shutdown = False
 
 
 # When the bot is ready to be worked with
 @client.event
 async def on_ready():
+    global tick_thread
     print('[Login successful]')
     print('[Starting]')
     self = None
@@ -67,13 +71,14 @@ async def on_ready():
     # Load mods
     await mod_handler.load_mods()
     # Start main loop
-    t = threading.Thread(target=tick)
-    t.start()
+    tick_thread = threading.Thread(target=tick)
+    tick_thread.start()
 
 
 # When a message is received by the bot
 @client.event
 async def on_message(message):
+    global shutdown
     # Check if the message is a possible command
     if message.content[0:len(command_prefix)] == command_prefix:
         # Check if the mod handler is ready to be worked with
@@ -81,8 +86,22 @@ async def on_message(message):
             if message.content == command_prefix + "<3":
                 await client.send_message(message.channel, config["Bot Emoji"])
             else:
-                # Not a bot command; use mod handler to parse the command
-                await mod_handler.command_called(message, message.content.split(" ")[0][len(command_prefix):])
+                try:
+                    # Not a bot command; use mod handler to parse the command
+                    await mod_handler.command_called(message, message.content.split(" ")[0][len(command_prefix):])
+                # Handle exceptions, stopping and restarting
+                except Exception as e:
+                    shutdown = True
+                    print("[Cleaning threads]")
+                    tick_thread.join()
+                    print("[Logging out]")
+                    await client.logout()
+                    if e.args[0] != "Stop Bot":
+                        print("Ungraceful error caught", e)
+                        # TODO: Restarting on error or command / special exception
+                        # shutdown = False
+                        # print("[Restarting]")
+                        # login()
         # Mod handler is not ready -> Let the author know
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "The bot is still loading, please wait.")
@@ -102,7 +121,7 @@ async def on_member_join(member):
 # Calls ticks throughout the bot once a second
 def tick():
     minute_timer = 0
-    while True:
+    while not shutdown:
         time.sleep(1)
         loop.create_task(mod_handler.second_tick())
         minute_timer += 1
@@ -111,13 +130,17 @@ def tick():
             loop.create_task(mod_handler.minute_tick())
 
 
-# Make sure there is a token in the config
-print("[Attempting to login]")
-try:
-    if config['Token'] == "TOKEN":
-        print("Please add a token in the config file")
-    else:
-        # Run the bot with the token
-        client.run(config['Token'])
-except discord.errors.ClientException:
-    print("[Could not login]")
+def login():
+    # Make sure there is a token in the config
+    print("[Attempting to login]")
+    try:
+        if config['Token'] == "TOKEN":
+            print("Please add a token in the config file")
+        else:
+            # Run the bot with the token
+            client.run(config['Token'])
+    except discord.errors.ClientException:
+        print("[Could not login]")
+
+
+login()

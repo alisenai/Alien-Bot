@@ -1,5 +1,3 @@
-import sys
-
 import discord
 from Common import DataManager, Utils
 from Common.Mod import Mod
@@ -41,8 +39,8 @@ class Defaults(Mod):
             await self.change_presence(message, True)
         elif command is self.commands["Stop Command"]:
             await Utils.simple_embed_reply(channel, "[Stopping...]", "Goodbye cruel world.")
-            print("[Stop command called]")
-            sys.exit()
+            print("[Stopping the bot]")
+            raise Exception("Stop Bot")
         elif command is self.commands["Permissions Command"]:
             raise Exception("Not implemented yet!")
 

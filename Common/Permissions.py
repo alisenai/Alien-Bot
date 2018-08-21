@@ -20,9 +20,10 @@ def load_permissions():
             assert default_perm is None, "Bot config contains more than one default role."
             default_perm = permission
         if permission_config["Is Owner"]:
-            assert owner_perm is None, "Bot config contains more than one owner role."
+            assert owner_perm is None, "Bot config contains more than one owner permission."
             owner_perm = permission
-
+    assert owner_perm is not None, "There must be at least one owner permission"
+    assert default_perm is not None, "There must be at least one default permission"
     print("[Done]")
 
 

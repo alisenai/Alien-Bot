@@ -31,6 +31,7 @@
         "crime"
       ],
       "Cool Down": 60,
+      "Default Success Rate": 75,
       "Enabled": true,
       "Failure": {
         "Deduction": {
@@ -51,7 +52,6 @@
           "Min": 100
         }
       },
-      "Success Rate": 0,
       "Useage": [
         "crime"
       ]
@@ -142,6 +142,17 @@
         "set-deduction work 100 500"
       ]
     },
+    "Set Default Success Rate Command": {
+      "Aliases": [
+        "set-success-rate"
+      ],
+      "Enabled": true,
+      "Help": "Sets the default success rate of an income command.",
+      "Useage": [
+        "set-success-rate {Income Command: 'crime'/'slut'/'work'} {Percent: Number}",
+        "set-success-rate work 75"
+      ]
+    },
     "Set Payout Command": {
       "Aliases": [
         "set-payout"
@@ -153,22 +164,12 @@
         "set-payout work 100 500"
       ]
     },
-    "Set Success Rate Command": {
-      "Aliases": [
-        "set-success-rate"
-      ],
-      "Enabled": true,
-      "Help": "Sets the success rate of an income command.",
-      "Useage": [
-        "set-success-rate {Income Command: 'crime'/'slut'/'work'} {Percent: Number}",
-        "set-success-rate work 75"
-      ]
-    },
     "Slut Command": {
       "Aliases": [
         "slut"
       ],
       "Cool Down": 10,
+      "Default Success Rate": 75,
       "Enabled": true,
       "Failure": {
         "Deduction": {
@@ -189,7 +190,6 @@
           "Min": 100
         }
       },
-      "Success Rate": 75,
       "Useage": [
         "slut"
       ]
@@ -199,6 +199,7 @@
         "work"
       ],
       "Cool Down": 10,
+      "Default Success Rate": 75,
       "Enabled": true,
       "Failure": {
         "Deduction": {
@@ -219,7 +220,6 @@
           "Min": 100
         }
       },
-      "Success Rate": 100,
       "Useage": [
         "work"
       ]

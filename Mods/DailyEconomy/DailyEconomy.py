@@ -22,20 +22,20 @@ class DailyEconomy(Mod):
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
         server, channel, author = message.server, message.channel, message.author
-        if command is self.commands["Set Success Rate Command"]:
+        if command is self.commands["Set Default Success Rate Command"]:
             if len(split_message) > 2:
                 income_command = split_message[1]
                 new_rate = split_message[2]
-                if income_command == "slut" or "work" or "crime":
+                if income_command in ("slut", "work", "crime"):
                     income_command = get_income_command(income_command)
                     if new_rate.isdigit():
                         new_rate = int(new_rate)
                         if 0 <= new_rate <= 100:
                             economy_config = self.config.get_data()
-                            economy_config["Commands"][income_command]["Success Rate"] = new_rate
+                            economy_config["Commands"][income_command]["Default Success Rate"] = new_rate
                             self.config.write_data(economy_config)
                             await Utils.simple_embed_reply(channel, "[Success]", "`" + income_command +
-                                                           "` success rate set to " + str(new_rate) + "%.")
+                                                           "` default success rate set to " + str(new_rate) + "%.")
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]",
                                                            "Success rate parameter not between 0 and 100.")
@@ -43,7 +43,7 @@ class DailyEconomy(Mod):
                         await Utils.simple_embed_reply(channel, "[Error]",
                                                        "Success rate parameter is incorrect.")
                 else:
-                    await Utils.simple_embed_reply(channel, "[Error]", "Income command parameter not supplied.")
+                    await Utils.simple_embed_reply(channel, "[Error]", "Income command parameter is incorrect.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["Add Success Reply Command"]:
@@ -72,29 +72,32 @@ class DailyEconomy(Mod):
         elif command is self.commands["Rob Command"]:
             await Utils.simple_embed_reply(channel, "[Error]", "Awaiting method of calculating success rate")
 
-    # TODO: Add max reply message count and length limits
     async def set_income_reply(self, message, is_success):
         server, channel, author = message.server, message.channel, message.author
         split_message = message.content.split(" ")
         if len(split_message) > 2:
             income_command = split_message[1].lower()
             reply = message.content[len(split_message[0]) + len(split_message[1]) + 2:]
-            if income_command == "slut" or "work" or "crime":
-                income_command = get_income_command(income_command)
-                economy_config = self.config.get_data()
-                reply_type = "Success" if is_success else "Failure"
-                # Check to make sure that and {user_id}s supplied are valid
-                for section in reply.split(" "):
-                    if re.fullmatch(r"{[0-9]{18}}", section) is not None:
-                        if Utils.get_user_by_id(server, section[1:-1]) is None:
-                            return await Utils.simple_embed_reply(channel, "[Error]",
-                                                                  "User ID `" + section[1:-1] + "` not found.")
-                economy_config["Commands"][income_command][reply_type]["Messages"].append(reply)
-                self.config.write_data(economy_config)
-                await Utils.simple_embed_reply(message.channel, "[Success]", "Added `" + reply + "` to `" +
-                                               income_command + "`'s replies.")
+            if len(reply) < 1500:
+                if income_command in ("slut", "work", "crime"):
+                    income_command = get_income_command(income_command)
+                    economy_config = self.config.get_data()
+                    reply_type = "Success" if is_success else "Failure"
+                    # Check to make sure that and {user_id}s supplied are valid
+                    for section in reply.split(" "):
+                        if re.fullmatch(r"{[0-9]{18}}", section) is not None:
+                            if Utils.get_user_by_id(server, section[1:-1]) is None:
+                                return await Utils.simple_embed_reply(channel, "[Error]",
+                                                                      "User ID `" + section[1:-1] + "` not found.")
+                    economy_config["Commands"][income_command][reply_type]["Messages"].append(reply)
+                    self.config.write_data(economy_config)
+                    await Utils.simple_embed_reply(message.channel, "[Success]", "Added `" + reply + "` to `" +
+                                                   income_command + "`'s replies.")
+                else:
+                    await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter is incorrect.")
             else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
+                await Utils.simple_embed_reply(message.channel, "[Error]",
+                                               "Reply message is too long - it must be < 1500 characters")
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
 
@@ -106,7 +109,7 @@ class DailyEconomy(Mod):
         if len(split_message) > 1:
             reply_type = "Success" if is_success else "Failure"
             income_command = split_message[1].lower()
-            if income_command == "slut" or "work" or "crime":
+            if income_command in ("slut", "work", "crime"):
                 income_command = get_income_command(income_command)
                 current_index = 0
                 messages = self.config.get_data(key="Commands")[income_command][reply_type]["Messages"]
@@ -121,13 +124,14 @@ class DailyEconomy(Mod):
                         else:
                             embed_text += reply_message + "\n"
                     embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
-                    embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]), inline=True)
+                    embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]),
+                                    inline=True)
                     embed.add_field(name="Message", value=embed_text, inline=True)
                     await Utils.client.send_message(channel, embed=embed)
                 else:
                     await Utils.simple_embed_reply(message.channel, "[Reply Messages]", "There are no replies.")
             else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
+                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter is incorrect.")
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
 
@@ -137,7 +141,7 @@ class DailyEconomy(Mod):
         if len(split_message) > 2:
             reply_type = "Success" if is_success else "Failure"
             income_command, index = split_message[1].lower(), split_message[2]
-            if income_command == "slut" or "work" or "crime":
+            if income_command in ("slut", "work", "crime"):
                 if index.isdigit():
                     index = int(index)
                     income_command = get_income_command(income_command)
@@ -155,7 +159,7 @@ class DailyEconomy(Mod):
                 else:
                     await Utils.simple_embed_reply(message.channel, "[Error]", "ID parameter is incorrect.")
             else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
+                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter is incorrect.")
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
 
@@ -165,7 +169,7 @@ class DailyEconomy(Mod):
         success_type, change_type = ("Success", "Payout") if is_payout else ("Failure", "Deduction")
         if len(split_message) > 3:
             income_command, minimum, maximum = split_message[1].lower(), split_message[2], split_message[3]
-            if income_command == "slut" or "work" or "crime":
+            if income_command in ("slut", "work", "crime"):
                 income_command = get_income_command(income_command)
                 if minimum.isdigit():
                     if maximum.isdigit():
@@ -185,7 +189,7 @@ class DailyEconomy(Mod):
                     await Utils.simple_embed_reply(message.channel, "[Error]",
                                                    "Minimum parameter is incorrect.")
             else:
-                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter not supplied.")
+                await Utils.simple_embed_reply(message.channel, "[Error]", "Income command parameter is incorrect.")
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "Insufficient parameters supplied.")
 
@@ -196,7 +200,7 @@ class DailyEconomy(Mod):
         user_cash = EconomyUtils.get_cash(server.id, author.id)
         # Pick success or failure
         win_mode, change_mode, balance_change = ("Success", "Payout", 1) if roll(
-            int(self.config.get_data(key="Commands")[command_name]["Success Rate"])) else (
+            int(self.config.get_data(key="Commands")[command_name]["Default Success Rate"])) else (
             "Failure", "Deduction", -1)
         balance_change_range = command_config[win_mode][change_mode]
         cash_change = random.randint(balance_change_range["Min"], balance_change_range["Max"]) * balance_change
@@ -215,7 +219,13 @@ class DailyEconomy(Mod):
 
 
 def get_income_command(text):
-    return "Slut Command" if text == "slut" else "Work Command" if text == "work" else "Crime Command"
+    if text == "slut":
+        return "Slut Command"
+    if text == "work":
+        return "Work Command"
+    if text == "crime":
+        return "Crime Command"
+    return None
 
 
 # Roll a True/Fall with a given success chance

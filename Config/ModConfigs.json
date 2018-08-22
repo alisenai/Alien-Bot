@@ -46,12 +46,12 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
-      "Set Payout Command": {
+      "Set Default Success Rate Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
-      "Set Success Rate Command": {
+      "Set Payout Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""

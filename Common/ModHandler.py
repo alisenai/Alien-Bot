@@ -186,16 +186,6 @@ class ModHandler:
     def is_done_loading(self):
         return self.done_loading
 
-    # Called when the bot joins a server
-    async def on_server_join(self, server):
-        for mod_name in self.mods:
-            await self.mods[mod_name].on_server_join(server)
-
-    # Calls when a member joins a server
-    async def on_member_join(self, member):
-        for mod_name in self.mods:
-            await self.mods[mod_name].on_member_join(member)
-
 
 # Get the most similar string from an array, given a string
 def most_similar_string(string, string_list):

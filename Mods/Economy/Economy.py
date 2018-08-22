@@ -266,6 +266,7 @@ class Economy(Mod):
             self.applied_interest = False
 
     # Called when the bot joins a server
+    @Utils.client.event
     async def on_server_join(self, server):
         EconomyUtils.database_execute(
             "CREATE TABLE IF NOT EXISTS '%s'(user TEXT, cash REAL, bank REAL)" % server.id
@@ -277,6 +278,7 @@ class Economy(Mod):
                 ))
 
     # Called when a member joins a server the bot is in
+    @Utils.client.event
     async def on_member_join(self, member):
         server_id = member.server.id
         user_id = member.id

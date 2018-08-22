@@ -1,5 +1,7 @@
 import time
 
+import discord
+
 from Common.Command import Command
 from Common import Utils
 
@@ -33,7 +35,11 @@ class Mod:
     async def on_server_join(self, server):
         pass
 
-    # Calls when a member joins a server
+    # Called when a message is deleted
+    async def on_message_delete(self, message):
+        pass
+
+    # Called when a member joins a server
     async def on_member_join(self, member):
         pass
 

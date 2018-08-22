@@ -304,10 +304,12 @@ class Shops(Mod):
     # Cleans up shops from deleted channels
     def verify_db(self):
         shop_channels = self.database.execute("SELECT channel_ID from shops")
+        # Remove all existing channels from the shop_channels list
         for server in Utils.client.servers:
             for channel in server.channels:
                 if channel.id in shop_channels:
                     shop_channels.remove(channel.id)
+        # Delete any remaining channels as they don't exist (weren't removed previously)
         for channel in shop_channels:
             self.delete_shop_by_channel_id(channel)
             self.database.execute("DELETE FROM shops where channel_id='%s'" % channel)

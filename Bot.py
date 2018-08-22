@@ -75,6 +75,18 @@ async def on_ready():
     tick_thread.start()
 
 
+# Calls ticks throughout the bot once a second
+def tick():
+    minute_timer = 0
+    while not shutdown:
+        time.sleep(1)
+        loop.create_task(mod_handler.second_tick())
+        minute_timer += 1
+        if minute_timer == 60:
+            minute_timer = 0
+            loop.create_task(mod_handler.minute_tick())
+
+
 # When a message is received by the bot
 @client.event
 async def on_message(message):
@@ -106,28 +118,6 @@ async def on_message(message):
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "The bot is still loading, please wait.")
     await mod_handler.message_received(message)
-
-
-@client.event
-async def on_server_join(server):
-    await mod_handler.on_server_join(server)
-
-
-@client.event
-async def on_member_join(member):
-    await mod_handler.on_member_join(member)
-
-
-# Calls ticks throughout the bot once a second
-def tick():
-    minute_timer = 0
-    while not shutdown:
-        time.sleep(1)
-        loop.create_task(mod_handler.second_tick())
-        minute_timer += 1
-        if minute_timer == 60:
-            minute_timer = 0
-            loop.create_task(mod_handler.minute_tick())
 
 
 def login():

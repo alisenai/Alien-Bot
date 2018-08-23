@@ -28,6 +28,16 @@
         "help help"
       ]
     },
+    "Info Command": {
+      "Enabled": true,
+      "Aliases": [
+        "info"
+      ],
+      "Help": "Lists bot info",
+      "Useage": [
+        "info"
+      ]
+    },
     "Server Command": {
       "Enabled": true,
       "Bypass Server Restrictions": true,

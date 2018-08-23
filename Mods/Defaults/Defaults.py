@@ -33,14 +33,21 @@ class Defaults(Mod):
                     embed.add_field(name=mod, value=description, inline=False)
                 # Reply with the created embed
                 await Utils.client.send_message(channel, embed=embed)
-        elif command is self.commands["Server Command"]:
-            await self.change_presence(message, False)
-        elif command is self.commands["Channel Command"]:
-            await self.change_presence(message, True)
         elif command is self.commands["Stop Command"]:
             await Utils.simple_embed_reply(channel, "[Stopping...]", "Goodbye cruel world.")
             print("[Stopping the bot]")
             raise Exception("Stop Bot")
+        elif command is self.commands["Info Command"]:
+            embed = discord.Embed(title="[Help]", color=0x751DDF)
+            embed.add_field(name="Bot Nick", value=str(Utils.bot_nick), inline=True)
+            embed.add_field(name="Bot Prefix", value=str(Utils.prefix), inline=True)
+            embed.add_field(name="Mod Count", value=str(len(Utils.mod_handler.mods)), inline=True)
+            # embed.add_field(name="Mod Count", value=, inline=False)
+            await Utils.client.send_message(channel, embed=embed)
+        elif command is self.commands["Server Command"]:
+            await self.change_presence(message, False)
+        elif command is self.commands["Channel Command"]:
+            await self.change_presence(message, True)
         elif command is self.commands["Permissions Command"]:
             raise Exception("Not implemented yet!")
 

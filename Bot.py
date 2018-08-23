@@ -24,6 +24,7 @@ Permissions.load_permissions()
 Utils.bot_nick = config['Nickname']
 # Grab command prefix
 command_prefix = config['Command Prefix']
+Utils.prefix = command_prefix
 # Initialize the mod handler
 mod_handler = ModHandler(config["Minimum Suggestion Permission"], config['Embed Color'])
 # Add to Utils

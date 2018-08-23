@@ -83,6 +83,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Info Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Server Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

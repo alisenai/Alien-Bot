@@ -69,8 +69,10 @@ class Defaults(Mod):
             commands = [command for command in Utils.mod_handler.commands]
             if len(commands) > 0:
                 command_names = [command.name for command in commands]
-                embed.add_field(name="Commands (%d)" % len(command_names),
-                                value='\n'.join(command_names), inline=True)
+                # embed.add_field(name="Commands (%d)" % len(command_names),
+                #                 value='\n'.join(command_names), inline=True)
+                embed.add_field(name="Commands",
+                                value=str(len(command_names)), inline=True)
                 channel_disabled_commands = [command.name for command in commands if int(channel.id) in
                                              mod_config[command.parent_mod.name]["Commands"][command.name][
                                                  "Disabled Channels"]]

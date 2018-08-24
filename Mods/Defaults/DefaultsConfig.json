@@ -30,6 +30,7 @@
     },
     "Info Command": {
       "Enabled": true,
+      "Bypass Server Restrictions": true,
       "Aliases": [
         "info"
       ],

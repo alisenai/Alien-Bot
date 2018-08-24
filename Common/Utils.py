@@ -168,3 +168,15 @@ def parse_command_config(parent, parent_name, config):
                                    config[command_name]["Bypass Channel Restrictions"] if
                                    "Bypass Channel Restrictions" in config[command_name] else False))
             for command_name in config}
+
+
+def seconds_format(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    days, hours, minutes, seconds = int(days), int(hours), int(minutes), int(seconds)
+    # Turn x hours y minutes and z seconds into text format
+    return ((str(days) + "d ") if days != 0 else "") + \
+           ((str(hours) + "h ") if hours != 0 else "") + \
+           ((str(minutes) + "m ") if minutes != 0 else "") + \
+           ((str(seconds) + "s") if seconds != 0 else "1s")

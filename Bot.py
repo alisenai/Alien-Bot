@@ -110,7 +110,9 @@ async def on_message(message):
                     print("[Logging out]")
                     await client.logout()
                     if e.args[0] != "Stop Bot":
-                        print("Ungraceful error caught", e)
+                        # For DEBUG
+                        raise e
+                        # print("Ungraceful error caught", e)
                         # TODO: Restarting on error or command / special exception
                         # shutdown = False
                         # print("[Restarting]")

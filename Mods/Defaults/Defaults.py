@@ -41,51 +41,51 @@ class Defaults(Mod):
             await Utils.simple_embed_reply(channel, "[Stopping...]", "Goodbye cruel world.")
             print("[Stopping the bot]")
             raise Exception("Stop Bot")
-        elif command is self.commands["Info Command"]:
-            text = ""
-            text += "Bot Nick: %s\n" % str(Utils.bot_nick)
-            text += "Bot Prefix: %s\n" % Utils.prefix
-            embed = discord.Embed(title="[Help]", color=0x751DDF, description=text)
-            embed.add_field(name="Uptime", value=Utils.seconds_format(time.time() - self.start_time), inline=True)
-            mod_config = DataManager.get_manager("mod_config").get_data()
-            mod_names = [mod_name for mod_name in mod_config]
-            embed.add_field(name="Mods (%d)" % len(mod_names),
-                            value='\n'.join(mod_names) if len(mod_names) > 0 else "None", inline=True)
-            if len(mod_names) > 0:
-                disabled_mods = [mod_name for mod_name in mod_names if not mod_config[mod_name]["Enabled"]]
-                if len(disabled_mods) > 0:
-                    embed.add_field(name="Disabled Mods (%d)" % len(disabled_mods),
-                                    value='\n'.join(disabled_mods), inline=True)
-                channel_disabled_mods = [mod_name for mod_name in mod_names if
-                                         int(channel.id) in mod_config[mod_name]["Disabled Channels"]]
-                if len(channel_disabled_mods) > 0:
-                    embed.add_field(name="Channel Disabled Mods (%d)" % len(channel_disabled_mods),
-                                    value='\n'.join(channel_disabled_mods), inline=True)
-                server_disabled_mods = [mod_name for mod_name in mod_names if
-                                        int(server.id) in mod_config[mod_name]["Disabled Servers"]]
-                if len(server_disabled_mods) > 0:
-                    embed.add_field(name="Server Disabled Mods (%d)" % len(server_disabled_mods),
-                                    value='\n'.join(server_disabled_mods), inline=True)
-            commands = [command for command in Utils.mod_handler.commands]
-            if len(commands) > 0:
-                command_names = [command.name for command in commands]
-                # embed.add_field(name="Commands (%d)" % len(command_names),
-                #                 value='\n'.join(command_names), inline=True)
-                embed.add_field(name="Commands",
-                                value=str(len(command_names)), inline=True)
-                channel_disabled_commands = [command.name for command in commands if int(channel.id) in
-                                             mod_config[command.parent_mod.name]["Commands"][command.name][
-                                                 "Disabled Channels"]]
-                if len(channel_disabled_commands) > 0:
-                    embed.add_field(name="Channel Disabled Commands (%d)" % len(channel_disabled_commands),
-                                    value='\n'.join(channel_disabled_commands), inline=True)
-                server_disabled_commands = [command.name for command in commands if int(server.id) in
-                                            mod_config[command.parent_mod.name]["Commands"][command.name][
-                                                "Disabled Servers"]]
-                if len(server_disabled_commands) > 0:
-                    embed.add_field(name="Server Disabled Commands (%d)" % len(server_disabled_commands),
-                                    value='\n'.join(server_disabled_commands), inline=True)
-            await Utils.client.send_message(channel, embed=embed)
+        # elif command is self.commands["Info Command"]:
+        #     text = ""
+        #     text += "Bot Nick: %s\n" % str(Utils.bot_nick)
+        #     text += "Bot Prefix: %s\n" % Utils.prefix
+        #     embed = discord.Embed(title="[Help]", color=0x751DDF, description=text)
+        #     embed.add_field(name="Uptime", value=Utils.seconds_format(time.time() - self.start_time), inline=True)
+        #     mod_config = DataManager.get_manager("mod_config").get_data()
+        #     mod_names = [mod_name for mod_name in mod_config]
+        #     embed.add_field(name="Mods (%d)" % len(mod_names),
+        #                     value='\n'.join(mod_names) if len(mod_names) > 0 else "None", inline=True)
+        #     if len(mod_names) > 0:
+        #         disabled_mods = [mod_name for mod_name in mod_names if not mod_config[mod_name]["Enabled"]]
+        #         if len(disabled_mods) > 0:
+        #             embed.add_field(name="Disabled Mods (%d)" % len(disabled_mods),
+        #                             value='\n'.join(disabled_mods), inline=True)
+        #         channel_disabled_mods = [mod_name for mod_name in mod_names if
+        #                                  int(channel.id) in mod_config[mod_name]["Disabled Channels"]]
+        #         if len(channel_disabled_mods) > 0:
+        #             embed.add_field(name="Channel Disabled Mods (%d)" % len(channel_disabled_mods),
+        #                             value='\n'.join(channel_disabled_mods), inline=True)
+        #         server_disabled_mods = [mod_name for mod_name in mod_names if
+        #                                 int(server.id) in mod_config[mod_name]["Disabled Servers"]]
+        #         if len(server_disabled_mods) > 0:
+        #             embed.add_field(name="Server Disabled Mods (%d)" % len(server_disabled_mods),
+        #                             value='\n'.join(server_disabled_mods), inline=True)
+        #     commands = [command for command in Utils.mod_handler.commands]
+        #     if len(commands) > 0:
+        #         command_names = [command.name for command in commands]
+        #         # embed.add_field(name="Commands (%d)" % len(command_names),
+        #         #                 value='\n'.join(command_names), inline=True)
+        #         embed.add_field(name="Commands",
+        #                         value=str(len(command_names)), inline=True)
+        #         channel_disabled_commands = [command.name for command in commands if int(channel.id) in
+        #                                      mod_config[command.parent_mod.name]["Commands"][command.name][
+        #                                          "Disabled Channels"]]
+        #         if len(channel_disabled_commands) > 0:
+        #             embed.add_field(name="Channel Disabled Commands (%d)" % len(channel_disabled_commands),
+        #                             value='\n'.join(channel_disabled_commands), inline=True)
+        #         server_disabled_commands = [command.name for command in commands if int(server.id) in
+        #                                     mod_config[command.parent_mod.name]["Commands"][command.name][
+        #                                         "Disabled Servers"]]
+        #         if len(server_disabled_commands) > 0:
+        #             embed.add_field(name="Server Disabled Commands (%d)" % len(server_disabled_commands),
+        #                             value='\n'.join(server_disabled_commands), inline=True)
+        #     await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Server Command"]:
             await self.change_presence(message, False)
         elif command is self.commands["Channel Command"]:

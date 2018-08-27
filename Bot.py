@@ -25,6 +25,8 @@ Utils.bot_nick = config['Nickname']
 # Grab command prefix
 command_prefix = config['Command Prefix']
 Utils.prefix = command_prefix
+# Grab the bot's emoji
+Utils. bot_emoji = config["Bot Emoji"]
 # Initialize the mod handler
 mod_handler = ModHandler(config["Minimum Suggestion Permission"], config['Embed Color'])
 # Add to Utils

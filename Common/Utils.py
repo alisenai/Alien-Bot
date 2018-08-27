@@ -6,6 +6,7 @@ import re
 client = None
 prefix = None
 bot_nick = None
+bot_emoji = None
 mod_handler = None
 
 

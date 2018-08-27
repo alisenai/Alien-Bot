@@ -85,20 +85,20 @@ class ModHandler:
                 if command is not None:
                     # Grab mod config to check for enabled servers / channels
                     mod_config = DataManager.get_manager("mod_config").get_data()[command.parent_mod.name]
-                    # Check if command's parent mod is disabled in the current server
-                    if int(server.id) not in mod_config["Disabled Servers"]:
-                        # Check if command's parent mod is disabled in the current channel
-                        if int(channel.id) not in mod_config["Disabled Channels"]:
-                            # Check if the command bypasses server restrictions
-                            if command.bypass_server_restrictions:
+                    # Check if the command bypasses server restrictions
+                    if command.bypass_server_restrictions:
+                        await command.call_command(message)
+                    # Check if the bot is disabled in the current server
+                    elif int(server.id) not in bot_config.get_data("Disabled Servers"):
+                        # Check if command's parent mod is disabled in the current server
+                        if int(server.id) not in mod_config["Disabled Servers"]:
+                            # Check if the command bypasses channel restrictions
+                            if command.bypass_channel_restrictions:
                                 await command.call_command(message)
-                            # Check if the bot is disabled in the current server
-                            elif int(server.id) not in bot_config.get_data("Disabled Servers"):
-                                # Check if the command bypasses channel restrictions
-                                if command.bypass_channel_restrictions:
-                                    await command.call_command(message)
-                                # Check if the bot is disabled in the current channel
-                                elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                            # Check if the bot is disabled in the current channel
+                            elif int(channel.id) not in bot_config.get_data("Disabled Channels"):
+                                # Check if command's parent mod is disabled in the current channel
+                                if int(channel.id) not in mod_config["Disabled Channels"]:
                                     await command.call_command(message)
                 else:
                     # Check if command's parent mod is disabled in the current server

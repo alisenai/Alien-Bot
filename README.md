@@ -1,4 +1,4 @@
-# Alien-Bot ALPHA
+# Alien-Bot ALPHA (Paused)
 A fully-customizable bot for dynamic module loading
 ## Getting Started
 ### Prerequisites

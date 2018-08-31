@@ -47,10 +47,17 @@ class Defaults(Mod.Mod):
                 embed.add_field(name="Bot Nick", value=str(Utils.bot_nick), inline=True)
                 embed.add_field(name="Bot Prefix", value=str(Utils.prefix), inline=True)
                 embed.add_field(name="Bot Emoji", value=str(Utils.bot_emoji), inline=True)
+                bot_config = DataManager.get_manager("bot_config")
+                # Server Info
                 servers = [svr for svr in Utils.client.servers]
-                embed.add_field(name="Server Count", value=str(len(servers)), inline=True)
+                server_text = "Servers: %d\n" % len(servers)
+                server_text += "Disabled Servers: %d\n" % len(bot_config.get_data("Disabled Servers"))
+                embed.add_field(name="Server Count", value=server_text, inline=True)
+                # Channel info
                 channels = [channel for channel in server.channels for server in servers]
-                embed.add_field(name="Channel Count", value=str(len(channels)), inline=True)
+                channel_text = "Channels: %d\n" % len(channels)
+                channel_text += "Disabled Channels: %d\n" % len(bot_config.get_data("Disabled Channels"))
+                embed.add_field(name="Channel Info", value=channel_text, inline=True)
                 embed.add_field(name="Permissions", value=str(len(Permissions.permissions)))
                 embed.add_field(name="Uptime", value=Utils.seconds_format(time.time() - self.start_time), inline=True)
                 mod_config = DataManager.get_manager("mod_config").get_data()

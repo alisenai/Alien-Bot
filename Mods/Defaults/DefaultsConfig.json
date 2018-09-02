@@ -15,6 +15,7 @@
       ]
     },
     "Help Command": {
+      "DM Enabled": true,
       "Enabled": true,
       "Aliases": [
         "help",

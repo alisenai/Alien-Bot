@@ -167,7 +167,9 @@ def parse_command_config(parent, parent_name, config):
                                    config[command_name]["Bypass Server Restrictions"] if
                                    "Bypass Server Restrictions" in config[command_name] else False,
                                    config[command_name]["Bypass Channel Restrictions"] if
-                                   "Bypass Channel Restrictions" in config[command_name] else False))
+                                   "Bypass Channel Restrictions" in config[command_name] else False,
+                                   config[command_name]["DM Enabled"] if
+                                   "DM Enabled" in config[command_name] else False))
             for command_name in config}
 
 

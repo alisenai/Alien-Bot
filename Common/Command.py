@@ -5,7 +5,7 @@ import time
 class Command:
     def __init__(self, parent_mod, name, aliases, enabled=False, minimum_permissions="Owner", command_help="No help",
                  useage="No useage", cool_down_seconds=0, bypass_server_restrictions=False,
-                 bypass_channel_restrictions=False):
+                 bypass_channel_restrictions=False, dm_enabled=False):
         # Check if parameters are valid
         assert name is not None or "", "Command not given a valid name"
         assert aliases is not None and len(aliases) > 0, "Command not given aliases"
@@ -21,6 +21,7 @@ class Command:
         self.cool_down_seconds = cool_down_seconds
         self.bypass_server_restrictions = bypass_server_restrictions
         self.bypass_channel_restrictions = bypass_channel_restrictions
+        self.dm_enabled = dm_enabled
         # Get cool down manager
         self.command_database = DataManager.get_manager("commands")
         self.command_database.execute("CREATE TABLE IF NOT EXISTS '" + name + "'(user_id TEXT, last_called REAL)")
@@ -86,12 +87,14 @@ class Command:
             channel = message.channel
             author = message.author
             mod_config = DataManager.get_manager("mod_config").get_data()
-            # Check if the command is enabled in the server
-            if int(server.id) not in mod_config[self.parent_mod.name]["Commands"][self.name]["Disabled Servers"]:
+            # Check if the command is enabled in the server, or if it's a DM
+            if int(server.id) not in mod_config[self.parent_mod.name]["Commands"][self.name]["Disabled Servers"] \
+                    or self.dm_enabled:
                 # Check if the command is enabled in the channel
                 if int(channel.id) not in mod_config[self.parent_mod.name]["Commands"][self.name]["Disabled Channels"]:
-                    # Check if the user has the permissions to call the command
-                    if self.has_permissions(author):
+                    # Check if the user has the permissions to call the command, or if it's a DM
+                    if self.has_permissions(author) \
+                            or self.dm_enabled:
                         # If there is no cool down for this command, all checks were passed so call the command
                         if self.cool_down_seconds == 0:
                             await self.call_command_skip_checks(message)

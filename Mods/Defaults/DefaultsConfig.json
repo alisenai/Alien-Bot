@@ -37,7 +37,9 @@
       ],
       "Help": "Lists bot info",
       "Useage": [
-        "info"
+        "info {Empty/'server'/'channel'/'mod'/'command'/'permissions'}",
+        "info",
+        "info mod"
       ]
     },
     "Server Command": {

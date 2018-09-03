@@ -48,14 +48,16 @@ class Defaults(Mod.Mod):
                 main_param = split_message[1].lower()
                 if len(split_message) < 2 and main_param == "all":
                     all_info = True
-                elif main_param == "server":
+                elif main_param == 'server':
                     given_type = InfoType.SERVERS
-                elif main_param == "channel":
+                elif main_param == 'channel':
                     given_type = InfoType.CHANNELS
-                elif main_param == "mod":
+                elif main_param == 'mod':
                     given_type = InfoType.MODS
-                elif main_param == "command":
+                elif main_param == 'command':
                     given_type = InfoType.COMMANDS
+                elif main_param == 'permissions':
+                    given_type = InfoType.PERMISSIONS
             if all_info:
                 embed = discord.Embed(title="[Info]", color=0x751DDF, description="Bot info.")
                 # Basic Info
@@ -63,7 +65,8 @@ class Defaults(Mod.Mod):
                 embed.add_field(name="Bot Prefix", value=str(Utils.prefix), inline=True)
                 embed.add_field(name="Bot Emoji", value=str(Utils.bot_emoji), inline=True)
                 embed.add_field(name="Uptime", value=Utils.seconds_format(time.time() - self.start_time), inline=True)
-                for info_type in [InfoType.SERVERS, InfoType.CHANNELS, InfoType.MODS, InfoType.COMMANDS]:
+                for info_type in [InfoType.SERVERS, InfoType.CHANNELS,
+                                  InfoType.PERMISSIONS, InfoType.MODS, InfoType.COMMANDS]:
                     given_info = self.get_specific_info(server, channel, info_type)
                     mod_text = ""
                     for item_name in given_info:
@@ -101,17 +104,28 @@ class Defaults(Mod.Mod):
             bot_config = DataManager.get_manager("bot_config")
             servers = [svr for svr in Utils.client.servers]
             if info_type == InfoType.SERVERS:
+                # TODO: For current server only?
                 # Server Info
                 return [("Servers", [svr.name for svr in servers]),
                         ("Disabled Servers", bot_config.get_data("Disabled Servers"))]
             elif info_type == InfoType.CHANNELS:
+                # TODO: For current server only?
                 # Channel info
-                channels = [channel for svr in servers for cnl in svr.channels]
+                channels = [cnl for svr in servers for cnl in svr.channels if cnl.type == discord.ChannelType.text]
                 return [("Channels", [cnl.name for cnl in channels]),
                         ("Disabled Channels", bot_config.get_data("Disabled Channels"))]
         elif info_type == InfoType.PERMISSIONS:
-            # TODO: Permissions info
-            return [("Permissions", Permissions.permissions)]
+            permissions = Permissions.permissions
+            names, restricted = [], []
+            owners, default = [Permissions.owner_perm.title], [Permissions.default_perm.title]
+            for permission in permissions:
+                names.append(permission)
+                if not permissions[permission].has_permissions:
+                    restricted.append(permission)
+            return [("Permissions", names),
+                    ("Owner", owners),
+                    ("Default", default),
+                    ("Restricted", restricted)]
         elif info_type == InfoType.MODS or InfoType.COMMANDS:
             mod_config = DataManager.get_manager("mod_config").get_data()
             if info_type == InfoType.MODS:

@@ -22,8 +22,8 @@ def load_permissions():
         if permission_config["Is Owner"]:
             assert owner_perm is None, "Bot config contains more than one owner permission."
             owner_perm = permission
-    assert owner_perm is not None, "There must be at least one owner permission"
-    assert default_perm is not None, "There must be at least one default permission"
+    assert owner_perm is not None, "There must be one owner permission"
+    assert default_perm is not None, "There must be one default permission"
     print("[Done]")
 
 

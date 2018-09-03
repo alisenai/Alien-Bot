@@ -39,64 +39,108 @@ class Defaults(Mod.Mod):
             await Utils.simple_embed_reply(channel, "[Stopping...]", "Goodbye cruel world.")
             print("[Stopping the bot]")
             raise Exception("Stop Bot")
-        # TODO add more specific params (EX: info mods)
         # Mods, commands, bot, server, channel, permissions
         elif command is self.commands["Info Command"]:
-            if not len(split_message) > 1:
+            all_info, given_type = False, None
+            if len(split_message) == 1:
+                all_info = True
+            else:
+                main_param = split_message[1].lower()
+                if len(split_message) < 2 and main_param == "all":
+                    all_info = True
+                elif main_param == "server":
+                    given_type = InfoType.SERVERS
+                elif main_param == "channel":
+                    given_type = InfoType.CHANNELS
+                elif main_param == "mod":
+                    given_type = InfoType.MODS
+                elif main_param == "command":
+                    given_type = InfoType.COMMANDS
+            if all_info:
                 embed = discord.Embed(title="[Info]", color=0x751DDF, description="Bot info.")
+                # Basic Info
                 embed.add_field(name="Bot Nick", value=str(Utils.bot_nick), inline=True)
                 embed.add_field(name="Bot Prefix", value=str(Utils.prefix), inline=True)
                 embed.add_field(name="Bot Emoji", value=str(Utils.bot_emoji), inline=True)
-                bot_config = DataManager.get_manager("bot_config")
-                # Server Info
-                servers = [svr for svr in Utils.client.servers]
-                server_text = "Servers: %d\n" % len(servers)
-                server_text += "Disabled Servers: %d\n" % len(bot_config.get_data("Disabled Servers"))
-                embed.add_field(name="Server Count", value=server_text, inline=True)
-                # Channel info
-                channels = [channel for channel in server.channels for server in servers]
-                channel_text = "Channels: %d\n" % len(channels)
-                channel_text += "Disabled Channels: %d\n" % len(bot_config.get_data("Disabled Channels"))
-                embed.add_field(name="Channel Info", value=channel_text, inline=True)
-                embed.add_field(name="Permissions", value=str(len(Permissions.permissions)))
                 embed.add_field(name="Uptime", value=Utils.seconds_format(time.time() - self.start_time), inline=True)
-                mod_config = DataManager.get_manager("mod_config").get_data()
-                # Mod info
-                mod_names = [mod_name for mod_name in mod_config]
-                mod_text = "Mods: %d\n" % len(mod_names)
-                disabled_mods = [mod_name for mod_name in mod_names if not mod_config[mod_name]["Enabled"]]
-                mod_text += "Disabled Mods: %d\n" % len(disabled_mods)
-                server_disabled_mods = [mod_name for mod_name in mod_names if
-                                        len(mod_config[mod_name]["Disabled Servers"]) > 0]
-                mod_text += "Server Disabled: %d\n" % len(server_disabled_mods)
-                channel_disabled_mods = [mod_name for mod_name in mod_names if
-                                         len(mod_config[mod_name]["Disabled Channels"]) > 0]
-                mod_text += "Channel Disabled: %d\n" % len(channel_disabled_mods)
-                embed.add_field(name="Mod Info", value=mod_text, inline=True)
-                # Commands
-                commands = [cmd for cmd in Utils.mod_handler.commands]
-                command_names = [cmd.name for cmd in commands]
-                command_text = "Commands: %d\n" % len(command_names)
-                command_aliases = [command_alias for cmd in commands for command_alias in cmd]
-                command_text += "Command Aliases: %d\n" % len(command_aliases)
-                server_disabled_commands = [cmd.name for cmd in commands if int(server.id) in
-                                            mod_config[cmd.parent_mod.name]["Commands"][cmd.name][
-                                                "Disabled Servers"]]
-                command_text += "Server Disabled: %d\n" % len(server_disabled_commands)
-                channel_disabled_commands = [cmd.name for cmd in commands if int(channel.id) in
-                                             mod_config[cmd.parent_mod.name]["Commands"][cmd.name][
-                                                 "Disabled Channels"]]
-                command_text += "Channel Disabled: %d\n" % len(channel_disabled_commands)
-                embed.add_field(name="Command Info", value=command_text, inline=True)
-                await Utils.client.send_message(channel, embed=embed)
+                for info_type in [InfoType.SERVERS, InfoType.CHANNELS, InfoType.MODS, InfoType.COMMANDS]:
+                    given_info = self.get_specific_info(server, channel, info_type)
+                    mod_text = ""
+                    for item_name in given_info:
+                        mod_text += "%s: %d\n" % (item_name[0], len(item_name[1]))
+                    embed.add_field(name=info_type, value=mod_text, inline=True)
+            elif given_type is not None:
+                embed = discord.Embed(title="[%s]" % given_type, color=0x751DDF, description="Bot info.")
+                given_info = self.get_specific_info(server, channel, given_type)
+                for item_name in given_info:
+                    embed.add_field(name=item_name[0], value=self.format(item_name[1], 400), inline=True)
             else:
-                await Utils.simple_embed_reply(channel, "[Info]", "Not implemented.")
+                await Utils.simple_embed_reply(channel, "[Error]", "Unknown parameter passed.")
+                return
+            await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Server Command"]:
             await self.change_presence(message, False)
         elif command is self.commands["Channel Command"]:
             await self.change_presence(message, True)
         elif command is self.commands["Permissions Command"]:
             raise Exception("Not implemented yet!")
+
+    def format(self, item_list, max_char):
+        mod_text = ""
+        for mod_name in sorted(item_list):
+            if len(mod_text) + len(mod_name) < max_char:
+                mod_text += mod_name + "\n"
+            else:
+                return mod_text + "..."
+        if mod_text == "":
+            return "None"
+        return mod_text
+
+    def get_specific_info(self, server, channel, info_type):
+        if info_type == InfoType.SERVERS or info_type == InfoType.CHANNELS:
+            bot_config = DataManager.get_manager("bot_config")
+            servers = [svr for svr in Utils.client.servers]
+            if info_type == InfoType.SERVERS:
+                # Server Info
+                return [("Servers", [svr.name for svr in servers]),
+                        ("Disabled Servers", bot_config.get_data("Disabled Servers"))]
+            elif info_type == InfoType.CHANNELS:
+                # Channel info
+                channels = [channel for svr in servers for cnl in svr.channels]
+                return [("Channels", [cnl.name for cnl in channels]),
+                        ("Disabled Channels", bot_config.get_data("Disabled Channels"))]
+        elif info_type == InfoType.PERMISSIONS:
+            # TODO: Permissions info
+            return [("Permissions", Permissions.permissions)]
+        elif info_type == InfoType.MODS or InfoType.COMMANDS:
+            mod_config = DataManager.get_manager("mod_config").get_data()
+            if info_type == InfoType.MODS:
+                # Mod info
+                mod_names = [mod_name for mod_name in mod_config]
+                disabled_mods = [mod_name for mod_name in mod_names if not mod_config[mod_name]["Enabled"]]
+                server_disabled_mods = [mod_name for mod_name in mod_names if
+                                        len(mod_config[mod_name]["Disabled Servers"]) > 0]
+                channel_disabled_mods = [mod_name for mod_name in mod_names if
+                                         len(mod_config[mod_name]["Disabled Channels"]) > 0]
+                return [("Mods", mod_names),
+                        ("Disabled Mods", disabled_mods),
+                        ("Server Disabled Mods", server_disabled_mods),
+                        ("Channel Disabled Mods", channel_disabled_mods)]
+            elif info_type == InfoType.COMMANDS:
+                # Commands
+                commands = [cmd for cmd in Utils.mod_handler.commands]
+                command_names = [cmd.name for cmd in commands]
+                command_aliases = [command_alias for cmd in commands for command_alias in cmd]
+                server_disabled_commands = [cmd.name for cmd in commands if int(server.id) in
+                                            mod_config[cmd.parent_mod.name]["Commands"][cmd.name][
+                                                "Disabled Servers"]]
+                channel_disabled_commands = [cmd.name for cmd in commands if int(channel.id) in
+                                             mod_config[cmd.parent_mod.name]["Commands"][cmd.name][
+                                                 "Disabled Channels"]]
+                return [("Commands", command_names),
+                        ("Command Aliases", command_aliases),
+                        ("Server Disabled Mods", server_disabled_commands),
+                        ("Channel Disabled Mods", channel_disabled_commands)]
 
     async def change_presence(self, message, channel_mode=False):
         split_message = message.content.split(" ")
@@ -175,3 +219,11 @@ class Defaults(Mod.Mod):
                 await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                (Utils.bot_nick, str(mode_obj)))
             config.write_data(disabled_ids, key="Disabled " + key_word)
+
+
+class InfoType:
+    MODS = "Mod Info"
+    SERVERS = "Server Info"
+    CHANNELS = "Channel Info"
+    COMMANDS = "Command Info"
+    PERMISSIONS = "Permission Info"

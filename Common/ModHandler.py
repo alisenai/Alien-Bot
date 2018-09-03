@@ -69,7 +69,6 @@ class ModHandler:
         self.done_loading = True
         print("[Done loading Mods]")
 
-    # Todo: Handle PMs / DMs
     # Called when a user message looks like a command, and it attempts to work with that command
     async def command_called(self, message, command_alias):
         split_message = message.content.split(" ")

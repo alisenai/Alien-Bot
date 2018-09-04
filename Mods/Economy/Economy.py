@@ -17,13 +17,12 @@ class Economy(Mod):
         self.applied_interest = False
         # Config var init
         self.config = DataManager.JSON("Mods/Economy/EconomyConfig.json")
-        # Init the bank DB for mods to use
-        EconomyUtils.init_database()
         # Set the currency for mods to use
         EconomyUtils.currency = self.config.get_data("Currency")
         # Build command objects
         self.commands = Utils.parse_command_config(self, mod_name, self.config.get_data('Commands'))
-        # Generate and Update DB
+        # Generate Update and Init DBs
+        EconomyUtils.init_database()
         self.generate_db()
         # Init the super with all the info from this mod
         super().__init__(mod_name, self.config.get_data('Mod Description'), self.commands, embed_color)

@@ -10,18 +10,23 @@ def load_permissions():
     global owner_perm
     print("[Loading permissions]", end='')
     permissions_config = DataManager.get_manager("bot_config").get_data(key="Permissions")
+    # Build the permissions from the config
     for permission_name in permissions_config:
+        # Grab info from each permission
         permission_config = permissions_config[permission_name]
         permission = Permission(permission_name, permission_config["Has Permissions"],
                                 permission_config["Is Owner"], permission_config["Inherits"],
                                 permission_config["Associated Roles"])
         permissions[permission_name] = permission
+        # Check if it's the default permission, making sure there is a max of 1
         if permission_config["Is Default"]:
             assert default_perm is None, "Bot config contains more than one default role."
             default_perm = permission
+        # Check if it's the owner permission, making sure there is a max of 1
         if permission_config["Is Owner"]:
             assert owner_perm is None, "Bot config contains more than one owner permission."
             owner_perm = permission
+    # Check that there is a min of 1 owner and default permission
     assert owner_perm is not None, "There must be one owner permission"
     assert default_perm is not None, "There must be one default permission"
     print("[Done]")
@@ -33,6 +38,7 @@ def get_user_permission(user):
         permission = permissions[permission_name]
         if len([role for role in user.roles if int(role.id) in permission.associated_roles]):
             return permission
+    # If they don't have any associated roles, assume they have the default permissions
     return default_perm
 
 

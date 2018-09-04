@@ -42,10 +42,13 @@ class Defaults(Mod.Mod):
         # Mods, commands, bot, server, channel, permissions
         elif command is self.commands["Info Command"]:
             all_info, given_type = False, None
+            # No parameters passed, user is asking for all the info
             if len(split_message) == 1:
                 all_info = True
+            # At least one parameter passed
             else:
                 main_param = split_message[1].lower()
+                # Get which info the user is asking for
                 if len(split_message) < 2 and main_param == "all":
                     all_info = True
                 elif main_param == 'server':
@@ -58,25 +61,34 @@ class Defaults(Mod.Mod):
                     given_type = InfoType.COMMANDS
                 elif main_param == 'permissions':
                     given_type = InfoType.PERMISSIONS
+            # Printing for all info
             if all_info:
                 embed = discord.Embed(title="[Info]", color=0x751DDF, description="Bot info.")
-                # Basic Info
+                # Append basic info
                 embed.add_field(name="Bot Nick", value=str(Utils.bot_nick), inline=True)
                 embed.add_field(name="Bot Prefix", value=str(Utils.prefix), inline=True)
                 embed.add_field(name="Bot Emoji", value=str(Utils.bot_emoji), inline=True)
                 embed.add_field(name="Uptime", value=Utils.seconds_format(time.time() - self.start_time), inline=True)
+                # Go through every type of info available
                 for info_type in [InfoType.SERVERS, InfoType.CHANNELS,
                                   InfoType.PERMISSIONS, InfoType.MODS, InfoType.COMMANDS]:
+                    # Get the info for that text
                     given_info = self.get_specific_info(server, channel, info_type)
                     mod_text = ""
                     for item_name in given_info:
+                        # Generate and append text to the info
                         mod_text += "%s: %d\n" % (item_name[0], len(item_name[1]))
+                    # Add ONE field for each info type
                     embed.add_field(name=info_type, value=mod_text, inline=True)
+            # Only print something specific, as requested
             elif given_type is not None:
                 embed = discord.Embed(title="[%s]" % given_type, color=0x751DDF, description="Bot info.")
+                # Get info about what was requested
                 given_info = self.get_specific_info(server, channel, given_type)
+                # Add a new field for each group of info
                 for item_name in given_info:
                     embed.add_field(name=item_name[0], value=self.format(item_name[1], 400), inline=True)
+            # Unknown parameter(s) passed
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Unknown parameter passed.")
                 return
@@ -88,10 +100,13 @@ class Defaults(Mod.Mod):
         elif command is self.commands["Permissions Command"]:
             raise Exception("Not implemented yet!")
 
+    # Get a vertical list text built from an array of Strings, given a max number of characters
     def format(self, item_list, max_char):
         mod_text = ""
+        # Keep appending until it breaks the character limit (or doesn't and finishes)
         for mod_name in sorted(item_list):
-            if len(mod_text) + len(mod_name) < max_char:
+            # "- 3" so it can append "..."
+            if len(mod_text) + len(mod_name) < max_char - 3:
                 mod_text += mod_name + "\n"
             else:
                 return mod_text + "..."
@@ -100,24 +115,27 @@ class Defaults(Mod.Mod):
         return mod_text
 
     def get_specific_info(self, server, channel, info_type):
+        # Info for servers and channels
         if info_type == InfoType.SERVERS or info_type == InfoType.CHANNELS:
             bot_config = DataManager.get_manager("bot_config")
             servers = [svr for svr in Utils.client.servers]
+            # Info for servers
             if info_type == InfoType.SERVERS:
                 # TODO: For current server only?
-                # Server Info
                 return [("Servers", [svr.name for svr in servers]),
                         ("Disabled Servers", bot_config.get_data("Disabled Servers"))]
+            # Info for channels
             elif info_type == InfoType.CHANNELS:
                 # TODO: For current server only?
-                # Channel info
                 channels = [cnl for svr in servers for cnl in svr.channels if cnl.type == discord.ChannelType.text]
                 return [("Channels", [cnl.name for cnl in channels]),
                         ("Disabled Channels", bot_config.get_data("Disabled Channels"))]
+        # Info for permissions
         elif info_type == InfoType.PERMISSIONS:
             permissions = Permissions.permissions
             names, restricted = [], []
             owners, default = [Permissions.owner_perm.title], [Permissions.default_perm.title]
+            # Get permission names and restricted permissions into their respective lists
             for permission in permissions:
                 names.append(permission)
                 if not permissions[permission].has_permissions:
@@ -126,10 +144,11 @@ class Defaults(Mod.Mod):
                     ("Owner", owners),
                     ("Default", default),
                     ("Restricted", restricted)]
+        # Info for mods and commands
         elif info_type == InfoType.MODS or InfoType.COMMANDS:
             mod_config = DataManager.get_manager("mod_config").get_data()
+            # Info for mods
             if info_type == InfoType.MODS:
-                # Mod info
                 mod_names = [mod_name for mod_name in mod_config]
                 disabled_mods = [mod_name for mod_name in mod_names if not mod_config[mod_name]["Enabled"]]
                 server_disabled_mods = [mod_name for mod_name in mod_names if
@@ -140,8 +159,8 @@ class Defaults(Mod.Mod):
                         ("Disabled Mods", disabled_mods),
                         ("Server Disabled Mods", server_disabled_mods),
                         ("Channel Disabled Mods", channel_disabled_mods)]
+            # Info for commands
             elif info_type == InfoType.COMMANDS:
-                # Commands
                 commands = [cmd for cmd in Utils.mod_handler.commands]
                 command_names = [cmd.name for cmd in commands]
                 command_aliases = [command_alias for cmd in commands for command_alias in cmd]
@@ -157,79 +176,100 @@ class Defaults(Mod.Mod):
                         ("Channel Disabled Mods", channel_disabled_commands)]
 
     async def change_presence(self, message, channel_mode=False):
+        # Build message info
         split_message = message.content.split(" ")
         server = message.server
         channel = message.channel
-        key_word = "Channels" if channel_mode else "Servers"
-        mode_obj = channel if channel_mode else server
-        mode_id = int(channel.id) if channel_mode else int(server.id)
-        enable_mode = None
+        # Grab the bot's config
         config = DataManager.get_manager("bot_config")
+        # Init vars based on passed mode type
+        key_word, mode_obj = ("Channels", channel) if channel_mode else ("Servers", server)
         disabled_ids = config.get_data("Disabled " + key_word)
-        if len(split_message) > 2:
-            passed_change_mode = split_message[2].lower()
-            if passed_change_mode == "enable" or passed_change_mode == "disable":
-                enable_mode = True if passed_change_mode == "enable" else False
         if len(split_message) > 1:
-            lowered_parameter = split_message[1].lower()
+            first_parameter = split_message[1].lower()
+            # Determine if the user is trying to enable/disable something other than the server or channel
+            enable_mode = None
+            if len(split_message) > 2:
+                # The second parameter is some form of "enable" or "disable", if called correctly
+                passed_change_mode = split_message[2].lower()
+                if passed_change_mode == "enable" or passed_change_mode == "disable":
+                    enable_mode = True if passed_change_mode == "enable" else False
             # Enable / Disable a Server / Channel
-            if lowered_parameter == "enable" or lowered_parameter == "disable":
-                if lowered_parameter == "enable":
-                    if mode_id in disabled_ids:
-                        disabled_ids.remove(mode_id)
+            if first_parameter == "enable" or first_parameter == "disable":
+                if first_parameter == "enable":
+                    # Make sure to not remove the ID if it's not there already
+                    if int(mode_obj.id) in disabled_ids:
+                        disabled_ids.remove(int(mode_obj.id))
                         config.write_data(disabled_ids, key="Disabled " + key_word)
                     await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
                                                    (Utils.bot_nick, str(mode_obj)))
-                elif lowered_parameter == "disable":
-                    if mode_id not in disabled_ids:
-                        disabled_ids.append(mode_id)
+                elif first_parameter == "disable":
+                    # Make sure to not add the ID if it's not there already
+                    if int(mode_obj.id) not in disabled_ids:
+                        disabled_ids.append(int(mode_obj.id))
                     await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                    (Utils.bot_nick, str(mode_obj)))
                 config.write_data(disabled_ids, key="Disabled " + key_word)
             # Enable / Disable a Mod / Command
             else:
-                given_mod = Utils.mod_handler.get_mod_by_name(lowered_parameter)
+                given_mod = Utils.mod_handler.get_mod_by_name(first_parameter)
+                mod_config = DataManager.get_manager("mod_config")
+                # Check if it found a mod given a name
                 if given_mod is not None:
-                    mod_config = DataManager.get_manager("mod_config")
                     mod_data = mod_config.get_data(given_mod.name)
-                    if enable_mode or (mode_id in mod_data["Disabled " + key_word] and enable_mode is None):
-                        if mode_id in mod_data["Disabled " + key_word]:
-                            mod_data["Disabled " + key_word].remove(mode_id)
+                    # Check if the mod should be enabled, or if it's currently disabled (to toggle)
+                    if enable_mode or (int(mode_obj.id) in mod_data["Disabled " + key_word] and enable_mode is None):
+                        # Make sure to not remove the ID if it's not there already
+                        if int(mode_obj.id) in mod_data["Disabled " + key_word]:
+                            mod_data["Disabled " + key_word].remove(int(mode_obj.id))
                         await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
                                                        (given_mod.name, str(mode_obj)))
+                    # Mod should be disabled
                     else:
-                        if mode_id not in mod_data["Disabled " + key_word]:
-                            mod_data["Disabled " + key_word].append(mode_id)
+                        # Make sure to not add the ID if it's not there already
+                        if int(mode_obj.id) not in mod_data["Disabled " + key_word]:
+                            mod_data["Disabled " + key_word].append(int(mode_obj.id))
                         await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                        (given_mod.name, str(mode_obj)))
                     mod_config.write_data(mod_data, key=given_mod.name)
+                # Passed parameter might refer to a command
                 else:
-                    given_command = Utils.mod_handler.get_command_by_alias(lowered_parameter)
+                    given_command = Utils.mod_handler.get_command_by_alias(first_parameter)
+                    # Check if it found a command given an alias
                     if given_command is not None:
-                        mod_config = DataManager.get_manager("mod_config")
                         mod_data = mod_config.get_data(given_command.parent_mod.name)
                         command_data = mod_data["Commands"][given_command.name]
-                        if enable_mode or (mode_id in command_data["Disabled " + key_word] and enable_mode is None):
-                            if mode_id in command_data["Disabled " + key_word]:
-                                command_data["Disabled " + key_word].remove(mode_id)
+                        # Check if the command should be enabled, or if it's currently disabled (to toggle)
+                        if enable_mode or (
+                                int(mode_obj.id) in command_data["Disabled " + key_word] and enable_mode is None
+                        ):
+                            # Make sure to not remove the ID if it's not there already
+                            if int(mode_obj.id) in command_data["Disabled " + key_word]:
+                                command_data["Disabled " + key_word].remove(int(mode_obj.id))
                             await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
                                                            (given_command.name, str(mode_obj)))
+                        # Command should be disabled
                         else:
-                            if mode_id not in command_data["Disabled " + key_word]:
-                                command_data["Disabled " + key_word].append(mode_id)
+                            # Make sure to not add the ID if it's not there already
+                            if int(mode_obj.id) not in command_data["Disabled " + key_word]:
+                                command_data["Disabled " + key_word].append(int(mode_obj.id))
                             await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                            (given_command.name, str(mode_obj)))
                         mod_data["Commands"][given_command.name] = command_data
                         mod_config.write_data(mod_data, key=given_command.parent_mod.name)
+                    # That command wasn't found nor was a mod - error
                     else:
-                        await Utils.simple_embed_reply(channel, "[Presence]", "Neither that command nor mod exists.")
+                        await Utils.simple_embed_reply(channel, "[Error]", "Neither that command nor mod exists.")
+        # Not given whether to enable or disable - so toggle based on current status
         else:
-            if mode_id in disabled_ids:
-                disabled_ids.remove(mode_id)
+            # Make sure to not remove the ID if it's not there already
+            if int(mode_obj.id) in disabled_ids:
+                disabled_ids.remove(int(mode_obj.id))
                 await Utils.simple_embed_reply(channel, "[Enabled]", "%s has been enabled in %s." %
                                                (Utils.bot_nick, str(mode_obj)))
+            # Otherwise the ID doesn't exist, so it can be added
             else:
-                disabled_ids.append(mode_id)
+                disabled_ids.append(int(mode_obj.id))
                 await Utils.simple_embed_reply(channel, "[Disabled]", "%s has been disabled in %s." %
                                                (Utils.bot_nick, str(mode_obj)))
             config.write_data(disabled_ids, key="Disabled " + key_word)

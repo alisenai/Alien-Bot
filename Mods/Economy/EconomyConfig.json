@@ -122,7 +122,7 @@
     }
   },
   "Currency": "\ud83e\udd5d",
-  "Bank Icon Url": "http://suba.nekeko.com/BankIcon.png",
+  "Bank Icon Url": "https://suba.nekeko.com/BankIcon.png",
   "Interest Rate": 0.1,
   "Mod Description": "A mod that manages server economics.",
   "Starting Balance": 250

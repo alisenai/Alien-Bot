@@ -1,5 +1,17 @@
 {
+  "Bank Icon Url": "https://suba.nekeko.com/BankIcon.png",
   "Commands": {
+    "Award Command": {
+      "Aliases": [
+        "award"
+      ],
+      "Enabled": true,
+      "Help": "Award specified user or role specified amount",
+      "Useage": [
+        "award {Amount: Number/'all'} {Role/User: Identifier/Ping}",
+        "award 200 123456789123456789"
+      ]
+    },
     "Balance Command": {
       "Aliases": [
         "balance",
@@ -16,50 +28,14 @@
         "balance 123456789012345678"
       ]
     },
-    "Leaderboard Command": {
+    "Bank Command": {
       "Aliases": [
-        "leaderboard",
-        "ldb"
+        "bank"
       ],
       "Enabled": true,
-      "Help": "Lists the richest users and their ranks.",
+      "Help": "Displays the total bank balance of the server.",
       "Useage": [
-        "leaderboard {Page: Empty/Number}",
-        "leaderboard",
-        "leaderboard 3"
-      ]
-    },
-    "Give Command": {
-      "Aliases": [
-        "give"
-      ],
-      "Enabled": true,
-      "Help": "Give your cash to another user.",
-      "Useage": [
-        "give {User: Identifier/Ping} {Amount: Number/'all'}",
-        "give 123456789123456789 200"
-      ]
-    },
-    "Award Command": {
-      "Aliases": [
-        "award"
-      ],
-      "Enabled": true,
-      "Help": "Award specified user or role specified amount",
-      "Useage": [
-        "award {Amount: Number/'all'} {Role/User: Identifier/Ping}",
-        "award 200 123456789123456789"
-      ]
-    },
-    "Take Command": {
-      "Aliases": [
-        "take"
-      ],
-      "Enabled": true,
-      "Help": "Deduct from specified user or role specified amount",
-      "Useage": [
-        "take {Amount: Number/'all'} {Role/User: Identifier/Ping}",
-        "take 200 123456789123456789"
+        "bank"
       ]
     },
     "Deposit Command": {
@@ -73,6 +49,30 @@
         "deposit {Amount: Number/'all'}",
         "deposit 100",
         "deposit all"
+      ]
+    },
+    "Give Command": {
+      "Aliases": [
+        "give"
+      ],
+      "Enabled": true,
+      "Help": "Give your cash to another user.",
+      "Useage": [
+        "give {User: Identifier/Ping} {Amount: Number/'all'}",
+        "give 123456789123456789 200"
+      ]
+    },
+    "Leaderboard Command": {
+      "Aliases": [
+        "leaderboard",
+        "ldb"
+      ],
+      "Enabled": true,
+      "Help": "Lists the richest users and their ranks.",
+      "Useage": [
+        "leaderboard {Page: Empty/Number}",
+        "leaderboard",
+        "leaderboard 3"
       ]
     },
     "Set Currency Command": {
@@ -97,14 +97,15 @@
         "set-starting-balance 200"
       ]
     },
-    "Bank Command": {
+    "Take Command": {
       "Aliases": [
-        "bank"
+        "take"
       ],
       "Enabled": true,
-      "Help": "Displays the total bank balance of the server.",
+      "Help": "Deduct from specified user or role specified amount",
       "Useage": [
-        "bank"
+        "take {Amount: Number/'all'} {Role/User: Identifier/Ping}",
+        "take 200 123456789123456789"
       ]
     },
     "Withdraw Command": {
@@ -122,7 +123,6 @@
     }
   },
   "Currency": "\ud83e\udd5d",
-  "Bank Icon Url": "https://suba.nekeko.com/BankIcon.png",
   "Interest Rate": 0.1,
   "Mod Description": "A mod that manages server economics.",
   "Starting Balance": 250

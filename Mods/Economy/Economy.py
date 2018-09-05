@@ -8,7 +8,6 @@ import time
 
 
 # TODO: Major commenting needed
-# TODO: "" + x + "" -> %
 class Economy(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init
@@ -32,7 +31,11 @@ class Economy(Mod):
         server, channel, author = message.server, message.channel, message.author
         if command is self.commands["Set Currency Command"]:
             if len(split_message) > 1:
-                self.config.write_data(split_message[1], key="Currency")
+                new_currency = split_message[1]
+                self.config.write_data(new_currency, key="Currency")
+                EconomyUtils.currency = new_currency
+                await Utils.simple_embed_reply(channel, "[Set Currency]",
+                                               "Currency has been set to `%s`." % new_currency)
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Currency parameter not supplied.")
         elif command is self.commands["Set Starting Balance Command"]:
@@ -41,7 +44,7 @@ class Economy(Mod):
                 if starting_balance.isdigit():
                     self.config.write_data(int(starting_balance), key="Starting Balance")
                     await Utils.simple_embed_reply(channel, "[Success]",
-                                                   "Starting balance set to `" + starting_balance + "`.")
+                                                   "Starting balance set to `%s`." % starting_balance)
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]",
                                                    "Starting balance command parameter is incorrect.")
@@ -61,8 +64,8 @@ class Economy(Mod):
             user_rank = EconomyUtils.get_rank(server.id, user.id)
             rank_text = Utils.add_number_abbreviation(user_rank)
             user_worth = user_cash + user_bank
-            embed = discord.Embed(title=" [" + str(user) + "]",
-                                  description="Server Rank: " + str(rank_text),
+            embed = discord.Embed(title=" [%s]" % str(user),
+                                  description="Server Rank: %s" % str(rank_text),
                                   color=discord.Color(int("0x751DDF", 16)))
             embed.add_field(name="Cash", value=str(user_cash) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Bank", value=str(user_bank) + EconomyUtils.currency, inline=True)
@@ -79,22 +82,24 @@ class Economy(Mod):
                         if user_cash >= deposit_amount:
                             EconomyUtils.set_cash(server.id, author.id, user_cash - deposit_amount)
                             EconomyUtils.set_bank(server.id, author.id, user_bank + deposit_amount)
-                            await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Deposited " +
-                                                           str(deposit_amount) + EconomyUtils.currency +
-                                                           " into your bank account.")
+                            await Utils.simple_embed_reply(channel, "[%s]" % str(author),
+                                                           "Deposited %s%s into your bank account." % (
+                                                               str(deposit_amount), EconomyUtils.currency)
+                                                           )
                         else:
-                            await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
+                            await Utils.simple_embed_reply(channel, "[%s]" % str(author),
                                                            "Sorry, but you don't have enough money to do that.")
                     elif deposit_amount == "all":
                         EconomyUtils.set_cash(server.id, author.id, 0)
                         EconomyUtils.set_bank(server.id, author.id, user_bank + user_cash)
-                        await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Deposited " +
-                                                       str(user_cash) + EconomyUtils.currency +
-                                                       " into your bank account.")
+                        await Utils.simple_embed_reply(channel, "[%s]" % str(author),
+                                                       "Deposited %s%s into your bank account." % (
+                                                           str(user_cash), EconomyUtils.currency)
+                                                       )
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
                 else:
-                    await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
+                    await Utils.simple_embed_reply(channel, "[%s]" % str(author),
                                                    "Sorry, but you don't have any money to deposit.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Amount command parameter not supplied.")
@@ -109,22 +114,20 @@ class Economy(Mod):
                         if user_bank >= withdraw_amount:
                             EconomyUtils.set_cash(server.id, author.id, user_cash + withdraw_amount)
                             EconomyUtils.set_bank(server.id, author.id, user_bank - withdraw_amount)
-                            await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Withdrew " +
-                                                           str(withdraw_amount) + EconomyUtils.currency +
-                                                           " into cash.")
+                            await Utils.simple_embed_reply(channel, "[%s]" % str(author), "Withdrew %s%s into cash." % (
+                                str(withdraw_amount), EconomyUtils.currency))
                         else:
-                            await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
+                            await Utils.simple_embed_reply(channel, "[%s]" % str(author),
                                                            "Sorry, but you don't have enough money to do that.")
                     elif withdraw_amount == "all":
                         EconomyUtils.set_bank(server.id, author.id, 0)
                         EconomyUtils.set_cash(server.id, author.id, user_cash + user_bank)
-                        await Utils.simple_embed_reply(channel, "[" + str(author) + "]", "Withdrew " +
-                                                       str(user_bank) + EconomyUtils.currency +
-                                                       " into cash.")
+                        await Utils.simple_embed_reply(channel, "[%s]" % str(author), "Withdrew %s%s into cash." % (
+                            str(user_bank), EconomyUtils.currency))
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
                 else:
-                    await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
+                    await Utils.simple_embed_reply(channel, "[%s]" % str(author),
                                                    "Sorry, but you don't have any money to withdraw.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Amount command parameter not supplied.")
@@ -145,8 +148,8 @@ class Economy(Mod):
                         return await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
                     EconomyUtils.set_cash(server.id, author.id, author_cash - give_amount)
                     EconomyUtils.set_cash(server.id, user.id, user_cash + give_amount)
-                    await Utils.simple_embed_reply(channel, "[Error]", "You gave " + str(user) + " " + str(give_amount)
-                                                   + EconomyUtils.currency + ".")
+                    await Utils.simple_embed_reply(channel, "[Error]", "You gave %s %s%s." % (
+                        str(user), str(give_amount), EconomyUtils.currency))
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             else:
@@ -161,11 +164,12 @@ class Economy(Mod):
                 else:
                     return await Utils.simple_embed_reply(channel, "[Error]", "Page number parameter is incorrect.")
             user_rank_order = EconomyUtils.database_execute(
-                "SELECT user FROM '" + server.id + "' ORDER BY bank + cash DESC")
+                "SELECT user FROM '%s' ORDER BY bank + cash DESC" % server.id
+            )
             max_page = int((len(user_rank_order) + 9) // 10)
             if page <= max_page:
                 if (len(user_rank_order) + 10) / 10 >= page:
-                    embed = discord.Embed(title="[" + str(server) + " Leaderboard]",
+                    embed = discord.Embed(title="[%s Leaderboard]" % str(server),
                                           color=discord.Color(int("0x751DDF", 16)))
                     for i in range(min(10, len(user_rank_order))):
                         user_rank = (page - 1) * 10 + i
@@ -176,15 +180,15 @@ class Economy(Mod):
                         user = Utils.get_user_by_id(server, user_id)
                         user_worth = EconomyUtils.get_bank(server.id, user_id) + EconomyUtils.get_cash(server.id,
                                                                                                        user_id)
-                        embed.add_field(name=str(user) + " : " + rank_text,
+                        embed.add_field(name="%s : %s" % (str(user), rank_text),
                                         value=str(user_worth) + EconomyUtils.currency, inline=False)
-                    embed.set_footer(text="Page " + str(page) + "/" + str(max_page))
+                    embed.set_footer(text="Page %d/%d" % (page, max_page))
                     await Utils.client.send_message(channel, embed=embed)
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Page number is too high.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]",
-                                               "You can only view a page between 1 and " + str(max_page) + ".")
+                                               "You can only view a page between 1 and %d." % max_page)
         elif command is self.commands["Bank Command"]:
             embed = discord.Embed(description="**The bank never goes Bankrupt!**",
                                   color=discord.Color(int("0x751DDF", 16)))
@@ -196,7 +200,7 @@ class Economy(Mod):
                 embed.set_author(name="%s Bank" % str(server),
                                  icon_url="https://media.discordapp.net/icons/%s/%s.jpg" % (server.id, server.icon))
             embed.set_thumbnail(url=self.config.get_data("Bank Icon Url"))
-            total_balance = int(EconomyUtils.database_execute("SELECT SUM(bank + cash) FROM `" + server.id + "`")[0])
+            total_balance = int(EconomyUtils.database_execute("SELECT SUM(bank + cash) FROM `%s`" % server.id)[0])
             embed.add_field(name="Balance:",
                             value=str(total_balance) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Interest:", value=str(self.config.get_data("Interest Rate")))
@@ -219,10 +223,8 @@ class Economy(Mod):
                 if user is not None:
                     EconomyUtils.set_cash(server.id, user.id,
                                           EconomyUtils.get_cash(server.id, user.id) + amount * mode_change)
-                    await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
-                                                   "User `" + str(user) +
-                                                   "` was " + mode_text + " " + str(amount) +
-                                                   EconomyUtils.currency + ".")
+                    await Utils.simple_embed_reply(channel, "[%s]" % str(author), "User `%s` was %s %d%s." % (
+                        str(user), mode_text, amount, EconomyUtils.currency))
                 else:
                     given_role = Utils.get_role(server, ''.join(split_message[2]))
                     users = []
@@ -233,10 +235,11 @@ class Economy(Mod):
                                                       amount * mode_change)
                                 users.append(user)
                         if len(users) > 0:
-                            await Utils.simple_embed_reply(channel, "[" + str(author) + "]",
-                                                           "Users with the role `" + str(given_role) +
-                                                           "` were " + mode_text + " " + str(amount) +
-                                                           EconomyUtils.currency + ".")
+                            await Utils.simple_embed_reply(channel, "[%s]" % str(author),
+                                                           "Users with the role `%s` were %s %d%s." % (
+                                                               str(given_role), mode_text, amount,
+                                                               EconomyUtils.currency)
+                                                           )
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]",
                                                            "No users are equipped with that role.")

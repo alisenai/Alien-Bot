@@ -1,0 +1,31 @@
+{
+  "Mod Description": "Gambling games and more.",
+  "Commands": {
+    "Flip Command": {
+      "Aliases": [
+        "flip"
+      ],
+      "Help": "Randomly flips heads or tails.",
+      "Useage": [
+        "flip"
+      ],
+      "Enabled": true
+    },
+    "Mega Flip Command": {
+      "Aliases": [
+        "mega-flip"
+      ],
+      "Help": "Randomly flips heads or tails, a lot.",
+      "Useage": [
+        "mega-flip {Amount: Number}",
+        "mega-flip 10"
+      ],
+      "Max Flip Amount": 500,
+      "Enabled": true
+    }
+  },
+  "Heads Win URL": "https://suba.nekeko.com/HeadsWin.png",
+  "Heads Lose URL": "https://suba.nekeko.com/HeadsLose.png",
+  "Tails Win URL": "https://suba.nekeko.com/TailsWin.png",
+  "Tails Lose URL": "https://suba.nekeko.com/TailsLose.png"
+}

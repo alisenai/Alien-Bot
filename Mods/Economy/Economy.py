@@ -199,7 +199,7 @@ class Economy(Mod):
             else:
                 embed.set_author(name="%s Bank" % str(server),
                                  icon_url="https://media.discordapp.net/icons/%s/%s.jpg" % (server.id, server.icon))
-            embed.set_thumbnail(url=self.config.get_data("Bank Icon Url"))
+            embed.set_thumbnail(url=self.config.get_data("Bank Icon URL"))
             total_balance = int(EconomyUtils.database_execute("SELECT SUM(bank + cash) FROM `%s`" % server.id)[0])
             embed.add_field(name="Balance:",
                             value=str(total_balance) + EconomyUtils.currency, inline=True)

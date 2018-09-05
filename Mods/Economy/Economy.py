@@ -134,9 +134,9 @@ class Economy(Mod):
         elif command is self.commands["Give Command"]:
             if len(split_message) > 2:
                 user = Utils.get_user(server, split_message[1])
-                author_cash = EconomyUtils.get_cash(server.id, author.id)
-                user_cash = EconomyUtils.get_cash(server.id, user.id)
                 if user is not None:
+                    author_cash = EconomyUtils.get_cash(server.id, author.id)
+                    user_cash = EconomyUtils.get_cash(server.id, user.id)
                     if split_message[2].isdigit():
                         give_amount = int(split_message[2])
                         if author_cash < int(split_message[2]):

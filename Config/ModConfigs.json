@@ -162,6 +162,11 @@
   },
   "Gamble": {
     "Commands": {
+      "Bet Flip Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "Flip Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

@@ -11,6 +11,17 @@
       ],
       "Enabled": true
     },
+    "Bet Flip Command": {
+      "Aliases": [
+        "bet-flip"
+      ],
+      "Help": "Randomly flips heads or tails, betting a given amount.",
+      "Useage": [
+        "bet-flip {Amount: Number/'all'}, {'heads'/'h'/'tails'/'t'",
+        "bet-flip 100 heads"
+      ],
+      "Enabled": true
+    },
     "Mega Flip Command": {
       "Aliases": [
         "mega-flip"

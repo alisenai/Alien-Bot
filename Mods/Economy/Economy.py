@@ -8,6 +8,7 @@ import time
 
 
 # TODO: Major commenting needed
+# TODO: Do user checks in case commands are called in DMs
 class Economy(Mod):
     def __init__(self, mod_name, embed_color):
         # General var init

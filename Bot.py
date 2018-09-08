@@ -26,7 +26,7 @@ Utils.bot_nick = config['Nickname']
 command_prefix = config['Command Prefix']
 Utils.prefix = command_prefix
 # Grab the bot's emoji
-Utils. bot_emoji = config["Bot Emoji"]
+Utils.bot_emoji = config["Bot Emoji"]
 # Initialize the mod handler
 mod_handler = ModHandler(config["Minimum Suggestion Permission"], config['Embed Color'])
 # Add to Utils
@@ -123,6 +123,21 @@ async def on_message(message):
         else:
             await Utils.simple_embed_reply(message.channel, "[Error]", "The bot is still loading, please wait.")
     await mod_handler.message_received(message)
+
+
+@Utils.client.event
+async def on_server_join(server):
+    await mod_handler.on_server_join(server)
+
+
+@Utils.client.event
+async def on_member_join(member):
+    await mod_handler.on_member_join(member)
+
+
+@Utils.client.event
+async def on_message_delete(message):
+    await mod_handler.on_member_join(message)
 
 
 def login():

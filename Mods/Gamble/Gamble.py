@@ -9,7 +9,8 @@ except ImportError:
     raise Exception("Economy mod not installed")
 
 
-# TODO: Win text(s) and lose text(s)
+# TODO: Random footer config
+# TODO: Multiple win/lose messages?
 class Gamble(Mod):
     def __init__(self, mod_name, embed_color):
         super().__init__(mod_name, "Just an example mod.", {}, embed_color)
@@ -45,6 +46,7 @@ class Gamble(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        # TODO: Create a method that will cut this code in 1/2
         elif command is self.commands["Bet Flip Command"]:
             if len(split_message) > 2:
                 author_cash = EconomyUtils.get_cash(server.id, author.id)
@@ -60,29 +62,45 @@ class Gamble(Mod):
                             if guess == "heads" or guess == "h" or guess == "tails" or guess == "t":
                                 is_heads = guess == "heads" or guess == "h"
                                 is_correct = test_flip(is_heads)
-                                url_data = self.config.get_data()
+                                config_data = self.config.get_data()
                                 if is_correct:
                                     # It's NOT amount * 2 since the 'amount' var is never updated
                                     EconomyUtils.set_cash(server.id, author.id, author_cash + amount)
+                                    message_description = self.config.get_data("Commands")["Bet Flip Command"][
+                                        "Win Message"]
+                                    # Insert author name where they bot owner requested it
+                                    message_description = message_description.replace(
+                                        "{user}", author.name
+                                    )
+                                    # Insert the amount they won where they bot owner requested it
+                                    message_description = message_description.replace(
+                                        "{amount}", str(amount * 2) + EconomyUtils.currency
+                                    )
                                     embed = discord.Embed(title="[Bet Flip]",
-                                                          description="Well done, you won %d%s!" % (
-                                                              amount * 2, EconomyUtils.currency
-                                                          ),
+                                                          description=message_description,
                                                           color=discord.Color(int("0x751DDF", 16)))
                                     embed.set_thumbnail(
-                                        url=url_data["Heads Win URL"] if is_heads else url_data["Tails Win URL"]
+                                        url=config_data["Heads Win URL"] if is_heads else config_data["Tails Win URL"]
                                     )
                                     if random.randint(0, 250) == 1:
                                         embed.set_footer(text="You're cheating, aren't you?")
                                     await Utils.client.send_message(channel, embed=embed)
                                 else:
+                                    message_description = self.config.get_data("Commands")["Bet Flip Command"][
+                                        "Lose Message"]
+                                    # Insert author name where they bot owner requested it
+                                    message_description = message_description.replace(
+                                        "{user}", author.name
+                                    )
+                                    # Insert the amount they won where they bot owner requested it
+                                    message_description = message_description.replace(
+                                        "{amount}", str(amount) + EconomyUtils.currency
+                                    )
                                     embed = discord.Embed(title="[Bet Flip]",
-                                                          description="You lost %d%s! Better luck next time" % (
-                                                              amount, EconomyUtils.currency
-                                                          ),
+                                                          description=message_description,
                                                           color=discord.Color(int("0x751DDF", 16)))
                                     embed.set_thumbnail(
-                                        url=url_data["Heads Lose URL"] if is_heads else url_data["Tails Lose URL"]
+                                        url=config_data["Heads Lose URL"] if is_heads else config_data["Tails Lose URL"]
                                     )
                                     if random.randint(0, 250) == 1:
                                         embed.set_footer(text="It's rigged!")

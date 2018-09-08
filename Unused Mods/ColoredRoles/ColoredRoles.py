@@ -236,12 +236,10 @@ class ColoredRoles(Mod):
         return discord.utils.get(server.roles, name=role_hex)
 
     # Called when a member joins a server the bot is in
-    @Utils.client.event
     async def on_member_join(self, member):
         pass
 
     # Called when a member joins a server the bot is in
-    @Utils.client.event
     async def on_server_join(self, member):
         pass
 

@@ -32,12 +32,12 @@ class Mod:
     async def on_server_join(self, server):
         pass
 
-    # Called when a message is deleted
-    async def on_message_delete(self, message):
-        pass
-
     # Called when a member joins a server
     async def on_member_join(self, member):
+        pass
+
+    # Called when a message is deleted
+    async def on_message_delete(self, message):
         pass
 
     # Called when a user doesn't have permissions to call a command

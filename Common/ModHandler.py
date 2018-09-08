@@ -130,6 +130,18 @@ class ModHandler:
         for mod_name in self.mods:
             await self.mods[mod_name].message_received(message)
 
+    async def on_server_join(self, server):
+        for mod_name in self.mods:
+            await self.mods[mod_name].on_server_join(server)
+
+    async def on_member_join(self, member):
+        for mod_name in self.mods:
+            await self.mods[mod_name].on_member_join(member)
+
+    async def on_message_delete(self, message):
+        for mod_name in self.mods:
+            await self.mods[mod_name].on_message_delete(message)
+
     # Called once a second
     async def second_tick(self):
         for mod_name in self.mods:

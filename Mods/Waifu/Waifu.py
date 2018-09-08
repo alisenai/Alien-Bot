@@ -376,7 +376,6 @@ class Waifu(Mod):
             await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "The leaderboard has been deleted.")
 
     # Called when the bot joins a server
-    @Utils.client.event
     async def on_server_join(self, server):
         # Create waifu server table if it doesn't exist
         self.waifus_db.execute(
@@ -399,7 +398,6 @@ class Waifu(Mod):
                 self.gifts_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))
 
     # Called when a member joins a server the bot is in
-    @Utils.client.event
     async def on_member_join(self, member):
         server_id = member.server.id
         user_id = member.id

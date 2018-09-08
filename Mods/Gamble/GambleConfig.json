@@ -12,6 +12,8 @@
       "Enabled": true
     },
     "Bet Flip Command": {
+      "Win Message": "Well done {user}, you won {amount}!",
+      "Lose Message": "Sorry {user}, you lost {amount}! Better luck next time.",
       "Aliases": [
         "bet-flip"
       ],

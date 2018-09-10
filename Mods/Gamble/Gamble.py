@@ -83,7 +83,8 @@ class Gamble(Mod):
                                         url=config_data["Heads Win URL"] if is_heads else config_data["Tails Win URL"]
                                     )
                                     if random.randint(0, 250) == 1:
-                                        embed.set_footer(text="You're cheating, aren't you?")
+                                        embed.set_footer(text=self.config.get_data("Commands")["Bet Flip Command"][
+                                            "Win Footer Message"])
                                     await Utils.client.send_message(channel, embed=embed)
                                 else:
                                     message_description = self.config.get_data("Commands")["Bet Flip Command"][
@@ -103,7 +104,8 @@ class Gamble(Mod):
                                         url=config_data["Heads Lose URL"] if is_heads else config_data["Tails Lose URL"]
                                     )
                                     if random.randint(0, 250) == 1:
-                                        embed.set_footer(text="It's rigged!")
+                                        embed.set_footer(text=self.config.get_data("Commands")["Bet Flip Command"][
+                                            "Lose Footer Message"])
                                     await Utils.client.send_message(channel, embed=embed)
                             else:
                                 await Utils.simple_embed_reply(channel, "[Error]",

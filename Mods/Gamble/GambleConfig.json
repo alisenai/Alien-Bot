@@ -14,6 +14,8 @@
     "Bet Flip Command": {
       "Win Message": "Well done {user}, you won {amount}!",
       "Lose Message": "Sorry {user}, you lost {amount}! Better luck next time.",
+      "Win Footer Message": "You're cheating, aren't you?",
+      "Lose Footer Message": "It's rigged!",
       "Aliases": [
         "bet-flip"
       ],

@@ -59,6 +59,7 @@ class Gamble(Mod):
                         if amount <= author_cash:
                             EconomyUtils.set_cash(server.id, author.id, author_cash - amount)
                             guess = split_message[2].lower()
+                            command_config = self.config.get_data("Commands")["Bet Flip Command"]
                             if guess == "heads" or guess == "h" or guess == "tails" or guess == "t":
                                 is_heads = guess == "heads" or guess == "h"
                                 is_correct = test_flip(is_heads)
@@ -66,8 +67,7 @@ class Gamble(Mod):
                                 if is_correct:
                                     # It's NOT amount * 2 since the 'amount' var is never updated
                                     EconomyUtils.set_cash(server.id, author.id, author_cash + amount)
-                                    message_description = self.config.get_data("Commands")["Bet Flip Command"][
-                                        "Win Message"]
+                                    message_description = command_config["Win Message"]
                                     # Insert author name where they bot owner requested it
                                     message_description = message_description.replace(
                                         "{user}", author.name
@@ -82,13 +82,11 @@ class Gamble(Mod):
                                     embed.set_thumbnail(
                                         url=config_data["Heads Win URL"] if is_heads else config_data["Tails Win URL"]
                                     )
-                                    if random.randint(0, 250) == 1:
-                                        embed.set_footer(text=self.config.get_data("Commands")["Bet Flip Command"][
-                                            "Win Footer Message"])
+                                    if random.random() < command_config["Footer Percent Chance"]/100:
+                                        embed.set_footer(text=command_config["Win Footer Message"])
                                     await Utils.client.send_message(channel, embed=embed)
                                 else:
-                                    message_description = self.config.get_data("Commands")["Bet Flip Command"][
-                                        "Lose Message"]
+                                    message_description = command_config["Lose Message"]
                                     # Insert author name where they bot owner requested it
                                     message_description = message_description.replace(
                                         "{user}", author.name
@@ -103,9 +101,8 @@ class Gamble(Mod):
                                     embed.set_thumbnail(
                                         url=config_data["Heads Lose URL"] if is_heads else config_data["Tails Lose URL"]
                                     )
-                                    if random.randint(0, 250) == 1:
-                                        embed.set_footer(text=self.config.get_data("Commands")["Bet Flip Command"][
-                                            "Lose Footer Message"])
+                                    if random.random() < command_config["Footer Percent Chance"]/100:
+                                        embed.set_footer(text=command_config["Lose Footer Message"])
                                     await Utils.client.send_message(channel, embed=embed)
                             else:
                                 await Utils.simple_embed_reply(channel, "[Error]",

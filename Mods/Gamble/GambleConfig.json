@@ -16,6 +16,7 @@
       "Lose Message": "Sorry {user}, you lost {amount}! Better luck next time.",
       "Win Footer Message": "You're cheating, aren't you?",
       "Lose Footer Message": "It's rigged!",
+      "Footer Percent Chance": 5,
       "Aliases": [
         "bet-flip"
       ],

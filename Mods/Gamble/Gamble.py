@@ -9,7 +9,6 @@ except ImportError:
     raise Exception("Economy mod not installed")
 
 
-# TODO: Random footer config
 # TODO: Multiple win/lose messages?
 class Gamble(Mod):
     def __init__(self, mod_name, embed_color):
@@ -82,7 +81,7 @@ class Gamble(Mod):
                                     embed.set_thumbnail(
                                         url=config_data["Heads Win URL"] if is_heads else config_data["Tails Win URL"]
                                     )
-                                    if random.random() < command_config["Footer Percent Chance"]/100:
+                                    if random.random() < command_config["Footer Percent Chance"] / 100:
                                         embed.set_footer(text=command_config["Win Footer Message"])
                                     await Utils.client.send_message(channel, embed=embed)
                                 else:
@@ -101,7 +100,7 @@ class Gamble(Mod):
                                     embed.set_thumbnail(
                                         url=config_data["Heads Lose URL"] if is_heads else config_data["Tails Lose URL"]
                                     )
-                                    if random.random() < command_config["Footer Percent Chance"]/100:
+                                    if random.random() < command_config["Footer Percent Chance"] / 100:
                                         embed.set_footer(text=command_config["Lose Footer Message"])
                                     await Utils.client.send_message(channel, embed=embed)
                             else:

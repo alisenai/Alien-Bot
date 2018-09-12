@@ -45,71 +45,72 @@ class Gamble(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
-        # TODO: Create a method that will cut this code in 1/2
         elif command is self.commands["Bet Flip Command"]:
             if len(split_message) > 2:
+                # Grab the author's cash
                 author_cash = EconomyUtils.get_cash(server.id, author.id)
                 amount = split_message[1].lower()
                 if amount == "all":
-                    amount = author_cash
+                    amount = str(author_cash)
                 if amount.isdigit():
-                    amount = int(split_message[1])
+                    amount = int(amount)
+                    # Make sure their betting something
                     if amount > 0:
+                        # Check if the user's bet is within their cash balance
                         if amount <= author_cash:
+                            # Remove their bet amount immediately
                             EconomyUtils.set_cash(server.id, author.id, author_cash - amount)
                             guess = split_message[2].lower()
-                            command_config = self.config.get_data("Commands")["Bet Flip Command"]
+                            # Check if the user has picked either heads or tails
                             if guess == "heads" or guess == "h" or guess == "tails" or guess == "t":
-                                is_heads = guess == "heads" or guess == "h"
-                                is_correct = test_flip(is_heads)
-                                config_data = self.config.get_data()
-                                if is_correct:
-                                    # It's NOT amount * 2 since the 'amount' var is never updated
-                                    EconomyUtils.set_cash(server.id, author.id, author_cash + amount)
-                                    message_description = command_config["Win Message"]
-                                    # Insert author name where they bot owner requested it
-                                    message_description = message_description.replace(
-                                        "{user}", author.name
-                                    )
-                                    # Insert the amount they won where they bot owner requested it
-                                    message_description = message_description.replace(
-                                        "{amount}", str(amount * 2) + EconomyUtils.currency
-                                    )
-                                    embed = discord.Embed(title="[Bet Flip]",
-                                                          description=message_description,
-                                                          color=discord.Color(int("0x751DDF", 16)))
-                                    embed.set_thumbnail(
-                                        url=config_data["Heads Win URL"] if is_heads else config_data["Tails Win URL"]
-                                    )
-                                    if random.random() < command_config["Footer Percent Chance"] / 100:
-                                        embed.set_footer(text=command_config["Win Footer Message"])
-                                    await Utils.client.send_message(channel, embed=embed)
+                                # Flip and save their choice
+                                if guess == "heads" or guess == "h":
+                                    is_correct = test_flip(True)
+                                    guess_type = "Heads"
                                 else:
-                                    message_description = command_config["Lose Message"]
-                                    # Insert author name where they bot owner requested it
-                                    message_description = message_description.replace(
-                                        "{user}", author.name
-                                    )
-                                    # Insert the amount they won where they bot owner requested it
-                                    message_description = message_description.replace(
-                                        "{amount}", str(amount) + EconomyUtils.currency
-                                    )
-                                    embed = discord.Embed(title="[Bet Flip]",
-                                                          description=message_description,
-                                                          color=discord.Color(int("0x751DDF", 16)))
-                                    embed.set_thumbnail(
-                                        url=config_data["Heads Lose URL"] if is_heads else config_data["Tails Lose URL"]
-                                    )
-                                    if random.random() < command_config["Footer Percent Chance"] / 100:
-                                        embed.set_footer(text=command_config["Lose Footer Message"])
-                                    await Utils.client.send_message(channel, embed=embed)
+                                    is_correct = test_flip(False)
+                                    guess_type = "Tails"
+
+                                # Grab configs
+                                config_data = self.config.get_data()
+                                command_config = config_data["Commands"]["Bet Flip Command"]
+
+                                # Set cash and set response type based on win / lose
+                                if is_correct:
+                                    response_type = "Win"
+                                    EconomyUtils.set_cash(server.id, author.id, author_cash + amount)
+                                else:
+                                    response_type = "Lose"
+                                    EconomyUtils.set_cash(server.id, author.id, author_cash - amount)
+
+                                message_description = command_config["%s Message" % response_type]
+                                # Insert author name where the bot owner requested it
+                                message_description = message_description.replace(
+                                    "{user}", author.name
+                                )
+                                # Insert the amount they won/lost where the bot owner requested it
+                                message_description = message_description.replace(
+                                    "{amount}", str(amount * 2 if is_correct else amount) + EconomyUtils.currency
+                                )
+
+                                # Discord with the generated message description
+                                embed = discord.Embed(title="[Bet Flip]",
+                                                      description=message_description,
+                                                      color=discord.Color(int("0x751DDF", 16)))
+                                # Set the thumbnail to the url of the won/lost coin type
+                                embed.set_thumbnail(url=config_data["%s %s URL" % (guess_type, response_type)])
+                                # Random chance to set footer from config
+                                if random.random() < command_config["Footer Percent Chance"] / 100:
+                                    embed.set_footer(text=command_config["%s Footer Message" % response_type])
+                                # Reply with built embed
+                                await Utils.client.send_message(channel, embed=embed)
                             else:
                                 await Utils.simple_embed_reply(channel, "[Error]",
                                                                "You have to pick heads or tails (h/t).")
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]", "You don't have enough cash to do that.")
                     else:
-                        await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
+                        await Utils.simple_embed_reply(channel, "[Error]", "You can't bet nothing.")
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
             else:

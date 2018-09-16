@@ -412,7 +412,9 @@ class Waifu(Mod):
             db_gift_names = [gift_name for gift_name in self.config.get_data("Gifts")]
             # Populate gifts DB tables with new user
             for gift_name in db_gift_names:
-                self.gifts_db.execute("INSERT INTO '%s' VALUES('%s', 0, 0)" % (gift_name, user_id))
+                self.gifts_db.execute(
+                    "INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server_id, user_id)
+                )
 
     # Generates the waifu DB
     def generate_db(self):

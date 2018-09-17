@@ -21,22 +21,35 @@ class Gamble(Mod):
         super().__init__(mod_name, self.config.get_data('Mod Description'), self.commands, embed_color)
 
     async def command_called(self, message, command):
+        # Slip the message on space to help parse the command
         split_message = message.content.split(" ")
+        # Extract the server, channel and author from the message
         server, channel, author = message.server, message.channel, message.author
         if command is self.commands["Flip Command"]:
             embed = discord.Embed(title="[Flip]", color=discord.Color(int("0x751DDF", 16)))
+            # 50/50 fip for heads or tails
             if random.randint(0, 1) == 1:
+                # If it's a 1, then set the image to the heads WIN URL
                 embed.set_image(url=self.config.get_data("Heads Win URL"))
             else:
+                # If it's a 0, then set the image to the tails WIN URL
                 embed.set_image(url=self.config.get_data("Tails Win URL"))
+            # Send and wait for the built message
             await Utils.client.send_message(channel, embed=embed)
         elif command is self.commands["Mega Flip Command"]:
+            # Check if at least one parameter is passed
             if len(split_message) > 1:
+                # Check if the user passed a valid integer
                 if split_message[1].isdigit():
+                    # Parse passed amount as an it
                     amount = int(split_message[1])
+                    # Get the config-defined max flip count
                     max_flip_amount = self.config.get_data("Commands")["Mega Flip Command"]["Max Flip Amount"]
+                    # Make sure the user isn't asking for more and the maximum flip amount allowed
                     if amount <= max_flip_amount:
+                        # Append an "amount" number of ('T')s and ('H')s to a string randomly
                         flip_text = "`%s`" % ''.join(["H" if random.randint(0, 1) == 1 else "T" for _ in range(amount)])
+                        # Reply with the randomly generated text, and wait
                         await Utils.simple_embed_reply(channel, "[Mega Flip]", flip_text)
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]",
@@ -46,15 +59,19 @@ class Gamble(Mod):
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["Bet Flip Command"]:
+            # Check if at least one parameter is passed
             if len(split_message) > 2:
                 # Grab the author's cash
                 author_cash = EconomyUtils.get_cash(server.id, author.id)
+                # Grab the text for the amount passed (whether it's an integer or not)
                 amount = split_message[1].lower()
+                # If it's the text 'all', then set the bet amount to all the authors cash
                 if amount == "all":
                     amount = str(author_cash)
+                # Since it's not 'all', check if it's a digit so it can be parsed as so
                 if amount.isdigit():
                     amount = int(amount)
-                    # Make sure their betting something
+                    # Make sure they're betting something
                     if amount > 0:
                         # Check if the user's bet is within their cash balance
                         if amount <= author_cash:

@@ -130,17 +130,25 @@ class ModHandler:
         for mod_name in self.mods:
             await self.mods[mod_name].message_received(message)
 
+    # Called when the bot joins a server
     async def on_server_join(self, server):
         for mod_name in self.mods:
             await self.mods[mod_name].on_server_join(server)
 
+    # Called when a member joins a server
     async def on_member_join(self, member):
         for mod_name in self.mods:
             await self.mods[mod_name].on_member_join(member)
 
+    # Called when a message is deleted
     async def on_message_delete(self, message):
         for mod_name in self.mods:
             await self.mods[mod_name].on_message_delete(message)
+
+    # Called when a user's VoiceState changes
+    async def on_voice_state_update(self, before, after):
+        for mod_name in self.mods:
+            await self.mods[mod_name].on_voice_state_update(before, after)
 
     # Called once a second
     async def second_tick(self):

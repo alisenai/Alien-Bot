@@ -125,19 +125,28 @@ async def on_message(message):
     await mod_handler.message_received(message)
 
 
+# Called when the bot joins a server
 @Utils.client.event
 async def on_server_join(server):
     await mod_handler.on_server_join(server)
 
 
+# Called when a member joins a server
 @Utils.client.event
 async def on_member_join(member):
     await mod_handler.on_member_join(member)
 
 
+# Called when a message is deleted
 @Utils.client.event
 async def on_message_delete(message):
     await mod_handler.on_member_join(message)
+
+
+# Called when a user's VoiceState changes
+@Utils.client.event
+async def on_voice_state_update(before, after):
+    await mod_handler.on_voice_state_update(before, after)
 
 
 def login():

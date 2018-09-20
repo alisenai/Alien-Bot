@@ -40,6 +40,10 @@ class Mod:
     async def on_message_delete(self, message):
         pass
 
+    # Called when a user's VoiceState changes
+    async def on_voice_state_update(self, before, after):
+        pass
+
     # Called when a user doesn't have permissions to call a command
     async def error_no_permissions(self, message, command):
         pass

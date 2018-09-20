@@ -229,6 +229,12 @@
     "Disabled Servers": [],
     "Enabled": true
   },
+  "VoiceTimeout": {
+    "Commands": {},
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
   "Waifu": {
     "Commands": {
       "Affinity Command": {

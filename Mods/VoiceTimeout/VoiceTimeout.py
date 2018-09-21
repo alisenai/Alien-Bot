@@ -3,7 +3,11 @@ import discord
 import time
 
 
-# Todo: Per-server
+# TODO: Figure out how to actually kick people out of a vc
+# > Create channel, move user, delete channel?
+# > Change channel permissions, then change them back?
+# > Change user permissions, then change them back?
+# TODO: Per-server
 class VoiceTimeout(Mod.Mod):
     def __init__(self, mod_name, embed_color):
         # Vars

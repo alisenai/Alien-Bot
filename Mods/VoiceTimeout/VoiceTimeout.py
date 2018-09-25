@@ -7,6 +7,7 @@ import time
 # > Create channel, move user, delete channel?
 # > Change channel permissions, then change them back?
 # > Change user permissions, then change them back?
+# > Just move users to AFK channel
 # TODO: Per-server
 class VoiceTimeout(Mod.Mod):
     def __init__(self, mod_name, embed_color):

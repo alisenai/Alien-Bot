@@ -45,7 +45,7 @@ class ModHandler:
             if mod_name not in mod_configs.keys() or mod_configs[mod_name]['Enabled'] is not False:
                 # Make the python files importable and import them
                 sys.path.insert(0, 'Mods/' + mod_name)
-                print("[Loading: " + mod_name + "]")
+                print("[+][Loading: %s]" % mod_name)
                 # Import and call mod init to get object
                 mod = getattr(__import__(mod_name), mod_name)(mod_name, self.embed_color)
                 # Check for command conflicts and store commands
@@ -65,7 +65,7 @@ class ModHandler:
                 print("[Done loading " + mod_name + "]")
             # Mod exists -> Disabled -> Don't load it, as per config
             else:
-                print("[Not Loading: " + mod_name + "]")
+                print("[-][Not Loading: " + mod_name + "]")
         self.done_loading = True
         print("[Done loading Mods]")
 

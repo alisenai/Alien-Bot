@@ -132,6 +132,11 @@ class Gamble(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
+        elif command is self.commands["Wheel Command"]:
+            await Utils.simple_embed_reply(channel, "Test",
+                                           "<:1:497587518401806337><:2:497587518380965888><:3:497587518108205057>\n" +
+                                           "<:4:497587518347411476>➡<:6:497587518401675314>\n" +
+                                           "<:7:497587518330372096><:8:497587518129307659><:9:497587518317789184>")
 
 
 def test_flip(is_heads=True):

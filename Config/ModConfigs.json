@@ -176,6 +176,11 @@
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
+      },
+      "Wheel Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],

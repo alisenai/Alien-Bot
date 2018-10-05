@@ -38,6 +38,17 @@
       ],
       "Max Flip Amount": 500,
       "Enabled": true
+    },
+    "Wheel Command": {
+      "Aliases": [
+        "wheel"
+      ],
+      "Help": "Spins a wheel.",
+      "Useage": [
+        "wheel{Amount: Number}",
+        "wheel 10"
+      ],
+      "Enabled": true
     }
   },
   "Heads Win URL": "https://suba.nekeko.com/HeadsWin.png",

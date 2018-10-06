@@ -4,6 +4,7 @@ A fully-customizable bot for dynamic module loading
 ### Prerequisites
 * [Python 3.4.2](https://www.python.org/downloads/release/python-342/)+
 * [Discord.py](https://github.com/Rapptz/discord.py)
+* Asyncio
 ### Execution
 1. Install prerequisites
 2. Rename `Config.json.example` under `Alien-Bot\Config` to `Config.json`

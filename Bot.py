@@ -11,13 +11,13 @@ client = discord.Client()
 # Set global client object
 Utils.client = client
 # Initialize the config data manager and load the config
-config = DataManager.add_manager("bot_config", "Config\Config.json").get_data()
+config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
 # Initialize database data manager
 database_manager = DataManager.add_manager("database", config['Database'], file_type=DataManager.FileType.SQL)
 # Initialize cool down data manager
-cool_down_manager = DataManager.add_manager("commands", "Common\Command.db", file_type=DataManager.FileType.SQL)
+cool_down_manager = DataManager.add_manager("commands", "Common/Command.db", file_type=DataManager.FileType.SQL)
 # Initialize mod config manager
-mod_config_manager = DataManager.add_manager("mod_config", "Config\ModConfigs.json")
+mod_config_manager = DataManager.add_manager("mod_config", "Config/ModConfigs.json")
 # Load permissions
 Permissions.load_permissions()
 # Grab the bot's nickname
@@ -154,7 +154,7 @@ def login():
     print("[Attempting to login]")
     try:
         if config['Token'] == "TOKEN":
-            print("Please add a token in the config file")
+            print("Please set a token in the config file")
         else:
             # Run the bot with the token
             client.run(config['Token'])

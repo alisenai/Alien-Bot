@@ -1,11 +1,10 @@
 {
   "Bot Emoji": "\ud83e\udd5d",
   "Command Prefix": ";",
-  "Database": "Config\\Database.db",
+  "Database": "Config/Database.db",
   "Disabled Channels": [],
   "Disabled Servers": [],
   "Embed Color": "0x751DDF",
-  "Minimum Suggestion Permission": "Guardian",
   "Game Status": [
     "With Alien Sensei",
     "With Mods",
@@ -15,37 +14,39 @@
     "With Your Data",
     "#751DDF"
   ],
+  "Minimum Suggestion Permission": "Guardian",
   "Nickname": "Alien-Bot",
   "Permissions": {
     "Admin": {
-      "Is Default": false,
+      "Associated Roles": [
+      ],
       "Has Permissions": true,
       "Inherits": "Guardian",
-      "Is Owner": true,
-      "Associated Roles": []
+      "Is Default": false,
+      "Is Owner": true
     },
     "Guardian": {
-      "Is Default": false,
+      "Associated Roles": [],
       "Has Permissions": true,
       "Inherits": "User",
-      "Is Owner": false,
-      "Associated Roles": []
+      "Is Default": false,
+      "Is Owner": false
     },
     "Restricted": {
-      "Is Default": false,
+      "Associated Roles": [],
       "Has Permissions": false,
       "Inherits": null,
-      "Is Owner": false,
-      "Associated Roles": []
+      "Is Default": false,
+      "Is Owner": false
     },
     "User": {
-      "Is Default": true,
+      "Associated Roles": [],
       "Has Permissions": true,
       "Inherits": "Restricted",
-      "Is Owner": false,
-      "Associated Roles": []
+      "Is Default": true,
+      "Is Owner": false
     }
   },
-  "Profile Picture": "Config\\pfp_default.jpg",
+  "Profile Picture": "Config/pfp_default.jpg",
   "Token": "TOKEN"
 }

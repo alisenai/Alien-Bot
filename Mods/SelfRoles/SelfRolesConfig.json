@@ -1,0 +1,40 @@
+{
+  "Mod Description": "Gambling games and more.",
+  "Commands": {
+    "I Am Command": {
+      "Aliases": [
+        "iam"
+      ],
+      "Help": "Gives you a self role.",
+      "Useage": [
+        "iam {Role Name: Name/Identifier | A-Z, a-z, 0-9}",
+        "iam purple"
+      ],
+      "Enabled": true
+    },
+    "I Am Not Command": {
+      "Aliases": [
+        "iamnot",
+        "iamn"
+      ],
+      "Help": "Removes a self role.",
+      "Useage": [
+        "iamn {Role Name: Name/Identifier | A-Z, a-z, 0-9}",
+        "iamn purple"
+      ],
+      "Enabled": true
+    },
+    "Add Self Role Command": {
+      "Aliases": [
+        "add-self-role"
+      ],
+      "Help": "Adds a self role.",
+      "Useage": [
+        "add-self-role {Role Name: Name/Identifier | A-Z, a-z, 0-9} {Role: Ping/Identifier}",
+        "add-self-role purple @purple",
+        "add-self-role purple 123456789123456789"
+      ],
+      "Enabled": true
+    }
+  }
+}

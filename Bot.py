@@ -50,7 +50,7 @@ async def on_ready():
     # Change the bot nickname and get a "self" user
     for server in client.servers:
         self = server.me
-        await client.change_nickname(self, config['Nickname'])
+        # await client.change_nickname(self, config['Nickname'])
     # Change the avatar if it's not already set
     avatar_hash = self.avatar
     database_manager.execute("CREATE TABLE IF NOT EXISTS bot_data(name TEXT, value TEXT)")
@@ -140,7 +140,7 @@ async def on_member_join(member):
 # Called when a message is deleted
 @Utils.client.event
 async def on_message_delete(message):
-    await mod_handler.on_member_join(message)
+    await mod_handler.on_message_delete(message)
 
 
 # Called when a user's VoiceState changes

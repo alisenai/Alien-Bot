@@ -11,6 +11,7 @@ except ImportError:
     raise Exception("Economy mod not installed")
 
 
+# TODO: Support multiple servers
 class Shops(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init
@@ -56,7 +57,12 @@ class Shops(Mod):
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["List Shops Command"]:
-            shop_names = self.database.execute("SELECT shop_name FROM shops")
+            shop_names = []
+            info = self.database.execute("SELECT channel_id, shop_name FROM shops")
+            known_channels = [channel.id for channel in server.channels]
+            for i in range(0, len(info), 2):
+                if info[i] in known_channels:
+                    shop_names.append(info[i + 1])
             if len(shop_names) > 0:
                 shop_text = ''.join([shop_name + "\n" for shop_name in shop_names])[:-1]
                 await Utils.simple_embed_reply(channel, "[Shops]", shop_text)

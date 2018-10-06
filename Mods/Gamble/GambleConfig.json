@@ -45,7 +45,7 @@
       ],
       "Help": "Spins a wheel.",
       "Useage": [
-        "wheel{Amount: Number}",
+        "wheel {Amount: Number}",
         "wheel 10"
       ],
       "Enabled": true

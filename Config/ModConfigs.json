@@ -187,6 +187,28 @@
     "Disabled Servers": [],
     "Enabled": true
   },
+  "SelfRoles": {
+    "Commands": {
+      "Add Self Role Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "I Am Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
+      "I Am Not Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
   "Shops": {
     "Commands": {
       "Buy Command": {

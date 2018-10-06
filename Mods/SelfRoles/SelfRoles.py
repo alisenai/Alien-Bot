@@ -1,8 +1,6 @@
-import re
-
 from Common import DataManager, Utils
 from Common.Mod import Mod
-import discord
+import re
 
 
 class SelfRoles(Mod):

@@ -63,3 +63,5 @@ venv/
 Mods/Waifu/Gifts.db
 Mods/Shops/Shops.db
 Mods/SelfRoles/Roles.db
+Mods/Gacha/GachaDatabase.db
+Mods/Shops/ShopsInfo.db

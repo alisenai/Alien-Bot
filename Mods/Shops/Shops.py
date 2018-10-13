@@ -18,13 +18,15 @@ class Shops(Mod):
         self.config = DataManager.JSON("Mods/Shops/ShopsConfig.json")
         self.delete_delay = self.config.get_data("Message Delete Delay")
         # Init shop DB
-        self.database = DataManager.add_manager("shop_database", "Mods/Shops/Shops.db",
+        self.shop_info_database = DataManager.add_manager("shop_info_database", "Mods/Shops/ShopsInfo.db",
+                                                file_type=DataManager.FileType.SQL)
+        self.shops_database = DataManager.add_manager("shops_database", "Mods/Shops/Shops.db",
                                                 file_type=DataManager.FileType.SQL)
         # Create a shop table withing the DB if there isn't one
-        self.database.execute(
+        self.shop_info_database.execute(
             "CREATE TABLE IF NOT EXISTS shops(channel_id TEXT UNIQUE, shop_name TEXT, is_purge BIT)"
         )
-        self.database.execute(
+        self.shop_info_database.execute(
             "CREATE TABLE IF NOT EXISTS messages(shop_name TEXT UNIQUE, message_id TEXT, channel_id TEXT)"
         )
         # Verify DB - Check for deleted channels that shops exist in
@@ -44,11 +46,13 @@ class Shops(Mod):
                     # Drop old shop table if needed
                     self.delete_shop_by_channel_id(channel.id)
                     # Create new tables and rows
-                    self.database.execute(
+                    self.shops_database.execute(
                         """CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT UNIQUE, 
                         price NUMERIC, time_added REAL, duration REAL)""" % shop_name
                     )
-                    self.database.execute("REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name))
+                    self.shop_info_database.execute(
+                        "REPLACE INTO shops VALUES('%s', '%s', 0)" % (channel.id, shop_name)
+                    )
                     await Utils.simple_embed_reply(
                         channel, "[Shop Created]", "`%s` has been assigned `%s.`" % (str(channel), shop_name)
                     )
@@ -58,7 +62,7 @@ class Shops(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]", "Insufficient parameters supplied.")
         elif command is self.commands["List Shops Command"]:
             shop_names = []
-            info = self.database.execute("SELECT channel_id, shop_name FROM shops")
+            info = self.shop_info_database.execute("SELECT channel_id, shop_name FROM shops")
             known_channels = [channel.id for channel in server.channels]
             for i in range(0, len(info), 2):
                 if info[i] in known_channels:
@@ -72,12 +76,12 @@ class Shops(Mod):
             if len(split_message) > 1:
                 shop_name = split_message[1]
                 if is_valid_shop_name(shop_name):
-                    shop_names = self.database.execute("SELECT shop_name FROM shops")
+                    shop_names = self.shop_info_database.execute("SELECT shop_name FROM shops")
                     if len(shop_names) > 0:
                         if shop_name in shop_names:
-                            self.database.execute("DROP TABLE IF EXISTS '%s'" % shop_name)
-                            self.database.execute("DELETE FROM shops WHERE shop_name='%s'" % shop_name)
-                            self.database.execute("DELETE FROM messages WHERE shop_name='%s'" % shop_name)
+                            self.shops_database.execute("DROP TABLE IF EXISTS '%s'" % shop_name)
+                            self.shop_info_database.execute("DELETE FROM shops WHERE shop_name='%s'" % shop_name)
+                            self.shop_info_database.execute("DELETE FROM messages WHERE shop_name='%s'" % shop_name)
                             await Utils.simple_embed_reply(channel, "[Shops]", "Shop `%s` was deleted." % shop_name)
                         else:
                             await Utils.simple_embed_reply(channel, "[Error]", "That shop doesn't exist.")
@@ -100,10 +104,10 @@ class Shops(Mod):
                                 role = Utils.get_role(server, role_text)
                                 if role is not None:
                                     role_ids = [name.lower() for name in
-                                                self.database.execute("SELECT role_id FROM '%s'" % shop_name)]
+                                                self.shops_database.execute("SELECT role_id FROM '%s'" % shop_name)]
                                     role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
                                     if str(role).lower() not in role_names:
-                                        self.database.execute(
+                                        self.shops_database.execute(
                                             "INSERT INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
                                                 shop_name, role.id, int(price), time.time(), duration)
                                         )
@@ -118,7 +122,7 @@ class Shops(Mod):
                                         await self.update_messages()
                                     else:
                                         if role.id in role_ids:
-                                            self.database.execute(
+                                            self.shops_database.execute(
                                                 "REPLACE INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
                                                     shop_name, role.id, int(price), time.time(), duration)
                                             )
@@ -153,9 +157,11 @@ class Shops(Mod):
                 if is_valid_shop_name(shop_name):
                     if self.shop_exists(shop_name):
                         new_value = int(
-                            self.database.execute("SELECT is_purge FROM shops WHERE shop_name='%s'" % shop_name)[0]
+                            self.shop_info_database.execute(
+                                "SELECT is_purge FROM shops WHERE shop_name='%s'" % shop_name
+                            )[0]
                         ) ^ 1
-                        self.database.execute(
+                        self.shop_info_database.execute(
                             "UPDATE shops SET is_purge='%d' WHERE shop_name='%s'" % (new_value, shop_name)
                         )
                         await Utils.simple_embed_reply(
@@ -173,7 +179,7 @@ class Shops(Mod):
                 if self.shop_exists(shop_name):
                     embed = await self.get_shop_embed(shop_name, server)
                     shop_message = await Utils.client.send_message(channel, embed=embed)
-                    self.database.execute(
+                    self.shop_info_database.execute(
                         "REPLACE INTO messages VALUES('%s', '%s', '%s')" % (shop_name, shop_message.id, channel.id)
                     )
                 else:
@@ -183,11 +189,13 @@ class Shops(Mod):
         elif command is self.commands["Buy Command"]:
             if len(split_message) > 1:
                 given_name = ' '.join(split_message[1:]).lower()
-                shop = self.database.execute("SELECT shop_name FROM shops where channel_id='%s'" % message.channel.id)
+                shop = self.shop_info_database.execute(
+                    "SELECT shop_name FROM shops where channel_id='%s'" % message.channel.id
+                )
                 if len(shop) > 0:
                     shop = shop[0]
-                    role_ids = self.database.execute("SELECT role_id FROM '%s'" % shop)
-                    role_costs = self.database.execute("SELECT price FROM '%s'" % shop)
+                    role_ids = self.shops_database.execute("SELECT role_id FROM '%s'" % shop)
+                    role_costs = self.shops_database.execute("SELECT price FROM '%s'" % shop)
                     if len(role_ids) > 0:
                         role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
                         if given_name in [str(name).lower() for name in role_names]:
@@ -219,15 +227,15 @@ class Shops(Mod):
         elif command is self.commands["Delete Shop Role Command"]:
             if len(split_message) > 1:
                 given_name = ' '.join(split_message[1:]).lower()
-                shop = self.database.execute("SELECT shop_name FROM shops where channel_id='%s'" % channel.id)
+                shop = self.shop_info_database.execute("SELECT shop_name FROM shops where channel_id='%s'" % channel.id)
                 if len(shop) > 0:
                     shop = shop[0]
-                    role_ids = self.database.execute("SELECT role_id FROM '%s'" % shop)
+                    role_ids = self.shops_database.execute("SELECT role_id FROM '%s'" % shop)
                     if len(role_ids) > 0:
                         role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
                         if given_name in [str(name).lower() for name in role_names]:
                             for i in range(len(role_ids)):
-                                self.database.execute(
+                                self.shops_database.execute(
                                     "DELETE FROM '%s' WHERE role_name='%s'" % (shop, role_names[i])
                                 )
                                 await Utils.simple_embed_reply(channel, "[%s]" % shop,
@@ -245,12 +253,14 @@ class Shops(Mod):
     def delete_shop_by_channel_id(self, channel_id):
         # old_channel_drop = self.database.execute(
         #     """SELECT "DROP TABLE IF EXISTS '" || shop_name || "'" FROM shops WHERE channel_id='%s'""" % channel_id)
-        old_channel = self.database.execute("SELECT shop_name FROM shops WHERE channel_id='%s' LIMIT 1" % channel_id)
+        old_channel = self.shop_info_database.execute(
+            "SELECT shop_name FROM shops WHERE channel_id='%s' LIMIT 1" % channel_id
+        )
         if len(old_channel) > 0:
-            self.database.execute("DROP TABLE IF EXISTS '%s'" % old_channel[0])
+            self.shops_database.execute("DROP TABLE IF EXISTS '%s'" % old_channel[0])
 
     async def message_received(self, message):
-        deletion_channels = self.database.execute("SELECT channel_id FROM shops where is_purge=1")
+        deletion_channels = self.shop_info_database.execute("SELECT channel_id FROM shops where is_purge=1")
         if message.channel.id in deletion_channels:
             # Since async, blocking doesn't matter
             await asyncio.sleep(self.delete_delay)
@@ -258,7 +268,7 @@ class Shops(Mod):
 
     def shop_exists(self, shop_name):
         if is_valid_shop_name(shop_name):
-            db_return = self.database.execute(
+            db_return = self.shop_info_database.execute(
                 "SELECT EXISTS(SELECT * FROM shops WHERE shop_name='%s' LIMIT 1)" % shop_name
             )
             if db_return == [1]:
@@ -266,7 +276,7 @@ class Shops(Mod):
         return False
 
     async def update_messages(self):
-        data = self.database.execute("SELECT * from messages")
+        data = self.shop_info_database.execute("SELECT * from messages")
         # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
         messages = [[str(data[i * 3]), str(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in range(len(data) // 3)]
         for message_info in messages:
@@ -278,7 +288,7 @@ class Shops(Mod):
             await Utils.client.edit_message(message, embed=embed)
 
     async def get_shop_embed(self, shop_name, server):
-        roles = self.database.execute("SELECT role_id, price FROM '%s' ORDER BY price DESC" % shop_name)
+        roles = self.shops_database.execute("SELECT role_id, price FROM '%s' ORDER BY price DESC" % shop_name)
         # Convert [id1, cost1, id2, cost2, ...] to [[id1, cost1], [id2, cost2], ...]
         roles = [[roles[i * 2], str(roles[i * 2 + 1])] for i in range(len(roles) // 2)]
         embed = discord.Embed(title="[%s]" % shop_name,
@@ -294,22 +304,22 @@ class Shops(Mod):
 
     # Deletes messages if their duration is up
     async def second_tick(self):
-        shops = self.database.execute("SELECT shop_name FROM shops")
+        shops = self.shop_info_database.execute("SELECT shop_name FROM shops")
         current_time = time.time()
         for shop_name in shops:
-            data = self.database.execute("SELECT time_added, duration, role_id FROM '%s'" % shop_name)
+            data = self.shops_database.execute("SELECT time_added, duration, role_id FROM '%s'" % shop_name)
             # Convert [a1, b1, c1, a2, b2, c2, ...] to [[a1, b1, c1], [a2, b2, c2], ...]
             messages = [[float(data[i * 3]), float(data[i * 3 + 1]), str(data[i * 3 + 2])] for i in
                         range(len(data) // 3)]
             for message_info in messages:
                 if message_info[1] != -1:
                     if current_time - message_info[0] >= message_info[1] * 60 * 60:
-                        self.database.execute("DELETE FROM '%s' where role_id='%s'" % (shop_name, message_info[2]))
+                        self.shops_database.execute("DELETE FROM '%s' where role_id='%s'" % (shop_name, message_info[2]))
                         await self.update_messages()
 
     # Cleans up shops from deleted channels
     def verify_db(self):
-        shop_channels = self.database.execute("SELECT channel_ID from shops")
+        shop_channels = self.shop_info_database.execute("SELECT channel_ID from shops")
         # Remove all existing channels from the shop_channels list
         for server in Utils.client.servers:
             for channel in server.channels:
@@ -318,7 +328,7 @@ class Shops(Mod):
         # Delete any remaining channels as they don't exist (weren't removed previously)
         for channel in shop_channels:
             self.delete_shop_by_channel_id(channel)
-            self.database.execute("DELETE FROM shops where channel_id='%s'" % channel)
+            self.shop_info_database.execute("DELETE FROM shops where channel_id='%s'" % channel)
 
 
 # Prevents SQL Injection

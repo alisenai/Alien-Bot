@@ -160,6 +160,18 @@
     "Disabled Servers": [],
     "Enabled": true
   },
+  "Gacha": {
+    "Commands": {
+      "Set Gacha Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      }
+    },
+    "Disabled Channels": [],
+    "Disabled Servers": [],
+    "Enabled": true
+  },
   "Gamble": {
     "Commands": {
       "Bet Flip Command": {

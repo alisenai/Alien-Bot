@@ -1,0 +1,17 @@
+{
+  "Mod Description": "Role lootboxes! Gachapon!.",
+  "Message Delete Delay": 3,
+  "Commands": {
+    "Set Gacha Command": {
+      "Aliases": [
+        "set-gacha"
+      ],
+      "Help": "Adds a new gacha.",
+      "Useage": [
+        "set-gacha {Shop: Name/Identifier | A-Z, a-z, 0-9}",
+        "set-gacha lootbox"
+      ],
+      "Enabled": true
+    }
+  }
+}

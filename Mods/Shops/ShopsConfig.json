@@ -20,7 +20,7 @@
       ],
       "Help": "Sets the current channel as a shop with the supplied name.",
       "Useage": [
-        "set-shop {Shop: Name/Identifier | A-Z, a-z, 0-9} {Page: empty",
+        "set-shop {Shop: Name/Identifier | A-Z, a-z, 0-9}",
         "set-shop RolesShop"
       ],
       "Enabled": true

@@ -8,6 +8,7 @@ prefix = None
 bot_nick = None
 bot_emoji = None
 mod_handler = None
+default_hex_color = None
 
 
 # Used to check if a string is a hex value
@@ -66,7 +67,7 @@ def get_color(color):
 # Replies to a channel with a simple embed
 async def simple_embed_reply(channel, title, description, hex_color=None):
     # Pick which color to use (if the function was passed a color)
-    color = "0x751DDF" if hex_color is None else hex_color
+    color = default_hex_color if hex_color is None else hex_color
     # Reply with a built embed
     return await client.send_message(channel, embed=discord.Embed(title=title,
                                                                   description=description,

@@ -21,7 +21,7 @@
         "help",
         "h"
       ],
-      "Help": "Lists mod info",
+      "Help": "Lists mod info.",
       "Useage": [
         "help {Mod: Text}",
         "help {Command Alias: Text}",
@@ -34,7 +34,7 @@
       "Aliases": [
         "info"
       ],
-      "Help": "Lists bot info",
+      "Help": "Lists bot info.",
       "Useage": [
         "info {Empty/'server'/'channel'/'mod'/'command'/'permissions'}",
         "info",

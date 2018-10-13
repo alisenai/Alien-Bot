@@ -35,6 +35,18 @@
         "add-self-role purple 123456789123456789"
       ],
       "Enabled": true
+    },
+    "Delete Self Role Command": {
+      "Aliases": [
+        "delete-self-role"
+      ],
+      "Help": "Deletes a self role.",
+      "Useage": [
+        "delete-self-role {Role Name: Name/Identifier | A-Z, a-z, 0-9}",
+        "delete-self-role purple",
+        "delete-self-role purple"
+      ],
+      "Enabled": true
     }
   }
 }

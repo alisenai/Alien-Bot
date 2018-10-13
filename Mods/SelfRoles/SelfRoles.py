@@ -66,13 +66,28 @@ class SelfRoles(Mod):
                 await Utils.simple_embed_reply(channel, "[Error]", "Invalid parameters supplied.")
         elif command is self.commands["Add Self Role Command"]:
             if len(split_message) > 2:
-                role_name = split_message[1]
+                role_name = split_message[1].lower()
                 if is_valid_name(role_name):
                     role = Utils.get_role(server, split_message[2])
                     if role is not None:
                         self.roles_db.execute("INSERT INTO '%s' VALUES ('%s', '%s')" % (server.id, role.id, role_name))
-                        await Utils.simple_embed_reply(channel, "[Error]", "Role `%s` was added as `%s`." %
+                        await Utils.simple_embed_reply(channel, "[SelfRoles]", "Role `%s` was added as `%s`." %
                                                        (role.name, role_name))
+                    else:
+                        await Utils.simple_embed_reply(channel, "[Error]", "Role not found.")
+                else:
+                    await Utils.simple_embed_reply(channel, "[Error]", "Invalid name supplied.")
+            else:
+                await Utils.simple_embed_reply(channel, "[Error]", "Invalid parameters supplied.")
+        elif command is self.commands["Delete Self Role Command"]:
+            if len(split_message) > 1:
+                role_name = split_message[1].lower()
+                if is_valid_name(role_name):
+                    if len(self.roles_db.execute(
+                            "SELECT name FROM `%s` WHERE name='%s'" % (server.id, role_name)
+                    )) > 0:
+                        self.roles_db.execute("DELETE FROM '%s' where name='%s'" % (server.id, role_name))
+                        await Utils.simple_embed_reply(channel, "[SelfRoles]", "Role `%s` was deleted." % role_name)
                     else:
                         await Utils.simple_embed_reply(channel, "[Error]", "Role not found.")
                 else:

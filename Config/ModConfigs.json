@@ -194,6 +194,11 @@
         "Disabled Servers": [],
         "Minimum Permissions": ""
       },
+      "Delete Self Role Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
+      },
       "I Am Command": {
         "Disabled Channels": [],
         "Disabled Servers": [],

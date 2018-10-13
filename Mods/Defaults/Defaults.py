@@ -108,6 +108,7 @@ class Defaults(Mod.Mod):
             # "- 3" so it can append "..."
             if len(mod_text) + len(mod_name) < max_char - 3:
                 mod_text += mod_name + "\n"
+                max_char -= 1  # Newline char
             else:
                 return mod_text + "..."
         if mod_text == "":
@@ -126,8 +127,7 @@ class Defaults(Mod.Mod):
                         ("Disabled Servers", bot_config.get_data("Disabled Servers"))]
             # Info for channels
             elif info_type == InfoType.CHANNELS:
-                # TODO: For current server only?
-                channels = [cnl for svr in servers for cnl in svr.channels if cnl.type == discord.ChannelType.text]
+                channels = [cnl for cnl in server.channels if cnl.type == discord.ChannelType.text]
                 return [("Channels", [cnl.name for cnl in channels]),
                         ("Disabled Channels", bot_config.get_data("Disabled Channels"))]
         # Info for permissions

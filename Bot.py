@@ -27,8 +27,10 @@ command_prefix = config['Command Prefix']
 Utils.prefix = command_prefix
 # Grab the bot's emoji
 Utils.bot_emoji = config["Bot Emoji"]
+# Grab default hex color
+Utils.default_hex_color = config['Embed Color']
 # Initialize the mod handler
-mod_handler = ModHandler(config["Minimum Suggestion Permission"], config['Embed Color'])
+mod_handler = ModHandler(config["Minimum Suggestion Permission"], Utils.default_hex_color)
 # Add to Utils
 Utils.mod_handler = mod_handler
 # Boolean to keep track of when it's safe to start parsing commands

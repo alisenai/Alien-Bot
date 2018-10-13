@@ -62,3 +62,4 @@ venv/
 .idea/
 Mods/Waifu/Gifts.db
 Mods/Shops/Shops.db
+Mods/SelfRoles/Roles.db

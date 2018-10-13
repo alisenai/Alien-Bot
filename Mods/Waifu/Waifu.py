@@ -42,7 +42,9 @@ class Waifu(Mod):
                 if user is not None:
                     # Check if the author is trying to claim themselves
                     if user.id != author.id:
-                        amount = split_message[2]
+                        amount = split_message[2].lower()
+                        if amount == "all":
+                            amount = str(EconomyUtils.get_cash(server.id, author.id))
                         # Check if the "Amount" parameter is a digit so it can be used correctly later
                         if amount.isdigit():
                             amount = int(amount)

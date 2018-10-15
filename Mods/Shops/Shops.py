@@ -11,7 +11,7 @@ except ImportError:
     raise Exception("Economy mod not installed")
 
 
-# TODO: Support multiple servers
+# TODO: Support multiple servers (add server ID to shop names? or replace shops.db tables with server IDs)
 class Shops(Mod):
     def __init__(self, mod_name, embed_color):
         # Config var init

@@ -31,6 +31,8 @@ def get_user(server, user_text):
     # By Tag
     elif re.fullmatch(r"<@[0-9]{18}>", user_text) is not None:
         return get_user_by_id(server, user_text[2:-1])
+    elif re.fullmatch(r"<@![0-9]{18}>", user_text) is not None:
+        return get_user_by_id(server, user_text[3:-1])
     else:
         return None
 

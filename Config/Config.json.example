@@ -18,8 +18,7 @@
   "Nickname": "Alien-Bot",
   "Permissions": {
     "Admin": {
-      "Associated Roles": [
-      ],
+      "Associated Roles": [],
       "Has Permissions": true,
       "Inherits": "Guardian",
       "Is Default": false,
@@ -47,6 +46,5 @@
       "Is Owner": false
     }
   },
-  "Profile Picture": "Config/pfp_default.jpg",
   "Token": "TOKEN"
 }

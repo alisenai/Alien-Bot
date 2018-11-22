@@ -24,6 +24,17 @@
       ],
       "Enabled": true
     },
+    "List Self Roles Command": {
+      "Aliases": [
+        "list-self-roles",
+        "lsr"
+      ],
+      "Help": "Lists all the self roles.",
+      "Useage": [
+        "list-self-roles"
+      ],
+      "Enabled": true
+    },
     "Add Self Role Command": {
       "Aliases": [
         "add-self-role"

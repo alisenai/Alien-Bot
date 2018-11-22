@@ -1,5 +1,6 @@
 from Common import DataManager, Utils
 from Common.Mod import Mod
+import discord
 import re
 
 
@@ -94,6 +95,17 @@ class SelfRoles(Mod):
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid name supplied.")
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Invalid parameters supplied.")
+        elif command is self.commands["List Self Roles Command"]:
+            role_names = self.roles_db.execute("SELECT name from '%s'" % server.id)
+            if len(role_names) > 0:
+                roles_string = ''.join([i + "\n" for i in role_names])
+                # TODO: Add role listing cap (to not break the embed max)
+                # List the roles
+                await Utils.client.send_message(channel, embed=discord.Embed(title="[Self Roles]",
+                                                                             description=roles_string[0:-1],
+                                                                             color=self.embed_color))
+            else:
+                await Utils.simple_embed_reply(channel, "[Self Roles]", "There are currently no self roles.")
 
     # Generates the roles DB
     def generate_db(self):

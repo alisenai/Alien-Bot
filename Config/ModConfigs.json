@@ -220,6 +220,11 @@
         "Disabled Channels": [],
         "Disabled Servers": [],
         "Minimum Permissions": ""
+      },
+      "List Self Roles Command": {
+        "Disabled Channels": [],
+        "Disabled Servers": [],
+        "Minimum Permissions": ""
       }
     },
     "Disabled Channels": [],

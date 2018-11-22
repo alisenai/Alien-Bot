@@ -28,7 +28,7 @@ Utils.prefix = command_prefix
 # Grab the bot's emoji
 Utils.bot_emoji = config["Bot Emoji"]
 # Grab default hex color
-Utils.default_hex_color = config['Embed Color']
+Utils.default_hex_color = int(config['Embed Color'], 16)
 # Initialize the mod handler
 mod_handler = ModHandler(config["Minimum Suggestion Permission"], Utils.default_hex_color)
 # Add to Utils

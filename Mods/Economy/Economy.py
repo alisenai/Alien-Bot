@@ -67,7 +67,7 @@ class Economy(Mod):
             user_worth = user_cash + user_bank
             embed = discord.Embed(title=" [%s]" % str(user),
                                   description="Server Rank: %s" % str(rank_text),
-                                  color=discord.Color(int("0x751DDF", 16)))
+                                  color=Utils.default_hex_color)
             embed.add_field(name="Cash", value=str(user_cash) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Bank", value=str(user_bank) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Net Worth", value=str(user_worth) + EconomyUtils.currency, inline=True)
@@ -171,7 +171,7 @@ class Economy(Mod):
             if page <= max_page:
                 if (len(user_rank_order) + 10) / 10 >= page:
                     embed = discord.Embed(title="[%s Leaderboard]" % str(server),
-                                          color=discord.Color(int("0x751DDF", 16)))
+                                          color=Utils.default_hex_color)
                     for i in range(min(10, len(user_rank_order))):
                         user_rank = (page - 1) * 10 + i
                         rank_text = Utils.add_number_abbreviation(user_rank + 1)
@@ -192,7 +192,7 @@ class Economy(Mod):
                                                "You can only view a page between 1 and %d." % max_page)
         elif command is self.commands["Bank Command"]:
             embed = discord.Embed(description="**The bank never goes Bankrupt!**",
-                                  color=discord.Color(int("0x751DDF", 16)))
+                                  color=Utils.default_hex_color)
             # Remove this if?
             if server.icon is None:
                 embed.set_author(name="%s Bank" % str(server),

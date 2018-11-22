@@ -292,7 +292,7 @@ class Shops(Mod):
         # Convert [id1, cost1, id2, cost2, ...] to [[id1, cost1], [id2, cost2], ...]
         roles = [[roles[i * 2], str(roles[i * 2 + 1])] for i in range(len(roles) // 2)]
         embed = discord.Embed(title="[%s]" % shop_name,
-                              color=discord.Color(int("0x751DDF", 16)))
+                              color=Utils.default_hex_color)
         if len(roles) > 0:
             for role_info in roles:
                 role = Utils.get_role_by_id(server, role_info[0])

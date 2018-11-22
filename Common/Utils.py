@@ -12,8 +12,8 @@ default_hex_color = None
 
 
 # Used to check if a string is a hex value
-def is_hex(string):
-    if re.match(r'^0[xX][0-9a-fA-F]{3,6}$', string):
+def is_hex(hex_check):
+    if re.match(r'^0[xX][0-9a-fA-F]{3,6}$', str(hex_check)):
         return True
     return False
 
@@ -71,13 +71,13 @@ async def simple_embed_reply(channel, title, description, hex_color=None):
     # Reply with a built embed
     return await client.send_message(channel, embed=discord.Embed(title=title,
                                                                   description=description,
-                                                                  color=discord.Color(int(color, 16))))
+                                                                  color=color))
 
 
 # Gets help for a mod or command
 async def get_help(message, name, commands, is_full_help):
     # Sets up an embed to return
-    embed = discord.Embed(title="[" + name + " Help]", color=0x751DDF)
+    embed = discord.Embed(title="[" + name + " Help]", color=default_hex_color)
     # Parses the help message
     split_message = message.content.split(" ")
     # If it can be parsed as a specific command

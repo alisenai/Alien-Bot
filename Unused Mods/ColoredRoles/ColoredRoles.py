@@ -138,7 +138,7 @@ class ColoredRoles(Mod):
                 # If roles exist
                 if len(self.roles[server.id]) > 0:
                     # Begin reply crafting
-                    embed = discord.Embed(title="[Info]", color=0x751DDF)
+                    embed = discord.Embed(title="[Info]", Utils.default_hex_color)
                     # Cycle all the roles, creating user list per role
                     for role_id in self.roles[server.id]:
                         role = Utils.get_role_by_id(server, role_id)

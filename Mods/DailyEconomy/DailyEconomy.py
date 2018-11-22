@@ -123,7 +123,8 @@ class DailyEconomy(Mod):
                             embed_text += reply_message[0: 50 - max_number_length - 3] + "...\n"
                         else:
                             embed_text += reply_message + "\n"
-                    embed = discord.Embed(title="[Reply Messages]", color=discord.Color(int("0x751DDF", 16)))
+                    embed = discord.Embed(title="[Reply Messages]",
+                                          color=Utils.default_hex_color)
                     embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]),
                                     inline=True)
                     embed.add_field(name="Message", value=embed_text, inline=True)

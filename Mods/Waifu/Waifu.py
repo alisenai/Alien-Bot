@@ -94,7 +94,7 @@ class Waifu(Mod):
                     return await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
             # Start a new embed for the info to be displayed on
             embed = discord.Embed(title="[Waifu Info]", description="Waifu info for %s" % str(user),
-                                  color=discord.Color(int("0x751DDF", 16)))
+                                  color=Utils.default_hex_color)
             # Create text of the user's waifus from the DB
             waifus = ''.join([str(Utils.get_user(server, i)) + "\n" for i in self.waifus_db.execute(
                 "SELECT user_id FROM '%s' WHERE owner_id='%s'" % (server.id, user.id)
@@ -200,7 +200,7 @@ class Waifu(Mod):
                     return await Utils.simple_embed_reply(channel, "[Error]", "Page parameter is incorrect.")
             # Start the embed for returning
             embed = discord.Embed(title="[Waifu Gifts]", description="Gifts for your waifus!",
-                                  color=discord.Color(int("0x751DDF", 16)))
+                                  color=Utils.default_hex_color)
             # Grab all the gifts from the config
             gifts = self.config.get_data("Gifts")
             # Calculate the page count based on gift count and gifts per page
@@ -339,7 +339,7 @@ class Waifu(Mod):
                 top_ten = sorted(owner_total_values.items(), key=lambda x: x[1])[::-1][
                           :min(len(owner_total_values), 11)]
                 embed = discord.Embed(title=" [Waifu Leaderboard]",
-                                      color=discord.Color(int("0x751DDF", 16)))
+                                      color=Utils.default_hex_color)
                 for i in range(len(top_ten)):
                     # Get the info from the current spot in the top 10
                     owner_id, value = top_ten[i]

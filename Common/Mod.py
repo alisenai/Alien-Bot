@@ -5,10 +5,10 @@ import time
 
 # Extendable class for mods
 class Mod:
-    def __init__(self, mod_name, description="No description", commands=None, embed_color="0xab12ba"):
+    def __init__(self, mod_name, description="No description", commands=None, embed_color=Utils.default_hex_color):
         # Check if parameters are valid
         assert ' ' not in mod_name, "Mod name \"" + mod_name + "\" contains a space"
-        assert Utils.is_hex(embed_color), "Embed Color \"" + embed_color + "\" is not a valid hex color"
+        assert Utils.is_hex(hex(embed_color)), "Embed Color \"" + hex(embed_color) + "\" is not a valid hex color"
         assert type(commands) is dict, "Mod command list is not of type dict"
         for command_name in commands:
             assert type(commands[command_name]) is Command, "Mod commands are not of type \"Command\""

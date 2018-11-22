@@ -27,7 +27,7 @@ class Defaults(Mod.Mod):
             # Otherwise, it's a full general list and parse as so
             else:
                 # Start building an embed
-                embed = discord.Embed(title="[Help]", color=0x751DDF)
+                embed = discord.Embed(title="[Help]", color=Utils.default_hex_color)
                 mod_descriptions = Utils.mod_handler.get_mod_descriptions()
                 # Loop through all mods' descriptions and create their fields
                 for mod in mod_descriptions:
@@ -63,7 +63,7 @@ class Defaults(Mod.Mod):
                     given_type = InfoType.PERMISSIONS
             # Printing for all info
             if all_info:
-                embed = discord.Embed(title="[Info]", color=0x751DDF, description="Bot info.")
+                embed = discord.Embed(title="[Info]", color=Utils.default_hex_color, description="Bot info.")
                 # Append basic info
                 embed.add_field(name="Bot Nick", value=str(Utils.bot_nick), inline=True)
                 embed.add_field(name="Bot Prefix", value=str(Utils.prefix), inline=True)
@@ -82,7 +82,7 @@ class Defaults(Mod.Mod):
                     embed.add_field(name=info_type, value=mod_text, inline=True)
             # Only print something specific, as requested
             elif given_type is not None:
-                embed = discord.Embed(title="[%s]" % given_type, color=0x751DDF, description="Bot info.")
+                embed = discord.Embed(title="[%s]" % given_type, color=Utils.default_hex_color, description="Bot info.")
                 # Get info about what was requested
                 given_info = self.get_specific_info(server, channel, given_type)
                 # Add a new field for each group of info

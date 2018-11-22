@@ -26,7 +26,7 @@ class Gamble(Mod):
         # Extract the server, channel and author from the message
         server, channel, author = message.server, message.channel, message.author
         if command is self.commands["Flip Command"]:
-            embed = discord.Embed(title="[Flip]", color=discord.Color(int("0x751DDF", 16)))
+            embed = discord.Embed(title="[Flip]", color=Utils.default_hex_color)
             # 50/50 fip for heads or tails
             if random.randint(0, 1) == 1:
                 # If it's a 1, then set the image to the heads WIN URL
@@ -113,7 +113,7 @@ class Gamble(Mod):
                                 # Discord with the generated message description
                                 embed = discord.Embed(title="[Bet Flip]",
                                                       description=message_description,
-                                                      color=discord.Color(int("0x751DDF", 16)))
+                                                      color=Utils.default_hex_color)
                                 # Set the thumbnail to the url of the won/lost coin type
                                 embed.set_thumbnail(url=config_data["%s %s URL" % (guess_type, response_type)])
                                 # Random chance to set footer from config

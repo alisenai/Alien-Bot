@@ -38,7 +38,7 @@ class Shops(Mod):
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["Set Shop Command"]:
             if len(split_message) > 1:
                 shop_name = split_message[1]
@@ -108,7 +108,7 @@ class Shops(Mod):
                                     role_names = [str(Utils.get_role_by_id(server, role_id)) for role_id in role_ids]
                                     if str(role).lower() not in role_names:
                                         self.shops_database.execute(
-                                            "INSERT INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
+                                            "INSERT OR IGNORE INTO '%s' VALUES('%s', '%d', '%s', '%s')" % (
                                                 shop_name, role.id, int(price), time.time(), duration)
                                         )
                                         await Utils.simple_embed_reply(
@@ -178,7 +178,7 @@ class Shops(Mod):
                 shop_name = split_message[1]
                 if self.shop_exists(shop_name):
                     embed = await self.get_shop_embed(shop_name, server)
-                    shop_message = await Utils.client.send_message(channel, embed=embed)
+                    shop_message = await channel.send(embed=embed)
                     self.shop_info_database.execute(
                         "REPLACE INTO messages VALUES('%s', '%s', '%s')" % (shop_name, shop_message.id, channel.id)
                     )
@@ -283,7 +283,7 @@ class Shops(Mod):
             shop_name, message_id, channel_id = message_info[0], message_info[1], message_info[2]
             channel = Utils.client.get_channel(channel_id)
             message = await Utils.client.get_message(channel, message_id)
-            server = message.server
+            server = message.guild
             embed = await self.get_shop_embed(shop_name, server)
             await Utils.client.edit_message(message, embed=embed)
 
@@ -321,7 +321,7 @@ class Shops(Mod):
     def verify_db(self):
         shop_channels = self.shop_info_database.execute("SELECT channel_ID from shops")
         # Remove all existing channels from the shop_channels list
-        for server in Utils.client.servers:
+        for server in Utils.client.guilds:
             for channel in server.channels:
                 if channel.id in shop_channels:
                     shop_channels.remove(channel.id)

@@ -55,19 +55,19 @@ class Command:
 
     async def call_command_skip_checks(self, message):
         # Send "is typing", for  a e s t h e t i c s
-        await Utils.client.send_typing(message.channel)
-        # Keep a record of the last call time
-        author = message.author
-        if self.last_called(author.id) == -1:
-            self.command_database.execute(
-                "INSERT INTO '%s' VALUES('%s', '%s')" % (self.name, author.id, str(time.time()))
-            )
-        else:
-            self.command_database.execute(
-                "UPDATE '%s' SET last_called='%s' WHERE user_id='%s'" % (self.name, str(time.time()), author.id)
-            )
-        # Call the command on the parent mod
-        await self.parent_mod.command_called(message, self)
+        async with message.channel.typing():
+            # Keep a record of the last call time
+            author = message.author
+            if self.last_called(author.id) == -1:
+                self.command_database.execute(
+                    "INSERT OR IGNORE INTO '%s' VALUES('%s', '%s')" % (self.name, author.id, str(time.time()))
+                )
+            else:
+                self.command_database.execute(
+                    "UPDATE '%s' SET last_called='%s' WHERE user_id='%s'" % (self.name, str(time.time()), author.id)
+                )
+            # Call the command on the parent mod
+            await self.parent_mod.command_called(message, self)
 
     # Returns when the user last called the command
     def last_called(self, user_id):
@@ -83,7 +83,7 @@ class Command:
     # Calls the command if it's enabled and if the user has perms
     async def call_command(self, message):
         if self.enabled:
-            server = message.server
+            server = message.guild
             channel = message.channel
             author = message.author
             mod_config = DataManager.get_manager("mod_config").get_data()

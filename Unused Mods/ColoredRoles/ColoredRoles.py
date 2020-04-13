@@ -27,7 +27,7 @@ class ColoredRoles(Mod):
     # Called when a command from this mod is called
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
-        channel, author, server = message.channel, message.author, message.server
+        channel, author, server = message.channel, message.author, message.guild
         try:
             # Adding a role
             if command is self.commands['Add Color Command']:
@@ -149,7 +149,7 @@ class ColoredRoles(Mod):
                         # Create embed field per role
                         embed.add_field(name=role.name, value=users_text)
                     # Reply
-                    await Utils.client.send_message(channel, embed=embed)
+                    await channel.send(embed=embed)
                 # No used roles -> state so
                 else:
                     await Utils.simple_embed_reply(channel, "[Info]", "No color exist.")
@@ -246,7 +246,7 @@ class ColoredRoles(Mod):
     # Generates a fresh database on users and their color roles for every server the bot is in
     def generate_db(self):
         # Created a local DB based on live info (fresh DB)
-        for server in Utils.client.servers:
+        for server in Utils.client.guilds:
             # Create a user database for each server
             self.users[server.id], self.roles[server.id] = {}, {}
             for user in server.members:

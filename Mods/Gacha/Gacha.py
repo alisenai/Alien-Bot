@@ -18,7 +18,7 @@ class Gacha(Mod):
 
     def generate_db(self):
         return
-        # for server in Utils.client.servers:
+        # for server in Utils.client.guilds:
         #     self.gacha_database.execute(
         #         "CREATE TABLE IF NOT EXISTS '%s'(gacha_name TEXT, print REAL)" % server.id
         #     )

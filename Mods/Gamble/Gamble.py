@@ -24,7 +24,7 @@ class Gamble(Mod):
         # Slip the message on space to help parse the command
         split_message = message.content.split(" ")
         # Extract the server, channel and author from the message
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["Flip Command"]:
             embed = discord.Embed(title="[Flip]", color=Utils.default_hex_color)
             # 50/50 fip for heads or tails
@@ -35,7 +35,7 @@ class Gamble(Mod):
                 # If it's a 0, then set the image to the tails WIN URL
                 embed.set_image(url=self.config.get_data("Tails Win URL"))
             # Send and wait for the built message
-            await Utils.client.send_message(channel, embed=embed)
+            await channel.send(embed=embed)
         elif command is self.commands["Mega Flip Command"]:
             # Check if at least one parameter is passed
             if len(split_message) > 1:
@@ -120,7 +120,7 @@ class Gamble(Mod):
                                 if random.random() < command_config["Footer Percent Chance"] / 100:
                                     embed.set_footer(text=command_config["%s Footer Message" % response_type])
                                 # Reply with built embed
-                                await Utils.client.send_message(channel, embed=embed)
+                                await channel.send(embed=embed)
                             else:
                                 await Utils.simple_embed_reply(channel, "[Error]",
                                                                "You have to pick heads or tails (h/t).")

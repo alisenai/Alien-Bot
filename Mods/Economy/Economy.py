@@ -29,7 +29,7 @@ class Economy(Mod):
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["Set Currency Command"]:
             if len(split_message) > 1:
                 new_currency = split_message[1]
@@ -71,7 +71,7 @@ class Economy(Mod):
             embed.add_field(name="Cash", value=str(user_cash) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Bank", value=str(user_bank) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Net Worth", value=str(user_worth) + EconomyUtils.currency, inline=True)
-            await Utils.client.send_message(channel, embed=embed)
+            await channel.send(embed=embed)
         elif command is self.commands["Deposit Command"]:
             if len(split_message) > 1:
                 deposit_amount = split_message[1]
@@ -149,7 +149,7 @@ class Economy(Mod):
                         return await Utils.simple_embed_reply(channel, "[Error]", "Amount parameter is incorrect.")
                     EconomyUtils.set_cash(server.id, author.id, author_cash - give_amount)
                     EconomyUtils.set_cash(server.id, user.id, user_cash + give_amount)
-                    await Utils.simple_embed_reply(channel, "[Error]", "You gave %s %s%s." % (
+                    await Utils.simple_embed_reply(channel, "[Success]", "You gave %s %s%s." % (
                         str(user), str(give_amount), EconomyUtils.currency))
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Invalid user supplied.")
@@ -184,7 +184,7 @@ class Economy(Mod):
                         embed.add_field(name="%s : %s" % (str(user), rank_text),
                                         value=str(user_worth) + EconomyUtils.currency, inline=False)
                     embed.set_footer(text="Page %d/%d" % (page, max_page))
-                    await Utils.client.send_message(channel, embed=embed)
+                    await channel.send(embed=embed)
                 else:
                     await Utils.simple_embed_reply(channel, "[Error]", "Page number is too high.")
             else:
@@ -206,14 +206,14 @@ class Economy(Mod):
                             value=str(total_balance) + EconomyUtils.currency, inline=True)
             embed.add_field(name="Interest:", value=str(self.config.get_data("Interest Rate")))
             embed.set_footer(text="%s" % str(time.strftime("%m-%d-%Y")))
-            await Utils.client.send_message(channel, embed=embed)
+            await channel.send(embed=embed)
         elif command is self.commands["Award Command"]:
             await self.award_take(message, True)
         elif command is self.commands["Take Command"]:
             await self.award_take(message, False)
 
     async def award_take(self, message, is_award):
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         split_message = message.content.split(" ")
         mode_text, mode_change = ("awarded", 1) if is_award else ("deducted", -1)
         if len(split_message) > 2:
@@ -260,7 +260,7 @@ class Economy(Mod):
             if not self.applied_interest:
                 self.applied_interest = True
                 # If not, apply interest
-                for server in Utils.client.servers:
+                for server in Utils.client.guilds:
                     EconomyUtils.database_execute(
                         "UPDATE '%s' SET bank=bank*%f" % (server.id, 1 + self.config.get_data("Interest Rate"))
                     )
@@ -275,7 +275,7 @@ class Economy(Mod):
         )
         for user in server.members:
             if not EconomyUtils.user_exists(server.id, user.id):
-                EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
+                EconomyUtils.database_execute("INSERT OR IGNORE INTO '%s' VALUES('%s', 0, '%s')" % (
                     server.id, user.id, str(self.config.get_data("Starting Balance"))
                 ))
 
@@ -284,18 +284,18 @@ class Economy(Mod):
         server_id = member.server.id
         user_id = member.id
         if not EconomyUtils.user_exists(server_id, user_id):
-            EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
+            EconomyUtils.database_execute("INSERT OR IGNORE INTO '%s' VALUES('%s', 0, '%s')" % (
                 server_id, user_id, str(self.config.get_data("Starting Balance"))
             ))
 
     # Generates the bank DB
     def generate_db(self):
-        for server in Utils.client.servers:
+        for server in Utils.client.guilds:
             EconomyUtils.database_execute(
                 "CREATE TABLE IF NOT EXISTS '%s'(user TEXT, cash REAL, bank REAL)" % server.id
             )
             for user in server.members:
                 if not EconomyUtils.user_exists(server.id, user.id):
-                    EconomyUtils.database_execute("INSERT INTO '%s' VALUES('%s', 0, '%s')" % (
+                    EconomyUtils.database_execute("INSERT OR IGNORE INTO '%s' VALUES('%s', 0, '%s')" % (
                         server.id, user.id, str(self.config.get_data("Starting Balance"))
                     ))

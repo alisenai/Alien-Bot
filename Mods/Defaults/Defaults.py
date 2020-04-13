@@ -19,7 +19,7 @@ class Defaults(Mod.Mod):
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["Help Command"]:
             # If it's help for something specific, parse as so
             if len(split_message) > 1:
@@ -34,7 +34,7 @@ class Defaults(Mod.Mod):
                     description = mod_descriptions[mod]
                     embed.add_field(name=mod, value=description, inline=False)
                 # Reply with the created embed
-                await Utils.client.send_message(channel, embed=embed)
+                await channel.send(embed=embed)
         elif command is self.commands["Stop Command"]:
             await Utils.simple_embed_reply(channel, "[Stopping...]", "Goodbye cruel world.")
             print("[Stopping the bot]")
@@ -92,7 +92,7 @@ class Defaults(Mod.Mod):
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "Unknown parameter passed.")
                 return
-            await Utils.client.send_message(channel, embed=embed)
+            await channel.send(embed=embed)
         elif command is self.commands["Server Command"]:
             await self.change_presence(message, False)
         elif command is self.commands["Channel Command"]:
@@ -119,7 +119,7 @@ class Defaults(Mod.Mod):
         # Info for servers and channels
         if info_type == InfoType.SERVERS or info_type == InfoType.CHANNELS:
             bot_config = DataManager.get_manager("bot_config")
-            servers = [svr for svr in Utils.client.servers]
+            servers = [svr for svr in Utils.client.guilds]
             # Info for servers
             if info_type == InfoType.SERVERS:
                 # TODO: For current server only?
@@ -178,7 +178,7 @@ class Defaults(Mod.Mod):
     async def change_presence(self, message, channel_mode=False):
         # Build message info
         split_message = message.content.split(" ")
-        server = message.server
+        server = message.guild
         channel = message.channel
         # Grab the bot's config
         config = DataManager.get_manager("bot_config")

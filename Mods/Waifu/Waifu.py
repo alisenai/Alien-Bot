@@ -33,7 +33,7 @@ class Waifu(Mod):
     # Called when a waifu command is called
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["Claim Command"]:
             if len(split_message) > 2:
                 # Try and get a user from the passed arguments
@@ -141,7 +141,7 @@ class Waifu(Mod):
             embed.add_field(name="Changes of Heart", value=changes_of_heart, inline=True)
             embed.add_field(name="Waifus", value=waifus, inline=True)
             # Send the embed as the reply
-            await Utils.client.send_message(channel, embed=embed)
+            await channel.send(embed=embed)
         # TODO: Delete marriage role
         elif command is self.commands["Divorce Command"]:
             if len(split_message) > 1:
@@ -219,7 +219,7 @@ class Waifu(Mod):
                 # Set page number info footer
                 embed.set_footer(text="%d/%d" % (page, page_count))
                 # Send the created embed as a reply
-                await Utils.client.send_message(channel, embed=embed)
+                await channel.send(embed=embed)
             else:
                 await Utils.simple_embed_reply(channel, "[Error]", "That page doesn't exist.")
         elif command is self.commands["Gift Command"]:
@@ -362,7 +362,7 @@ class Waifu(Mod):
                     embed.add_field(name="%s - %s%s" %
                                          (Utils.add_number_abbreviation(i + 1), value, EconomyUtils.currency),
                                     value=desc)
-                await Utils.client.send_message(channel, embed=embed)
+                await channel.send(embed=embed)
             else:
                 await Utils.simple_embed_reply(channel, "[Waifu Leaderboard]", "No waifus are currently claimed!")
         elif command is self.commands["Delete Waifu Leaderboard Command"]:
@@ -388,7 +388,7 @@ class Waifu(Mod):
         known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server.id)
         for user in server.members:
             if user.id not in known_users:
-                self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
+                self.waifus_db.execute("INSERT OR IGNORE INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
                     server.id, user.id, str(self.config.get_data("Default Claim Amount"))
                 ))
         # Grab known gift names from the DB and Config
@@ -397,7 +397,7 @@ class Waifu(Mod):
         for gift_name in db_gift_names:
             # Populate the new table
             for user in server.members:
-                self.gifts_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))
+                self.gifts_db.execute("INSERT OR IGNORE INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))
 
     # Called when a member joins a server the bot is in
     async def on_member_join(self, member):
@@ -407,7 +407,7 @@ class Waifu(Mod):
         known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server_id)
         if user_id not in known_users:
             # Add user to waifus DB
-            self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
+            self.waifus_db.execute("INSERT OR IGNORE INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
                 server_id, user_id, str(self.config.get_data("Default Claim Amount"))
             ))
             # Get known gift names
@@ -415,13 +415,13 @@ class Waifu(Mod):
             # Populate gifts DB tables with new user
             for gift_name in db_gift_names:
                 self.gifts_db.execute(
-                    "INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server_id, user_id)
+                    "INSERT OR IGNORE INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server_id, user_id)
                 )
 
     # Generates the waifu DB
     def generate_db(self):
         # Create waifu server tables if they don't exist
-        for server in Utils.client.servers:
+        for server in Utils.client.guilds:
             self.waifus_db.execute(
                 """CREATE TABLE IF NOT EXISTS '%s'(user_id TEXT UNIQUE, price DIGIT, changes_of_heart DIGIT, 
                 divorces DIGIT, owner_id TEXT, affinity TEXT)""" % server.id
@@ -430,7 +430,7 @@ class Waifu(Mod):
             known_users = self.waifus_db.execute("SELECT user_id from '%s'" % server.id)
             for user in server.members:
                 if user.id not in known_users:
-                    self.waifus_db.execute("INSERT INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
+                    self.waifus_db.execute("INSERT OR IGNORE INTO '%s' VALUES('%s', '%s', 0, 0, NULL, NULL)" % (
                         server.id, user.id, str(self.config.get_data("Default Claim Amount"))
                     ))
         # Grab known gift names from the DB and Config
@@ -450,7 +450,7 @@ class Waifu(Mod):
                 gift_name
             )
             # Populate the new table
-            for server in Utils.client.servers:
+            for server in Utils.client.guilds:
                 for user in server.members:
                     self.gifts_db.execute(
-                        "INSERT INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))
+                        "INSERT OR IGNORE INTO '%s' VALUES('%s', '%s', 0, 0)" % (gift_name, server.id, user.id))

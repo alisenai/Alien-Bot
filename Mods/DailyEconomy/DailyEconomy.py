@@ -21,7 +21,7 @@ class DailyEconomy(Mod):
 
     async def command_called(self, message, command):
         split_message = message.content.split(" ")
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["Set Default Success Rate Command"]:
             if len(split_message) > 2:
                 income_command = split_message[1]
@@ -73,7 +73,7 @@ class DailyEconomy(Mod):
             await Utils.simple_embed_reply(channel, "[Error]", "Awaiting method of calculating success rate")
 
     async def set_income_reply(self, message, is_success):
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         split_message = message.content.split(" ")
         if len(split_message) > 2:
             income_command = split_message[1].lower()
@@ -104,7 +104,7 @@ class DailyEconomy(Mod):
     # TODO: Add pages
     # Lists all the success or failure reply messages for an income command
     async def list_reply_commands(self, message, is_success):
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         split_message = message.content.split(" ")
         if len(split_message) > 1:
             reply_type = "Success" if is_success else "Failure"
@@ -128,7 +128,7 @@ class DailyEconomy(Mod):
                     embed.add_field(name="ID", value=''.join([str(i) + "\n" for i in range(current_index)]),
                                     inline=True)
                     embed.add_field(name="Message", value=embed_text, inline=True)
-                    await Utils.client.send_message(channel, embed=embed)
+                    await channel.send(embed=embed)
                 else:
                     await Utils.simple_embed_reply(message.channel, "[Reply Messages]", "There are no replies.")
             else:
@@ -196,7 +196,7 @@ class DailyEconomy(Mod):
 
     # Pics a random win/loss based on the command and prints a win/loss message respectively
     async def roll_income(self, message, command_name):
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         command_config = self.config.get_data(key="Commands")[command_name]
         user_cash = EconomyUtils.get_cash(server.id, author.id)
         # Pick success or failure

@@ -11,7 +11,7 @@ client = discord.Client()
 # Set global client object
 Utils.client = client
 # Initialize the config data manager and load the config
-config = DataManager.add_manager("bot_config", "Config/Config.json").get_data()
+config = DataManager.add_manager("bot_config", "Config/config.json").get_data()
 # Initialize database data manager
 database_manager = DataManager.add_manager("database", config['Database'], file_type=DataManager.FileType.SQL)
 # Initialize cool down data manager
@@ -50,7 +50,7 @@ async def on_ready():
     print('[Starting]')
     self = None
     # Change the bot nickname and get a "self" user
-    for server in client.servers:
+    for server in client.guilds:
         self = server.me
         # await client.change_nickname(self, config['Nickname'])
     # Change the avatar if it's not already set
@@ -63,8 +63,8 @@ async def on_ready():
         with open(config['Profile Picture'], 'rb') as f:
             print("[Attempting Profile Picture Update]")
             try:
-                await client.edit_profile(avatar=f.read())
-                database_manager.execute("INSERT INTO bot_data VALUES('avatar_hash', '" + str(avatar_hash + "") + "')")
+                client.user.edit(avatar=f.read())
+                database_manager.execute("INSERT OR IGNORE INTO bot_data VALUES('avatar_hash', '" + str(avatar_hash + "") + "')")
                 print("[Updated Profile Picture]")
             except discord.errors.HTTPException:
                 print("[Skipping Profile Picture Update (Throttled)]")
@@ -72,7 +72,8 @@ async def on_ready():
     status = config['Game Status'][random.randint(0, len(config['Game Status']) - 1)]
     print("[Chose status \"" + status + "\"]")
     # Set status
-    await client.change_presence(game=discord.Game(name=status))
+    game = discord.Game(status)
+    await client.change_presence(status=discord.Status.do_not_disturb, activity=game)
     # Load mods
     await mod_handler.load_mods()
     # Start main loop
@@ -101,7 +102,7 @@ async def on_message(message):
         # Check if the mod handler is ready to be worked with
         if mod_handler.is_done_loading():
             if message.content == command_prefix + "<3":
-                await client.send_message(message.channel, config["Bot Emoji"])
+                await message.channel.send(config["Bot Emoji"])
             else:
                 try:
                     # Not a bot command; use mod handler to parse the command
@@ -115,8 +116,8 @@ async def on_message(message):
                     await client.logout()
                     if e.args[0] != "Stop Bot":
                         # For DEBUG
-                        raise e
                         # print("Ungraceful error caught", e)
+                        raise e
                         # TODO: Restarting on error or command / special exception
                         # shutdown = False
                         # print("[Restarting]")

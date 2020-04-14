@@ -22,7 +22,7 @@ class SelfRoles(Mod):
         # Slip the message on space to help parse the command
         split_message = message.content.split(" ")
         # Extract the server, channel and author from the message
-        server, channel, author = message.server, message.channel, message.author
+        server, channel, author = message.guild, message.channel, message.author
         if command is self.commands["I Am Command"]:
             if len(split_message) > 1:
                 given_name = split_message[1].lower()
@@ -71,7 +71,8 @@ class SelfRoles(Mod):
                 if is_valid_name(role_name):
                     role = Utils.get_role(server, split_message[2])
                     if role is not None:
-                        self.roles_db.execute("INSERT INTO '%s' VALUES ('%s', '%s')" % (server.id, role.id, role_name))
+                        self.roles_db.execute(
+                            "INSERT OR IGNORE INTO '%s' VALUES ('%s', '%s')" % (server.id, role.id, role_name))
                         await Utils.simple_embed_reply(channel, "[SelfRoles]", "Role `%s` was added as `%s`." %
                                                        (role.name, role_name))
                     else:
@@ -101,15 +102,15 @@ class SelfRoles(Mod):
                 roles_string = ''.join([i + "\n" for i in role_names])
                 # TODO: Add role listing cap (to not break the embed max)
                 # List the roles
-                await Utils.client.send_message(channel, embed=discord.Embed(title="[Self Roles]",
-                                                                             description=roles_string[0:-1],
-                                                                             color=self.embed_color))
+                await channel.send(embed=discord.Embed(title="[Self Roles]",
+                                                       description=roles_string[0:-1],
+                                                       color=self.embed_color))
             else:
                 await Utils.simple_embed_reply(channel, "[Self Roles]", "There are currently no self roles.")
 
     # Generates the roles DB
     def generate_db(self):
-        for server in Utils.client.servers:
+        for server in Utils.client.guilds:
             self.roles_db.execute(
                 "CREATE TABLE IF NOT EXISTS '%s'(role_id TEXT, name TEXT)" % server.id
             )

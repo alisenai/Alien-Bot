@@ -72,7 +72,7 @@ class ModHandler:
     # Called when a user message looks like a command, and it attempts to work with that command
     async def command_called(self, message, command_alias):
         split_message = message.content.split(" ")
-        server = message.server
+        server = message.guild
         channel = message.channel
         # Make sure everything initialized
         if self.done_loading:

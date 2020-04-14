@@ -71,9 +71,9 @@ async def simple_embed_reply(channel, title, description, hex_color=None):
     # Pick which color to use (if the function was passed a color)
     color = default_hex_color if hex_color is None else hex_color
     # Reply with a built embed
-    return await client.send_message(channel, embed=discord.Embed(title=title,
-                                                                  description=description,
-                                                                  color=color))
+    return await channel.send(embed=discord.Embed(title=title,
+                                                  description=description,
+                                                  color=color))
 
 
 # Gets help for a mod or command
@@ -93,7 +93,7 @@ async def get_help(message, name, commands, is_full_help):
         help_title, help_description = generate_help(commands, split_message[1], get_command_useage=True)
         embed.add_field(name=help_title, value=help_description)
     # Return the embed
-    await client.send_message(message.channel, embed=embed)
+    await message.channel.send(embed=embed)
 
 
 # Used to generate help, all of it or a specific command
